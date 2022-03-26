@@ -4,8 +4,15 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Hello World, Hexo">
-    <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hex">
+    <meta name="keywords" content="《利用Python进行数据分析》第一章, Hexo">
+    <meta name="description" content="第一章 准备工作1.1 本书内容常见数据形式
+
+表格型的数据，每一列可能会包含不同的类型（字符串、数值、日期或其他）。
+多维数组（矩阵）。
+由键位列关联的多张表数据（对于SQL用户来说就是主键或外键）。
+均匀或非均匀的时间序列。
+
+1.2 ">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +24,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Hello World | Hexo</title>
+    <title>《利用Python进行数据分析》第一章 | Hexo</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -309,12 +316,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/15.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Hello World</h1>
+                    <h1 class="description center-align post-title">《利用Python进行数据分析》第一章</h1>
                 </div>
             </div>
         </div>
@@ -428,9 +435,13 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">No tag</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
+                                <span class="chip bg-color">读书笔记</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
@@ -463,19 +474,70 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+                <h1 id="第一章-准备工作"><a href="#第一章-准备工作" class="headerlink" title="第一章 准备工作"></a>第一章 准备工作</h1><h2 id="1-1-本书内容"><a href="#1-1-本书内容" class="headerlink" title="1.1 本书内容"></a>1.1 本书内容</h2><p><strong>常见数据形式</strong></p>
+<ul>
+<li>表格型的数据，每一列可能会包含不同的类型（字符串、数值、日期或其他）。</li>
+<li>多维数组（矩阵）。</li>
+<li>由键位列关联的多张表数据（对于SQL用户来说就是主键或外键）。</li>
+<li>均匀或非均匀的时间序列。</li>
+</ul>
+<h2 id="1-2-为何利用Python进行数据分析"><a href="#1-2-为何利用Python进行数据分析" class="headerlink" title="1.2 为何利用Python进行数据分析"></a>1.2 为何利用Python进行数据分析</h2><ul>
+<li>Python作为胶水，整合C、C++等语言的代码</li>
+<li>解决“双语言”难题：使用相同程序工具集来兼顾研究人员和软件工程师的好处越发明显。</li>
+<li>当搭建高并发、多线程应用，尤其是多CPU绑定线程时，使用Python则会成为一项挑战。原因在于Python拥有全局解释器锁（GIL），这是一种防止解释器同时执行多个Python指令的机制。当搭建高并发、多线程应用，尤其是多CPU绑定线程时，使用Python则会成为一项挑战。原因在于Python拥有全局解释器锁（GIL），这是一种防止解释器同时执行多个Python指令的机制。</li>
+</ul>
+<h2 id="1-3-重要的Python库"><a href="#1-3-重要的Python库" class="headerlink" title="1.3 重要的Python库"></a>1.3 重要的Python库</h2><p><strong>Numpy</strong></p>
+<ul>
+<li>NumPy（<a target="_blank" rel="noopener" href="http://numpy.org)是numerical/">http://numpy.org）是Numerical</a> Python的简写，是Python数值计算的基石。</li>
+<li>NumPy赋予Python的快速数组处理能力。</li>
+<li>对于数值数据，NumPy数组能够比Python内建数据结构更为高效地存储和操作数据。</li>
+<li>用底层语言编写的库可以在NumPy数组存储的数据上直接操作，而无须将数据复制到其他内存中后再操作。</li>
+</ul>
+<p><strong>Pandas</strong></p>
+<ul>
+<li>pandas（<a target="_blank" rel="noopener" href="http://pandas.pyda/">http://pandas.pyda</a> ta.org）提供了高级数据结构和函数</li>
+<li>在本书中主要使用的pandas对象是DataFrame，它是用于实现表格化、面向列、使用行列标签的数据结构；以及Series，一种一维标签数组对象。</li>
+<li>pandas尤其擅长深度时间序列和处理商业进程中产生的时间索引数据</li>
+</ul>
+<p><strong>matplotlib</strong></p>
+<ul>
+<li>matplotlib（<a target="_blank" rel="noopener" href="http://matplotlib.org)是最流行的用于制图及其他二维数据可视化的python库/">http://matplotlib.org）是最流行的用于制图及其他二维数据可视化的Python库</a></li>
+</ul>
+<p><strong>IPython与Jupyter</strong></p>
+<ul>
+<li>IPython使用<strong>执行-探索</strong>工作流来替代其他语言典型的<strong>编辑-编译-运行</strong>工作流</li>
+<li>本书所有章节代码：<a target="_blank" rel="noopener" href="http://github.com/wesm/pydata-book">http://github.com/wesm/pydata-book</a></li>
+</ul>
+<p><strong>SciPy</strong></p>
+<ul>
+<li><p>SciPy（<a target="_blank" rel="noopener" href="http://scipy.org)是科学计算领域针对不同标准问题域的包集合,scipy与numpy一起为很多传统科学计算应用提供了一个合理、完整、成熟的计算基础./">http://scipy.org）是科学计算领域针对不同标准问题域的包集合，SciPy与NumPy一起为很多传统科学计算应用提供了一个合理、完整、成熟的计算基础。</a></p>
+</li>
+<li><p>&#96;&#96;&#96;<br>scipy.integrate  #数值积分例程和微分方程求解器<br>scipy.linalg  #线性代数例程和基于numpy.linalg的矩阵分解<br>scipy.optimize  #函数优化器（最小化器）和求根算法<br>scipy.signal  #信号处理工具<br>scipy.sparse  #稀疏矩阵与稀疏线性系统求解器<br>scipy.special  #SPECFUN的包装器。SPECFUN是Fortran语言下实现通用数据函数的包，例如gamma函数。<br>scipy.stats  #标准的连续和离散概率分布（密度函数、采样器、连续分布函数）、各类统计测试、各类描述性统计。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">**scikit-learn**</span><br><span class="line"></span><br><span class="line">- http://scikit-learn.org：机器学习工具包</span><br><span class="line">- 分类：SVM、最近邻、随机森林、逻辑回归等</span><br><span class="line">- 回归：Lasso、岭回归等</span><br><span class="line">- 聚类：k-means、谱聚类等·</span><br><span class="line">- 降维：PCA、特征选择、矩阵分解等</span><br><span class="line">- 模型选择：网格搜索、交叉验证、指标矩阵</span><br><span class="line">- 预处理：特征提取、正态化</span><br><span class="line"></span><br><span class="line">**statsmodels**</span><br><span class="line"></span><br><span class="line">- statsmodels（http://statsmodels.org）是一个统计分析包，为R语言公式系统所驱动的statsmodels包提供公式、模型规范框架。</span><br><span class="line">- 与scikit-learn相比，statsmodels包含经典的（高频词汇）统计学、经济学算法。</span><br><span class="line">  - 方差分析（ANOVA）</span><br><span class="line">  - 时间序列分析：AR、ARMA、ARIMA、VAR等模型</span><br><span class="line">  - 非参数方法：核密度估计、核回归</span><br><span class="line">  - 统计模型结果可视化</span><br><span class="line">- statsmodels更专注于统计推理，提供不确定性评价和p值参数。相反，scikit-learn更专注于预测。</span><br><span class="line"></span><br><span class="line">## 1.4 安装与配置</span><br><span class="line"></span><br><span class="line">**Windows**</span><br><span class="line"></span><br><span class="line">- 下载安装Anaconda：http://anaconda.com/downloads</span><br><span class="line">- 查看设置是否正确，在命令行中输入python启动python解释器，应该可以看到符合你下载的Anaconda版本的信息。</span><br><span class="line">- 退出命令行：Ctrl-D（Linux或macOS）/ Ctrl-Z（Windows），或者输入exit()</span><br><span class="line"></span><br><span class="line">**Apple（OS X和macOS）**</span><br><span class="line"></span><br><span class="line">- 略</span><br><span class="line"></span><br><span class="line">**GNU/Linux**</span><br><span class="line"></span><br><span class="line">- 略</span><br><span class="line"></span><br><span class="line">**安装及更新Python包**</span><br><span class="line"></span><br><span class="line">- 通常通过以下命令进行安装：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>conda install package_name</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 使用pip包管理工具进行安装:</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>pip install package_name</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 使用conda update命令来更新包:</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>conda update package_name</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- pip还支持通过--upgrade标识升级：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>pip install –upgrade package_name</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&gt; 同时使用conda和pip进行包安装时，请不要尝试使用pip更新conda安装的包，否则可能会导致环境问题。</span><br><span class="line">&gt;</span><br><span class="line">&gt; 当使用Anaconda或者Miniconda时，最好还是使用conda进行更新。</span><br><span class="line"></span><br><span class="line">## 1.5 社区和会议</span><br><span class="line"></span><br><span class="line">## 1.6 快速浏览本书</span><br><span class="line"></span><br><span class="line">**示例数据**</span><br><span class="line"></span><br><span class="line">- 每章的示例数据托管在GitHub仓库：http://github.com/wesm/pydata-book</span><br><span class="line">- 关于如何获得本书资料的最新指引：http://wesmckinney.com</span><br><span class="line"></span><br><span class="line">**导入约定**</span><br><span class="line"></span><br><span class="line">- 一次性从像NumPy这样的大包中引入所有内容（from numpyimport *）在Python软件开发中被认为是拙劣实践。</span><br><span class="line"></span><br><span class="line">- ```</span><br><span class="line">  import numpy as np</span><br><span class="line">  import matplotlib.pyplot as plt</span><br><span class="line">  import pandas as pd</span><br><span class="line">  import seaborn as sns</span><br><span class="line">  import statsmodels as sm</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><strong>术语</strong></p>
+<ul>
+<li>处理&#x2F;处置&#x2F;规整（munge&#x2F;munging&#x2F;wrangling）<ul>
+<li>将非结构化或者同时又很凌乱的数据整理成结构化、清晰形式的整个过程。</li>
+</ul>
+</li>
+<li>伪代码<ul>
+<li>将非结构化或者同时又很凌乱的数据整理成结构化、清晰形式的整个过程。</li>
+</ul>
+</li>
+<li>语法糖<ul>
+<li>并不增加新特性，但便利于代码编写的编程语法。</li>
+</ul>
+</li>
+</ul>
 
                 
             </div>
@@ -502,7 +564,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/03/20/hello-world/">http://example.com/2022/03/20/hello-world/</a>
+                    <a href="http://example.com/2022/03/20/%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B%E7%AC%AC%E4%B8%80%E7%AB%A0/">http://example.com/2022/03/20/%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B%E7%AC%AC%E4%B8%80%E7%AB%A0/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -539,7 +601,11 @@
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">No tag</span>
+                            
+                                <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
+                                    <span class="chip bg-color">读书笔记</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -711,9 +777,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;Previous</div>
+                <i class="far fa-dot-circle"></i>&nbsp;Current
+            </div>
             <div class="card">
                 <a href="/2022/03/20/%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B%E7%AC%AC%E4%B8%80%E7%AB%A0/">
                     <div class="card-image">
@@ -731,9 +798,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-03-20
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-03-20
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -742,6 +809,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -757,7 +825,7 @@
         
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge right-badge text-color">
-                Current&nbsp;<i class="far fa-dot-circle"></i>
+                Next&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
                 <a href="/2022/03/20/hello-world/">
@@ -787,7 +855,6 @@
                         </span>
                     </div>
                 </div>
-
                 
             </div>
         </div>
