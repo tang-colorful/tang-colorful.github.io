@@ -28,7 +28,7 @@
 <meta property="og:description" content="第一章 准备工作1.1 本书内容常见数据形式  表格型的数据，每一列可能会包含不同的类型（字符串、数值、日期或其他）。 多维数组（矩阵）。 由键位列关联的多张表数据（对于SQL用户来说就是主键或外键）。 均匀或非均匀的时间序列。  1.2 为何利用Python进行数据分析 Python作为胶水，整合C、C++等语言的代码 解决“双语言”难题：使用相同程序工具集来兼顾研究人员和软件工程师的好处越发明">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2022-03-20T08:31:20.000Z">
-<meta property="article:modified_time" content="2022-03-26T12:54:42.368Z">
+<meta property="article:modified_time" content="2022-04-23T03:24:22.179Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="读书笔记">
 <meta name="twitter:card" content="summary">
@@ -181,7 +181,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-03-26 20:54:42" itemprop="dateModified" datetime="2022-03-26T20:54:42+08:00">2022-03-26</time>
+                <time title="Modified: 2022-04-23 11:24:22" itemprop="dateModified" datetime="2022-04-23T11:24:22+08:00">2022-04-23</time>
               </span>
 
           
@@ -233,16 +233,78 @@
 <ul>
 <li><p>SciPy（<a target="_blank" rel="noopener" href="http://scipy.org)是科学计算领域针对不同标准问题域的包集合,scipy与numpy一起为很多传统科学计算应用提供了一个合理、完整、成熟的计算基础./">http://scipy.org）是科学计算领域针对不同标准问题域的包集合，SciPy与NumPy一起为很多传统科学计算应用提供了一个合理、完整、成熟的计算基础。</a></p>
 </li>
-<li><p>&#96;&#96;&#96;<br>scipy.integrate  #数值积分例程和微分方程求解器<br>scipy.linalg  #线性代数例程和基于numpy.linalg的矩阵分解<br>scipy.optimize  #函数优化器（最小化器）和求根算法<br>scipy.signal  #信号处理工具<br>scipy.sparse  #稀疏矩阵与稀疏线性系统求解器<br>scipy.special  #SPECFUN的包装器。SPECFUN是Fortran语言下实现通用数据函数的包，例如gamma函数。<br>scipy.stats  #标准的连续和离散概率分布（密度函数、采样器、连续分布函数）、各类统计测试、各类描述性统计。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">**scikit-learn**</span><br><span class="line"></span><br><span class="line">- http://scikit-learn.org：机器学习工具包</span><br><span class="line">- 分类：SVM、最近邻、随机森林、逻辑回归等</span><br><span class="line">- 回归：Lasso、岭回归等</span><br><span class="line">- 聚类：k-means、谱聚类等·</span><br><span class="line">- 降维：PCA、特征选择、矩阵分解等</span><br><span class="line">- 模型选择：网格搜索、交叉验证、指标矩阵</span><br><span class="line">- 预处理：特征提取、正态化</span><br><span class="line"></span><br><span class="line">**statsmodels**</span><br><span class="line"></span><br><span class="line">- statsmodels（http://statsmodels.org）是一个统计分析包，为R语言公式系统所驱动的statsmodels包提供公式、模型规范框架。</span><br><span class="line">- 与scikit-learn相比，statsmodels包含经典的（高频词汇）统计学、经济学算法。</span><br><span class="line">  - 方差分析（ANOVA）</span><br><span class="line">  - 时间序列分析：AR、ARMA、ARIMA、VAR等模型</span><br><span class="line">  - 非参数方法：核密度估计、核回归</span><br><span class="line">  - 统计模型结果可视化</span><br><span class="line">- statsmodels更专注于统计推理，提供不确定性评价和p值参数。相反，scikit-learn更专注于预测。</span><br><span class="line"></span><br><span class="line">## 1.4 安装与配置</span><br><span class="line"></span><br><span class="line">**Windows**</span><br><span class="line"></span><br><span class="line">- 下载安装Anaconda：http://anaconda.com/downloads</span><br><span class="line">- 查看设置是否正确，在命令行中输入python启动python解释器，应该可以看到符合你下载的Anaconda版本的信息。</span><br><span class="line">- 退出命令行：Ctrl-D（Linux或macOS）/ Ctrl-Z（Windows），或者输入exit()</span><br><span class="line"></span><br><span class="line">**Apple（OS X和macOS）**</span><br><span class="line"></span><br><span class="line">- 略</span><br><span class="line"></span><br><span class="line">**GNU/Linux**</span><br><span class="line"></span><br><span class="line">- 略</span><br><span class="line"></span><br><span class="line">**安装及更新Python包**</span><br><span class="line"></span><br><span class="line">- 通常通过以下命令进行安装：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>conda install package_name</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 使用pip包管理工具进行安装:</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>pip install package_name</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 使用conda update命令来更新包:</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>conda update package_name</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- pip还支持通过--upgrade标识升级：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>pip install –upgrade package_name</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&gt; 同时使用conda和pip进行包安装时，请不要尝试使用pip更新conda安装的包，否则可能会导致环境问题。</span><br><span class="line">&gt;</span><br><span class="line">&gt; 当使用Anaconda或者Miniconda时，最好还是使用conda进行更新。</span><br><span class="line"></span><br><span class="line">## 1.5 社区和会议</span><br><span class="line"></span><br><span class="line">## 1.6 快速浏览本书</span><br><span class="line"></span><br><span class="line">**示例数据**</span><br><span class="line"></span><br><span class="line">- 每章的示例数据托管在GitHub仓库：http://github.com/wesm/pydata-book</span><br><span class="line">- 关于如何获得本书资料的最新指引：http://wesmckinney.com</span><br><span class="line"></span><br><span class="line">**导入约定**</span><br><span class="line"></span><br><span class="line">- 一次性从像NumPy这样的大包中引入所有内容（from numpyimport *）在Python软件开发中被认为是拙劣实践。</span><br><span class="line"></span><br><span class="line">- ```</span><br><span class="line">  import numpy as np</span><br><span class="line">  import matplotlib.pyplot as plt</span><br><span class="line">  import pandas as pd</span><br><span class="line">  import seaborn as sns</span><br><span class="line">  import statsmodels as sm</span><br></pre></td></tr></table></figure></li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">scipy.integrate  #数值积分例程和微分方程求解器</span><br><span class="line">scipy.linalg  #线性代数例程和基于numpy.linalg的矩阵分解</span><br><span class="line">scipy.optimize  #函数优化器（最小化器）和求根算法</span><br><span class="line">scipy.signal  #信号处理工具</span><br><span class="line">scipy.sparse  #稀疏矩阵与稀疏线性系统求解器</span><br><span class="line">scipy.special  #SPECFUN的包装器。SPECFUN是Fortran语言下实现通用数据函数的包，例如gamma函数。</span><br><span class="line">scipy.stats  #标准的连续和离散概率分布（密度函数、采样器、连续分布函数）、各类统计测试、各类描述性统计。</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><strong>scikit-learn</strong></p>
+<ul>
+<li><a href="http://scikit-learn.org：机器学习工具包">http://scikit-learn.org：机器学习工具包</a></li>
+<li>分类：SVM、最近邻、随机森林、逻辑回归等</li>
+<li>回归：Lasso、岭回归等</li>
+<li>聚类：k-means、谱聚类等·</li>
+<li>降维：PCA、特征选择、矩阵分解等</li>
+<li>模型选择：网格搜索、交叉验证、指标矩阵</li>
+<li>预处理：特征提取、正态化</li>
+</ul>
+<p><strong>statsmodels</strong></p>
+<ul>
+<li>statsmodels（<a target="_blank" rel="noopener" href="http://statsmodels.org)是一个统计分析包,为r语言公式系统所驱动的statsmodels包提供公式、模型规范框架./">http://statsmodels.org）是一个统计分析包，为R语言公式系统所驱动的statsmodels包提供公式、模型规范框架。</a></li>
+<li>与scikit-learn相比，statsmodels包含经典的（高频词汇）统计学、经济学算法。<ul>
+<li>方差分析（ANOVA）</li>
+<li>时间序列分析：AR、ARMA、ARIMA、VAR等模型</li>
+<li>非参数方法：核密度估计、核回归</li>
+<li>统计模型结果可视化</li>
+</ul>
+</li>
+<li>statsmodels更专注于统计推理，提供不确定性评价和p值参数。相反，scikit-learn更专注于预测。</li>
+</ul>
+<h2 id="1-4-安装与配置"><a href="#1-4-安装与配置" class="headerlink" title="1.4 安装与配置"></a>1.4 安装与配置</h2><p><strong>Windows</strong></p>
+<ul>
+<li>下载安装Anaconda：<a target="_blank" rel="noopener" href="http://anaconda.com/downloads">http://anaconda.com/downloads</a></li>
+<li>查看设置是否正确，在命令行中输入python启动python解释器，应该可以看到符合你下载的Anaconda版本的信息。</li>
+<li>退出命令行：Ctrl-D（Linux或macOS）&#x2F; Ctrl-Z（Windows），或者输入exit()</li>
+</ul>
+<p><strong>Apple（OS X和macOS）</strong></p>
+<ul>
+<li>略</li>
+</ul>
+<p><strong>GNU&#x2F;Linux</strong></p>
+<ul>
+<li>略</li>
+</ul>
+<p><strong>安装及更新Python包</strong></p>
+<ul>
+<li><p>通常通过以下命令进行安装：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install package_name</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用pip包管理工具进行安装:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install package_name</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用conda update命令来更新包:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda update package_name</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>pip还支持通过–upgrade标识升级：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install --upgrade package_name</span><br></pre></td></tr></table></figure></li>
+</ul>
+<blockquote>
+<p>同时使用conda和pip进行包安装时，请不要尝试使用pip更新conda安装的包，否则可能会导致环境问题。</p>
+<p>当使用Anaconda或者Miniconda时，最好还是使用conda进行更新。</p>
+</blockquote>
+<h2 id="1-5-社区和会议"><a href="#1-5-社区和会议" class="headerlink" title="1.5 社区和会议"></a>1.5 社区和会议</h2><h2 id="1-6-快速浏览本书"><a href="#1-6-快速浏览本书" class="headerlink" title="1.6 快速浏览本书"></a>1.6 快速浏览本书</h2><p><strong>示例数据</strong></p>
+<ul>
+<li>每章的示例数据托管在GitHub仓库：<a target="_blank" rel="noopener" href="http://github.com/wesm/pydata-book">http://github.com/wesm/pydata-book</a></li>
+<li>关于如何获得本书资料的最新指引：<a target="_blank" rel="noopener" href="http://wesmckinney.com/">http://wesmckinney.com</a></li>
+</ul>
+<p><strong>导入约定</strong></p>
+<ul>
+<li><p>一次性从像NumPy这样的大包中引入所有内容（from numpyimport *）在Python软件开发中被认为是拙劣实践。</p>
+</li>
+<li><pre><code>import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+import statsmodels as sm
+</code></pre>
+</li>
 </ul>
 <p><strong>术语</strong></p>
 <ul>
@@ -339,7 +401,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">第一章 准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E6%9C%AC%E4%B9%A6%E5%86%85%E5%AE%B9"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 本书内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E4%B8%BA%E4%BD%95%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 为何利用Python进行数据分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E9%87%8D%E8%A6%81%E7%9A%84Python%E5%BA%93"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 重要的Python库</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">第一章 准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E6%9C%AC%E4%B9%A6%E5%86%85%E5%AE%B9"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 本书内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E4%B8%BA%E4%BD%95%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 为何利用Python进行数据分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E9%87%8D%E8%A6%81%E7%9A%84Python%E5%BA%93"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 重要的Python库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 安装与配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-%E7%A4%BE%E5%8C%BA%E5%92%8C%E4%BC%9A%E8%AE%AE"><span class="nav-number">1.5.</span> <span class="nav-text">1.5 社区和会议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-6-%E5%BF%AB%E9%80%9F%E6%B5%8F%E8%A7%88%E6%9C%AC%E4%B9%A6"><span class="nav-number">1.6.</span> <span class="nav-text">1.6 快速浏览本书</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
