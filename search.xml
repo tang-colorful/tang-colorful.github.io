@@ -39,6 +39,9 @@
 <p>比如说一个左闭右闭区间，[1,1]就是合法的；对于一个左闭右开区间，[1,1)就是不合法的，在每次需要变动区间时，看清左右边界条件，保证不多循环，也不落下一个元素。</p>
 <h1 id="Python语言"><a href="#Python语言" class="headerlink" title="Python语言"></a>Python语言</h1><p>python里面 &#x2F;&#x2F;是整数除法 &#x2F;是浮点数除法</p>
 ]]></content>
+      <tags>
+        <tag>leetcode</tag>
+      </tags>
   </entry>
   <entry>
     <title>《利用Python进行数据分析》第一章</title>
