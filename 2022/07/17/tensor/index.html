@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Tensortensor被翻译为张量，是一种与NumPy数据和矩阵十分相似的特殊数据结构 在PyTorch中，我们使用tensor给模型的输入输出以及参数进行编码 除了可以在GPUs和其他可以加速运算的硬件上运行这一特点之外，tensors和NumPy数组非常相似 1. 初始化tensor使用数据直接初始化123456789import numpy as npimport torchdata &#x3D;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="60分钟入门PyTorch——Tensor">
+<meta property="og:url" content="http://example.com/2022/07/17/tensor/index.html">
+<meta property="og:site_name" content="TT&#39;Blog">
+<meta property="og:description" content="Tensortensor被翻译为张量，是一种与NumPy数据和矩阵十分相似的特殊数据结构 在PyTorch中，我们使用tensor给模型的输入输出以及参数进行编码 除了可以在GPUs和其他可以加速运算的硬件上运行这一特点之外，tensors和NumPy数组非常相似 1. 初始化tensor使用数据直接初始化123456789import numpy as npimport torchdata &#x3D;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-07-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-09-13T11:56:12.865Z">
+<meta property="article:author" content="TT">
+<meta property="article:tag" content="PyTorch">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/07/17/tensor/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>60分钟入门PyTorch——Tensor | TT'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">TT'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/17/tensor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="TT">
+      <meta itemprop="description" content="The Journey Is the Reward">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TT'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          60分钟入门PyTorch——Tensor
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-07-17 00:00:00" itemprop="dateCreated datePublished" datetime="2022-07-17T00:00:00+08:00">2022-07-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-13 19:56:12" itemprop="dateModified" datetime="2023-09-13T19:56:12+08:00">2023-09-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%EF%BC%9A-PyTorch/" itemprop="url" rel="index"><span itemprop="name">深度学习： PyTorch</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2022/07/17/tensor/" class="post-meta-item leancloud_visitors" data-flag-title="60分钟入门PyTorch——Tensor" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/07/17/tensor/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/07/17/tensor/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Tensor"><a href="#Tensor" class="headerlink" title="Tensor"></a>Tensor</h1><p>tensor被翻译为<strong>张量</strong>，是一种与NumPy数据和矩阵十分相似的特殊数据结构</p>
+<p>在PyTorch中，我们使用tensor给模型的输入输出以及参数进行编码</p>
+<p>除了可以在GPUs和其他可以加速运算的硬件上运行这一特点之外，tensors和NumPy数组非常相似</p>
+<h2 id="1-初始化tensor"><a href="#1-初始化tensor" class="headerlink" title="1. 初始化tensor"></a>1. 初始化tensor</h2><h3 id="使用数据直接初始化"><a href="#使用数据直接初始化" class="headerlink" title="使用数据直接初始化"></a>使用数据直接初始化</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line">data = [[<span class="number">1</span>,<span class="number">2</span>],[<span class="number">3</span>,<span class="number">4</span>]]</span><br><span class="line">x_data = torch.tensor(data)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出</span></span><br><span class="line">tensor([[<span class="number">1</span>, <span class="number">2</span>],</span><br><span class="line">        [<span class="number">3</span>, <span class="number">4</span>]])</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用NumPy-arrays初始化"><a href="#使用NumPy-arrays初始化" class="headerlink" title="使用NumPy arrays初始化"></a>使用NumPy arrays初始化</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">np_array = np.array(data)</span><br><span class="line">x_np = torch.from_numpy(np_array)</span><br><span class="line"></span><br><span class="line"><span class="comment">#输出</span></span><br><span class="line">tensor([[<span class="number">1</span>, <span class="number">2</span>],</span><br><span class="line">        [<span class="number">3</span>, <span class="number">4</span>]], dtype=torch.int32)</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用另一个tensor创建"><a href="#使用另一个tensor创建" class="headerlink" title="使用另一个tensor创建"></a>使用另一个tensor创建</h3><p>新的tensor保留了参数tensor的一些属性（形状，数据类型），除非显式覆盖</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">x_ones = torch.ones_like(x_data) <span class="comment"># 保留了x_data的属性</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Ones Tensor: \n <span class="subst">&#123;x_ones&#125;</span> \n&quot;</span>)</span><br><span class="line"><span class="comment"># 显示覆盖x_data的数据类型</span></span><br><span class="line">x_rand = torch.rand_like(x_data,dtype=torch.<span class="built_in">float</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Random Tensor: \n <span class="subst">&#123;x_rand&#125;</span> \n&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出</span></span><br><span class="line">Ones Tensor: </span><br><span class="line"> tensor([[<span class="number">1</span>, <span class="number">1</span>],</span><br><span class="line">        [<span class="number">1</span>, <span class="number">1</span>]]) </span><br><span class="line"></span><br><span class="line">Random Tensor: </span><br><span class="line"> tensor([[<span class="number">0.5502</span>, <span class="number">0.3189</span>],</span><br><span class="line">        [<span class="number">0.0911</span>, <span class="number">0.7488</span>]]) </span><br></pre></td></tr></table></figure>
+
+<h3 id="使用随机数或者常数创建tensor"><a href="#使用随机数或者常数创建tensor" class="headerlink" title="使用随机数或者常数创建tensor"></a>使用随机数或者常数创建tensor</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># shape是关于tensor维度的元组，它决定输出tensor的维度</span></span><br><span class="line">shape = (<span class="number">2</span>,<span class="number">3</span>,)</span><br><span class="line"></span><br><span class="line">rand_tensor = torch.rand(shape)</span><br><span class="line">ones_tensor = torch.ones(shape)</span><br><span class="line">zeros_tensor = torch.zeros(shape)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Random Tensor: \n <span class="subst">&#123;rand_tensor&#125;</span> \n&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Ones Tensor: \n <span class="subst">&#123;ones_tensor&#125;</span> \n&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Zeros Tensor: \n <span class="subst">&#123;zeros_tensor&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出</span></span><br><span class="line">Random Tensor:</span><br><span class="line"> tensor([[<span class="number">0.8012</span>, <span class="number">0.4547</span>, <span class="number">0.4156</span>],</span><br><span class="line">        [<span class="number">0.6645</span>, <span class="number">0.1763</span>, <span class="number">0.3860</span>]])</span><br><span class="line"></span><br><span class="line">Ones Tensor:</span><br><span class="line"> tensor([[<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>]])</span><br><span class="line"></span><br><span class="line">Zeros Tensor:</span><br><span class="line"> tensor([[<span class="number">0.</span>, <span class="number">0.</span>, <span class="number">0.</span>],</span><br><span class="line">        [<span class="number">0.</span>, <span class="number">0.</span>, <span class="number">0.</span>]])</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-tensor属性"><a href="#2-tensor属性" class="headerlink" title="2. tensor属性"></a>2. tensor属性</h2><p>Tensor的属性包括形状，数据类型以及存储的设备</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">tensor = torch.rand(<span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Shape of tensor: <span class="subst">&#123;tensor.shape&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Datatype of tensor: <span class="subst">&#123;tensor.dtype&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Device tensor is stored on: <span class="subst">&#123;tensor.device&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出</span></span><br><span class="line">Shape of tensor: torch.Size([<span class="number">3</span>, <span class="number">4</span>])</span><br><span class="line">Datatype of tensor: torch.float32</span><br><span class="line">Device tensor <span class="keyword">is</span> stored on: cpu</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-tensor操作"><a href="#3-tensor操作" class="headerlink" title="3. tensor操作"></a>3. tensor操作</h2><p>tensor有超过100种操作，包括转置（transposing）, 索引（indexing）,切片（ slicing）, 数学运算（mathematical operations）, 线性代数（linear algebra）,随机操作（ random sampling）等等。</p>
+<p>它们都可以在GPU上运行（速度通常比CPU快），如果你使用的是Colab，通过编辑&gt;笔记本设置来分配一个GPU</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将tensor移到GPU上</span></span><br><span class="line"><span class="keyword">if</span> torch.cuda.is_available():</span><br><span class="line">    tensor = tensor.to(<span class="string">&#x27;cuda&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Device tensor is stored on: <span class="subst">&#123;tensor.device&#125;</span>&quot;</span>)</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 输出 ：Device tensor is stored on: cuda:0</span></span><br></pre></td></tr></table></figure>
+
+<p>尝试一些操作</p>
+<h3 id="像NumPy一样标准的索引和切片"><a href="#像NumPy一样标准的索引和切片" class="headerlink" title="像NumPy一样标准的索引和切片"></a>像NumPy一样标准的索引和切片</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">tensor = torch.ones(<span class="number">4</span>,<span class="number">4</span>)</span><br><span class="line">tensor[:,<span class="number">1</span>] = <span class="number">0</span></span><br><span class="line"><span class="built_in">print</span>(tensor)</span><br><span class="line"><span class="comment"># 输出</span></span><br><span class="line">tensor([[<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>]])</span><br></pre></td></tr></table></figure>
+
+<h3 id="连接tensor-Joining-tensors"><a href="#连接tensor-Joining-tensors" class="headerlink" title="连接tensor(Joining tensors)"></a>连接tensor(<strong>Joining tensors</strong>)</h3><p>使用torch.cat可以沿着给定的维度合并一系列tensor</p>
+<p>torch.stack是另一个连接tensor的操作，和torch.cat有些许不同</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">t1 = torch.cat([tensor, tensor, tensor], dim=<span class="number">1</span>)</span><br><span class="line"><span class="built_in">print</span>(t1)</span><br><span class="line"><span class="comment"># 输出</span></span><br><span class="line">tensor([[<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>]])</span><br></pre></td></tr></table></figure>
+
+<h3 id="tensor相乘"><a href="#tensor相乘" class="headerlink" title="tensor相乘"></a>tensor相乘</h3><p>元素层面的乘法操作</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># tensor在元素层面的乘法操作</span></span><br><span class="line">tensor.mul(tensor)</span><br><span class="line"><span class="comment"># 和上面等价的写法</span></span><br><span class="line">tensor * tensor</span><br><span class="line"><span class="comment"># 输出 </span></span><br><span class="line">tensor([[<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>]])</span><br></pre></td></tr></table></figure>
+
+<p>两个tensor之间的矩阵乘法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">tensor.matmul(tensor.T)</span><br><span class="line"><span class="comment"># 等价写法</span></span><br><span class="line">tensor @ tensor.T</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出</span></span><br><span class="line">tensor([[<span class="number">3.</span>, <span class="number">3.</span>, <span class="number">3.</span>, <span class="number">3.</span>],</span><br><span class="line">        [<span class="number">3.</span>, <span class="number">3.</span>, <span class="number">3.</span>, <span class="number">3.</span>],</span><br><span class="line">        [<span class="number">3.</span>, <span class="number">3.</span>, <span class="number">3.</span>, <span class="number">3.</span>],</span><br><span class="line">        [<span class="number">3.</span>, <span class="number">3.</span>, <span class="number">3.</span>, <span class="number">3.</span>]])</span><br></pre></td></tr></table></figure>
+
+<h3 id="In-place操作"><a href="#In-place操作" class="headerlink" title="In-place操作"></a>In-place操作</h3><p>带有后缀<code>_</code>的操作是in_place操作，例如：<code>x.copy_(y)</code>，<code>x.t_()</code>将改变x</p>
+<blockquote>
+<p>in_place操作虽然会节省很多内存空间，但是会因为即刻清除历史记录在计算导数的时候可能出现问题，所以不鼓励使用这种操作方式</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(tensor, <span class="string">&quot;\n&quot;</span>)</span><br><span class="line">tensor.add_(<span class="number">5</span>)</span><br><span class="line"><span class="built_in">print</span>(tensor)</span><br><span class="line"><span class="comment"># 输出</span></span><br><span class="line">tensor([[<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>]]) </span><br><span class="line"></span><br><span class="line">tensor([[<span class="number">6.</span>, <span class="number">5.</span>, <span class="number">6.</span>, <span class="number">6.</span>],</span><br><span class="line">        [<span class="number">6.</span>, <span class="number">5.</span>, <span class="number">6.</span>, <span class="number">6.</span>],</span><br><span class="line">        [<span class="number">6.</span>, <span class="number">5.</span>, <span class="number">6.</span>, <span class="number">6.</span>],</span><br><span class="line">        [<span class="number">6.</span>, <span class="number">5.</span>, <span class="number">6.</span>, <span class="number">6.</span>]])</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-使用Numpy作为桥梁"><a href="#4-使用Numpy作为桥梁" class="headerlink" title="4. 使用Numpy作为桥梁"></a>4. 使用Numpy作为桥梁</h2><p>在cpu上的tensor和NumPy数组可以共享基本的内存位置，<strong>改变一个就会改变另一个</strong></p>
+<h3 id="tnsor转变成Numpy数组"><a href="#tnsor转变成Numpy数组" class="headerlink" title="tnsor转变成Numpy数组"></a>tnsor转变成Numpy数组</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">t = torch.ones(<span class="number">5</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;t: <span class="subst">&#123;t&#125;</span>&quot;</span>)</span><br><span class="line">n = t.numpy()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;n: <span class="subst">&#123;n&#125;</span>&quot;</span>)</span><br><span class="line"><span class="comment"># 输出</span></span><br><span class="line">t: tensor([<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>])</span><br><span class="line">n: [<span class="number">1.</span> <span class="number">1.</span> <span class="number">1.</span> <span class="number">1.</span> <span class="number">1.</span>]</span><br></pre></td></tr></table></figure>
+
+<p>tensor中的改变会影响到NumPy数组</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">t.add_(<span class="number">1</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;t: <span class="subst">&#123;t&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;n: <span class="subst">&#123;n&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">t: tensor([<span class="number">2.</span>, <span class="number">2.</span>, <span class="number">2.</span>, <span class="number">2.</span>, <span class="number">2.</span>])</span><br><span class="line">n: [<span class="number">2.</span> <span class="number">2.</span> <span class="number">2.</span> <span class="number">2.</span> <span class="number">2.</span>]</span><br></pre></td></tr></table></figure>
+
+<h3 id="NumPy数组转变成tensor"><a href="#NumPy数组转变成tensor" class="headerlink" title="NumPy数组转变成tensor"></a>NumPy数组转变成tensor</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">n = np.ones(<span class="number">5</span>)</span><br><span class="line">t = torch.from_numpy(n)</span><br><span class="line"><span class="comment"># 在NumPy数组中的改变会影响到tensor</span></span><br><span class="line">np.add(n, <span class="number">1</span>, out=n)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;t: <span class="subst">&#123;t&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;n: <span class="subst">&#123;n&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">t: tensor([<span class="number">2.</span>, <span class="number">2.</span>, <span class="number">2.</span>, <span class="number">2.</span>, <span class="number">2.</span>], dtype=torch.float64)</span><br><span class="line">n: [<span class="number">2.</span> <span class="number">2.</span> <span class="number">2.</span> <span class="number">2.</span> <span class="number">2.</span>]</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PyTorch/" rel="tag"># PyTorch</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/23/%E5%AE%89%E8%A3%85R%E8%AF%AD%E8%A8%80%E5%92%8C%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%AD%A6%E5%8C%85/" rel="prev" title="安装R语言环境和生物信息学包">
+      <i class="fa fa-chevron-left"></i> 安装R语言环境和生物信息学包
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/07/17/autograd/" rel="next" title="60分钟入门PyTorch——自动求导autograd">
+      60分钟入门PyTorch——自动求导autograd <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Tensor"><span class="nav-number">1.</span> <span class="nav-text">Tensor</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%88%9D%E5%A7%8B%E5%8C%96tensor"><span class="nav-number">1.1.</span> <span class="nav-text">1. 初始化tensor</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%95%B0%E6%8D%AE%E7%9B%B4%E6%8E%A5%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.1.1.</span> <span class="nav-text">使用数据直接初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8NumPy-arrays%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.1.2.</span> <span class="nav-text">使用NumPy arrays初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%8F%A6%E4%B8%80%E4%B8%AAtensor%E5%88%9B%E5%BB%BA"><span class="nav-number">1.1.3.</span> <span class="nav-text">使用另一个tensor创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E9%9A%8F%E6%9C%BA%E6%95%B0%E6%88%96%E8%80%85%E5%B8%B8%E6%95%B0%E5%88%9B%E5%BB%BAtensor"><span class="nav-number">1.1.4.</span> <span class="nav-text">使用随机数或者常数创建tensor</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-tensor%E5%B1%9E%E6%80%A7"><span class="nav-number">1.2.</span> <span class="nav-text">2. tensor属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-tensor%E6%93%8D%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">3. tensor操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%83%8FNumPy%E4%B8%80%E6%A0%B7%E6%A0%87%E5%87%86%E7%9A%84%E7%B4%A2%E5%BC%95%E5%92%8C%E5%88%87%E7%89%87"><span class="nav-number">1.3.1.</span> <span class="nav-text">像NumPy一样标准的索引和切片</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5tensor-Joining-tensors"><span class="nav-number">1.3.2.</span> <span class="nav-text">连接tensor(Joining tensors)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tensor%E7%9B%B8%E4%B9%98"><span class="nav-number">1.3.3.</span> <span class="nav-text">tensor相乘</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#In-place%E6%93%8D%E4%BD%9C"><span class="nav-number">1.3.4.</span> <span class="nav-text">In-place操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E4%BD%BF%E7%94%A8Numpy%E4%BD%9C%E4%B8%BA%E6%A1%A5%E6%A2%81"><span class="nav-number">1.4.</span> <span class="nav-text">4. 使用Numpy作为桥梁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tnsor%E8%BD%AC%E5%8F%98%E6%88%90Numpy%E6%95%B0%E7%BB%84"><span class="nav-number">1.4.1.</span> <span class="nav-text">tnsor转变成Numpy数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NumPy%E6%95%B0%E7%BB%84%E8%BD%AC%E5%8F%98%E6%88%90tensor"><span class="nav-number">1.4.2.</span> <span class="nav-text">NumPy数组转变成tensor</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="TT"
+      src="/images/header.jpg">
+  <p class="site-author-name" itemprop="name">TT</p>
+  <div class="site-description" itemprop="description">The Journey Is the Reward</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TT</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'TNUpeWIcsOXnq5yrEo6XphL5-gzGzoHsz',
+      appKey     : 'HdE2XffT6XTWRYvV2zovg336',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

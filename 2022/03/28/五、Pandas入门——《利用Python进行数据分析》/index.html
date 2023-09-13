@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="第五章 Pandas入门 pandas经常是和其他数值计算工具，比如NumPy和SciPy，以及数据可视化工具比如matplotlib一起使用。 pandas支持大部分NumPy的数组计算，尤其是数组函数以及没有for循环的各种数据处理。 pandas处理表格型或异质型数据，NumPy处理同质型的数值类数组数据 常用的类：Series和DataFrame  5.1 pandas数据结构介绍Seri">
+<meta property="og:type" content="article">
+<meta property="og:title" content="五、Pandas入门——《利用Python进行数据分析》">
+<meta property="og:url" content="http://example.com/2022/03/28/%E4%BA%94%E3%80%81Pandas%E5%85%A5%E9%97%A8%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/index.html">
+<meta property="og:site_name" content="TT&#39;Blog">
+<meta property="og:description" content="第五章 Pandas入门 pandas经常是和其他数值计算工具，比如NumPy和SciPy，以及数据可视化工具比如matplotlib一起使用。 pandas支持大部分NumPy的数组计算，尤其是数组函数以及没有for循环的各种数据处理。 pandas处理表格型或异质型数据，NumPy处理同质型的数值类数组数据 常用的类：Series和DataFrame  5.1 pandas数据结构介绍Seri">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_69">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_71">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_74">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_75">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_76">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_77">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_78">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_80">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/%E6%97%A0%E6%A0%87%E9%A2%98.png">
+<meta property="article:published_time" content="2022-03-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-09-13T11:33:54.392Z">
+<meta property="article:author" content="TT">
+<meta property="article:tag" content="数据处理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_69">
+
+<link rel="canonical" href="http://example.com/2022/03/28/%E4%BA%94%E3%80%81Pandas%E5%85%A5%E9%97%A8%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>五、Pandas入门——《利用Python进行数据分析》 | TT'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">TT'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/28/%E4%BA%94%E3%80%81Pandas%E5%85%A5%E9%97%A8%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="TT">
+      <meta itemprop="description" content="The Journey Is the Reward">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TT'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          五、Pandas入门——《利用Python进行数据分析》
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-28 00:00:00" itemprop="dateCreated datePublished" datetime="2022-03-28T00:00:00+08:00">2022-03-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-13 19:33:54" itemprop="dateModified" datetime="2023-09-13T19:33:54+08:00">2023-09-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%EF%BC%9A-%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">机器学习： 数据分析</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2022/03/28/%E4%BA%94%E3%80%81Pandas%E5%85%A5%E9%97%A8%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" class="post-meta-item leancloud_visitors" data-flag-title="五、Pandas入门——《利用Python进行数据分析》" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/03/28/%E4%BA%94%E3%80%81Pandas%E5%85%A5%E9%97%A8%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/28/%E4%BA%94%E3%80%81Pandas%E5%85%A5%E9%97%A8%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="第五章-Pandas入门"><a href="#第五章-Pandas入门" class="headerlink" title="第五章 Pandas入门"></a>第五章 Pandas入门</h1><ul>
+<li>pandas经常是和其他数值计算工具，比如NumPy和SciPy，以及数据可视化工具比如matplotlib一起使用。</li>
+<li>pandas支持大部分NumPy的数组计算，尤其是<strong>数组函数</strong>以及没<strong>有for循环</strong>的各种数据处理。</li>
+<li>pandas处理表格型或异质型数据，NumPy处理同质型的数值类数组数据</li>
+<li>常用的类：Series和DataFrame</li>
+</ul>
+<h2 id="5-1-pandas数据结构介绍"><a href="#5-1-pandas数据结构介绍" class="headerlink" title="5.1 pandas数据结构介绍"></a>5.1 pandas数据结构介绍</h2><h3 id="Series"><a href="#Series" class="headerlink" title="Series"></a>Series</h3><ul>
+<li><p>Series是一种一维的数组型对象，它包含了一个值序列，并且包含了数据标签，称为索引（index）。</p>
+</li>
+<li><p>默认生成索引从0到N-1（N是数据的长度），通过values属性和index属性分别获得Series对象的值和索引。</p>
+</li>
+<li><p>通常会创建一个索引序列，用标签标识每个数据点</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line">obj2 = pd.Series([<span class="number">4</span>,<span class="number">7</span>,-<span class="number">5</span>,<span class="number">3</span>],index=[<span class="string">&#x27;d&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;c&#x27;</span>])</span><br><span class="line">obj2</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">d    4</span></span><br><span class="line"><span class="string">b    7</span></span><br><span class="line"><span class="string">a   -5</span></span><br><span class="line"><span class="string">c    3</span></span><br><span class="line"><span class="string">dtype: int64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">obj2.index <span class="comment"># Index([&#x27;d&#x27;, &#x27;b&#x27;, &#x27;a&#x27;, &#x27;c&#x27;], dtype=&#x27;object&#x27;)</span></span><br><span class="line"><span class="comment"># 使用标签进行索引</span></span><br><span class="line">obj2[<span class="string">&#x27;a&#x27;</span>] <span class="comment"># -5</span></span><br><span class="line">obj2[[<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;d&#x27;</span>]] <span class="comment"># 包含的不是数字而是字符串，作为索引列表</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">c    3</span></span><br><span class="line"><span class="string">a   -5</span></span><br><span class="line"><span class="string">d    4</span></span><br><span class="line"><span class="string">dtype: int64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>可以使用类似NumPy的风格操作：比如使用布尔值数组进行过滤，与标量相乘，或是应用数学函数，这些操作将保存索引值连接。</p>
+</li>
+<li><p>Series是一个<strong>长度固定且有序的字典</strong>，在你可能会使用字典的上下文中，也可以使用Series。</p>
+</li>
+<li><p>使用字典可以生成Series：<code>pd.Series(字典对象)</code></p>
+<ul>
+<li><p>可以将字典排序后生成Series</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">sdata = &#123;<span class="string">&#x27;Ohio&#x27;</span>: <span class="number">35000</span>, <span class="string">&#x27;Texas&#x27;</span>: <span class="number">71000</span>, <span class="string">&#x27;Oregon&#x27;</span>: <span class="number">16000</span>, <span class="string">&#x27;Utah&#x27;</span>:<span class="number">5000</span>&#125;</span><br><span class="line">states = [<span class="string">&#x27;California&#x27;</span>,<span class="string">&#x27;Ohio&#x27;</span>,<span class="string">&#x27;Oregon&#x27;</span>,<span class="string">&#x27;Texas&#x27;</span>]</span><br><span class="line">obj4= pd.Series(sdata,index=states)</span><br><span class="line">obj4</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">California        NaN  # not a number pandas标记缺失值</span></span><br><span class="line"><span class="string">Ohio          35000.0</span></span><br><span class="line"><span class="string">Oregon        16000.0</span></span><br><span class="line"><span class="string">Texas         71000.0</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>pandas中使用isnull和notnull函数来检查缺失数据，“缺失”或“NA”表示缺失数据</p>
+<ul>
+<li><code>pd.isnull(obj4)</code></li>
+<li><code>pd.notnull(obj4)</code></li>
+<li>isnull和notnull也是Series的实例方法：<code>obj4.isnull()</code></li>
+</ul>
+</li>
+<li><p>Series可用来在数学操作中自动对齐</p>
+</li>
+<li><p>Series<strong>对象自身</strong>和其<strong>索引</strong>都有name属性</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">obj4.name = <span class="string">&#x27;population&#x27;</span></span><br><span class="line">obj4.index.name = <span class="string">&#x27;state&#x27;</span></span><br><span class="line">obj4</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">state</span></span><br><span class="line"><span class="string">California        NaN</span></span><br><span class="line"><span class="string">Ohio          35000.0</span></span><br><span class="line"><span class="string">Oregon        16000.0</span></span><br><span class="line"><span class="string">Texas         71000.0</span></span><br><span class="line"><span class="string">Name: population, dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>改变Series的索引：按位置赋值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">41</span>]: obj</span><br><span class="line">Out[<span class="number">41</span>]:</span><br><span class="line"><span class="number">0</span>     <span class="number">4</span></span><br><span class="line"><span class="number">1</span>     <span class="number">7</span></span><br><span class="line"><span class="number">2</span>    -<span class="number">5</span></span><br><span class="line"><span class="number">3</span>     <span class="number">3</span></span><br><span class="line">dtype: int64</span><br><span class="line">In [<span class="number">42</span>]: obj.index = [<span class="string">&#x27;Bob&#x27;</span>, <span class="string">&#x27;Steve&#x27;</span>, <span class="string">&#x27;Jeff&#x27;</span>, <span class="string">&#x27;Ryan&#x27;</span>]</span><br><span class="line">In [<span class="number">43</span>]: obj</span><br><span class="line">Out[<span class="number">43</span>]:</span><br><span class="line">Bob       <span class="number">4</span></span><br><span class="line">Steve     <span class="number">7</span></span><br><span class="line">Jeff     -<span class="number">5</span></span><br><span class="line">Ryan      <span class="number">3</span></span><br><span class="line">dtype: int64</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="DataFrame"><a href="#DataFrame" class="headerlink" title="DataFrame"></a>DataFrame</h3><blockquote>
+<p>DataFrame是矩阵的数据表，它包含已排序的列集合，每一列可以是不同的值类型（数值、字符串、布尔值等）。</p>
+<p>DataFrame既有行索引也有列索引，它可以被视为一个共享相同索引的Series的字典。</p>
+<p>分层索引是pandas中一种更为高级的数据处理特性。</p>
+</blockquote>
+<p><strong>构建DataFrame</strong></p>
+<ul>
+<li><p>利用等长度列表或NumPy数组的字典来形成DataFrame</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">data = &#123;<span class="string">&#x27;state&#x27;</span>: [<span class="string">&#x27;Ohio&#x27;</span>, <span class="string">&#x27;Ohio&#x27;</span>, <span class="string">&#x27;Ohio&#x27;</span>, <span class="string">&#x27;Nevada&#x27;</span>, <span class="string">&#x27;Nevada&#x27;</span>, <span class="string">&#x27;Nevada&#x27;</span>],</span><br><span class="line">        <span class="string">&#x27;year&#x27;</span>: [<span class="number">2000</span>, <span class="number">2001</span>, <span class="number">2002</span>, <span class="number">2001</span>, <span class="number">2002</span>, <span class="number">2003</span>],</span><br><span class="line">        <span class="string">&#x27;pop&#x27;</span>: [<span class="number">1.5</span>, <span class="number">1.7</span>,<span class="number">3.6</span>,<span class="number">2.4</span>,<span class="number">2.9</span>,<span class="number">3.2</span>]&#125;</span><br><span class="line">frame = pd.DataFrame(data)</span><br><span class="line">frame</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">state	year	pop</span></span><br><span class="line"><span class="string">0	Ohio	2000	1.5</span></span><br><span class="line"><span class="string">1	Ohio	2001	1.7</span></span><br><span class="line"><span class="string">2	Ohio	2002	3.6</span></span><br><span class="line"><span class="string">3	Nevada	2001	2.4</span></span><br><span class="line"><span class="string">4	Nevada	2002	2.9</span></span><br><span class="line"><span class="string">5	Nevada	2003	3.2</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><strong>一些常用操作</strong></p>
+<ul>
+<li><p>大型DataFrame，head方法会选出头部的五行</p>
+</li>
+<li><p>指定列顺序后，DataFrame的列将会按照指定顺序排列；列不包含在字典中时，结果会出现缺失值</p>
+</li>
+<li><p>DataFrame中的一列，可以按字典型标记或属性那样检索为Series：<code>frame2[&#39;state&#39;]</code>，<code>frame2.year</code></p>
+<blockquote>
+<p>frame2[colunm]对于任意列名均有效，但是frame2.column只在列名是有效的Python变量名时有效</p>
+</blockquote>
+<ul>
+<li>返回的Series与原DataFrame有相同的索引，且Series的name属性也会被合理地设置。</li>
+<li>通过位置或特殊属性loc进行选取：<code>frame2.loc[&#39;three&#39;]</code></li>
+</ul>
+</li>
+<li><p>列的引用是可以修改的，例如，空的’debt’列可以赋值为标量值或值数组。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">frame2[<span class="string">&#x27;debt&#x27;</span>] = <span class="number">16.5</span></span><br><span class="line">frame2[<span class="string">&#x27;debt&#x27;</span>] = np.arange(<span class="number">6</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将列表或数组赋值给一个列时，值的长度必须和DataFrame的长度相匹配</p>
+</li>
+<li><p>将Series赋值给一列时，Series的索引将会按照DataFrame的索引重新排列，并在空缺的地方填充缺失值</p>
+</li>
+<li><p>如果被赋值的列并不存在，则会生成一个新的列</p>
+</li>
+<li><p>del关键字可以删除DataFrame列（像在字典中）</p>
+</li>
+<li><p>向DataFrame中增加一列</p>
+<ul>
+<li>&#96;&#96;&#96;python<h1 id="增加一列布尔值，判断条件是state是否为’ohio’"><a href="#增加一列布尔值，判断条件是state是否为’ohio’" class="headerlink" title="增加一列布尔值，判断条件是state是否为’ohio’"></a>增加一列布尔值，判断条件是state是否为’ohio’</h1>frame2[‘eastern’] &#x3D; frame2.state &#x3D;&#x3D; ‘Ohio’<h1 id="注意：-frame2-eastern的语法无法创建新的列"><a href="#注意：-frame2-eastern的语法无法创建新的列" class="headerlink" title="注意： frame2.eastern的语法无法创建新的列"></a>注意： frame2.eastern的语法无法创建新的列</h1><h1 id="del移除之前新建的列"><a href="#del移除之前新建的列" class="headerlink" title="del移除之前新建的列"></a>del移除之前新建的列</h1>del frame2[‘eastern’]<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- &gt; 从DataFrame中选取的列是数据的视图，而不是拷贝</span><br><span class="line">  &gt;</span><br><span class="line">  &gt; 对Series的修改会映射到DataFrame中，需要复制显示使用Series的copy方法</span><br><span class="line"></span><br><span class="line">**包含字典的嵌套字典**</span><br><span class="line"></span><br><span class="line">- 将嵌套字典赋值给DataFrame，Pandas会将字典的键作为列，将内部字典的键作为行索引</span><br><span class="line"></span><br><span class="line">  ```python</span><br><span class="line">  pop = &#123;&#x27;Nevada&#x27;: &#123;2001: 2.4, 2002: 2.9&#125;, &#x27;Ohio&#x27;: &#123;2000: 1.5,2001:1.7,2002:3.6&#125;&#125;</span><br><span class="line">  frame3 = pd.DataFrame(pop)</span><br><span class="line">  frame3</span><br><span class="line">  &quot;&quot;&quot;</span><br><span class="line">  	Nevada	Ohio</span><br><span class="line">  2001	2.4	1.7</span><br><span class="line">  2002	2.9	3.6</span><br><span class="line">  2000	NaN	1.5</span><br><span class="line">  &quot;&quot;&quot;</span><br><span class="line">  # 使用类似NumPy语法进行转置操作</span><br><span class="line">  frame3.T</span><br><span class="line">  &quot;&quot;&quot;</span><br><span class="line">  2001	2002	2000</span><br><span class="line">  Nevada	2.4	2.9	NaN</span><br><span class="line">  Ohio	1.7	3.6	1.5</span><br><span class="line">  &quot;&quot;&quot;</span><br><span class="line">  # 显示指明索引，内部字典的键不会排序</span><br><span class="line">  pd.DataFrame(pop,index=[2001,2002,2003])</span><br><span class="line">  &quot;&quot;&quot;</span><br><span class="line">  Nevada	Ohio</span><br><span class="line">  2001	2.4	1.7</span><br><span class="line">  2002	2.9	3.6</span><br><span class="line">  2003	NaN	NaN</span><br><span class="line">  &quot;&quot;&quot;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>DataFrame构造函数的有效输入</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_69" alt="img" style="zoom: 50%;" />
+</li>
+<li><p>DataFrame的索引和列拥有name属性，则这些name属性也会被显示</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">frame3.index.name=<span class="string">&#x27;year&#x27;</span></span><br><span class="line">frame3.columns.name = <span class="string">&#x27;state&#x27;</span></span><br><span class="line">frame3</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">state	Nevada	Ohio</span></span><br><span class="line"><span class="string">year		</span></span><br><span class="line"><span class="string">2001	2.4	1.7</span></span><br><span class="line"><span class="string">2002	2.9	3.6</span></span><br><span class="line"><span class="string">2000	NaN	1.5</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>DataFrame的values属性会将包含在DataFrame中的数据以<strong>二维ndarray</strong>的形式返回</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">frame3.values</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">array([[2.4, 1.7],</span></span><br><span class="line"><span class="string">       [2.9, 3.6],</span></span><br><span class="line"><span class="string">       [nan, 1.5]])</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>DataFrame的列是不同的dtypes，则values的dtype会自动选择适合所有列的类型</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="索引对象"><a href="#索引对象" class="headerlink" title="索引对象"></a>索引对象</h3><blockquote>
+<p>用于存储轴标签和其他元数据的（例如轴名称或标签）</p>
+<p>构造Series或DataFrame时，你所使用的任意数组或标签序列都可以转换为索引对象</p>
+</blockquote>
+<ul>
+<li><p>索引对象不可修改，分享更为安全</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">obj = pd.Series(<span class="built_in">range</span>(<span class="number">3</span>),index=[<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>])</span><br><span class="line">index = obj.index</span><br><span class="line">index <span class="comment"># Index([&#x27;a&#x27;, &#x27;b&#x27;, &#x27;c&#x27;], dtype=&#x27;object&#x27;)</span></span><br><span class="line">index[<span class="number">1</span>:] <span class="comment"># Index([&#x27;b&#x27;, &#x27;c&#x27;], dtype=&#x27;object&#x27;)</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>pandas索引对象是一个<strong>固定大小的集合</strong>，但是它可以<strong>包含重复标签</strong></p>
+</li>
+<li><p>一些索引对象的方法和属性</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_71" alt="img" style="zoom:50%;" /></li>
+</ul>
+<h2 id="5-2-基本功能"><a href="#5-2-基本功能" class="headerlink" title="5.2 基本功能"></a>5.2 基本功能</h2><h3 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h3><ul>
+<li><p>reindex是pandas对象的重要方法，用于创建一个符合新索引的新对象，并进行排列，如果某个索引值之前并不存在，则会引入缺失值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line">obj = pd.Series([<span class="number">4.5</span>,<span class="number">7.2</span>,-<span class="number">5.3</span>,<span class="number">3.6</span>],index=[<span class="string">&#x27;d&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;c&#x27;</span>])</span><br><span class="line">obj</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">d    4.5</span></span><br><span class="line"><span class="string">b    7.2</span></span><br><span class="line"><span class="string">a   -5.3</span></span><br><span class="line"><span class="string">c    3.6</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">obj2 = obj.reindex([<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;d&#x27;</span>,<span class="string">&#x27;e&#x27;</span>])</span><br><span class="line">obj2</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">a   -5.3</span></span><br><span class="line"><span class="string">b    7.2</span></span><br><span class="line"><span class="string">c    3.6</span></span><br><span class="line"><span class="string">d    4.5</span></span><br><span class="line"><span class="string">e    NaN #如果某个索引值之前并不存在，则会引入缺失值</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重建顺序数据（时间序列等）索引时可能需要进行插值或填值</p>
+<ul>
+<li><p>method可选参数可使用ffill等方法在重建索引时插值，向前填充</p>
+</li>
+<li><p>&#96;&#96;&#96;python<br>obj3 &#x3D; pd.Series([‘blue’,’purple’,’yellow’],index&#x3D;[0,2,4])<br>obj3<br>“””<br>0      blue<br>2    purple<br>4    yellow<br>dtype: object<br>“””<br>obj3.reindex(range(6),method&#x3D;’ffill’)<br>“””<br>0      blue<br>1      blue<br>2    purple<br>3    purple<br>4    yellow<br>5    yellow<br>dtype: object<br>“””</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">**DataFrame中的reindex**</span><br><span class="line"></span><br><span class="line">- reindex可以改变行索引、列索引或同时改变二者。当仅传入一个序列时，结果中的行会重建索引</span><br><span class="line"></span><br><span class="line">  ```python</span><br><span class="line">  frame = pd.DataFrame(np.arange(9).reshape((3,3)),</span><br><span class="line">                      index=[&#x27;a&#x27;,&#x27;c&#x27;,&#x27;d&#x27;],</span><br><span class="line">                      columns=[&#x27;Ohio&#x27;,&#x27;Texas&#x27;,&#x27;California&#x27;])</span><br><span class="line">  frame</span><br><span class="line">  &quot;&quot;&quot;</span><br><span class="line">  Ohio	Texas	California</span><br><span class="line">  a	0	1	2</span><br><span class="line">  c	3	4	5</span><br><span class="line">  d	6	7	8</span><br><span class="line">  &quot;&quot;&quot;</span><br><span class="line">  frame2 = frame.reindex([&#x27;a&#x27;,&#x27;b&#x27;,&#x27;c&#x27;,&#x27;d&#x27;])</span><br><span class="line">  frame2</span><br><span class="line">  &quot;&quot;&quot;</span><br><span class="line">  Ohio	Texas	California</span><br><span class="line">  a	0.0	1.0	2.0</span><br><span class="line">  b	NaN	NaN	NaN</span><br><span class="line">  c	3.0	4.0	5.0</span><br><span class="line">  d	6.0	7.0	8.0</span><br><span class="line">  &quot;&quot;&quot;</span><br><span class="line">  # 列可以使用columns关键字重建索引</span><br><span class="line">  states = [&#x27;Texas&#x27;,&#x27;Utah&#x27;,&#x27;Califormia&#x27;]</span><br><span class="line">  frame.reindex(columns=states)</span><br><span class="line">  &quot;&quot;&quot;</span><br><span class="line">  	Texas	Utah	Califormia</span><br><span class="line">  a	1	NaN	NaN</span><br><span class="line">  c	4	NaN	NaN</span><br><span class="line">  d	7	NaN	NaN</span><br><span class="line">  &quot;&quot;&quot;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>reindex的<strong>index</strong>参数：新建作为索引的序列，可以是索引实例或任意其他序列型Python数据结构，索引使用时无须复制</p>
+</li>
+</ul>
+<h3 id="轴向上删除条目"><a href="#轴向上删除条目" class="headerlink" title="轴向上删除条目"></a>轴向上删除条目</h3><ul>
+<li><p>drop方法会返回一个含有指示值或轴向上删除值的新对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">obj = pd.Series(np.arange(<span class="number">5.</span>),index=[<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;d&#x27;</span>,<span class="string">&#x27;e&#x27;</span>])</span><br><span class="line">obj</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">a    0.0</span></span><br><span class="line"><span class="string">b    1.0</span></span><br><span class="line"><span class="string">c    2.0</span></span><br><span class="line"><span class="string">d    3.0</span></span><br><span class="line"><span class="string">e    4.0</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">obj.drop([<span class="string">&#x27;d&#x27;</span>,<span class="string">&#x27;c&#x27;</span>])</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">a    0.0</span></span><br><span class="line"><span class="string">b    1.0</span></span><br><span class="line"><span class="string">e    4.0</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><strong>DataFrame中的drop</strong></p>
+<ul>
+<li><p>调用drop时默认删除行标签（轴0）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">data = pd.DataFrame(np.arange(<span class="number">16</span>).reshape((<span class="number">4</span>, <span class="number">4</span>)),</span><br><span class="line">                    index=[<span class="string">&#x27;Ohio&#x27;</span>, <span class="string">&#x27;Colorado&#x27;</span>, <span class="string">&#x27;Utah&#x27;</span>, <span class="string">&#x27;New York&#x27;</span>],</span><br><span class="line">                    columns=[<span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;two&#x27;</span>, <span class="string">&#x27;three&#x27;</span>, <span class="string">&#x27;four&#x27;</span>])</span><br><span class="line">data</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">	one	two	three	four</span></span><br><span class="line"><span class="string">Ohio	0	1	2	3</span></span><br><span class="line"><span class="string">Colorado	4	5	6	7</span></span><br><span class="line"><span class="string">Utah	8	9	10	11</span></span><br><span class="line"><span class="string">New York	12	13	14	15</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">data.drop([<span class="string">&#x27;Colorado&#x27;</span>,<span class="string">&#x27;Ohio&#x27;</span>])</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">one	two	three	four</span></span><br><span class="line"><span class="string">Utah	8	9	10	11</span></span><br><span class="line"><span class="string">New York	12	13	14	15</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># 传递axis=1或axis=&#x27;columns’来从列中删除值</span></span><br><span class="line">data.drop(<span class="string">&#x27;two&#x27;</span>,axis=<span class="number">1</span>)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">one	three	four</span></span><br><span class="line"><span class="string">Ohio	0	2	3</span></span><br><span class="line"><span class="string">Colorado	4	6	7</span></span><br><span class="line"><span class="string">Utah	8	10	11</span></span><br><span class="line"><span class="string">New York	12	14	15</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>drop，会修改Series或DataFrame的尺寸或形状；直接操作原对象而不是返回新对象</p>
+</li>
+<li><p>【注意】inplace属性：会清除被删除的数据：<code>obj.drop(‘c’,inplace=True)</code></p>
+</li>
+</ul>
+<h3 id="索引、选择与过滤"><a href="#索引、选择与过滤" class="headerlink" title="索引、选择与过滤"></a>索引、选择与过滤</h3><ul>
+<li><p>Series的索引与NumPy数组类似，但是不仅可以索引整数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">obj = pd.Series(np.arange(<span class="number">4.</span>),index=[<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;d&#x27;</span>])</span><br><span class="line">obj</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">a    0.0</span></span><br><span class="line"><span class="string">b    1.0</span></span><br><span class="line"><span class="string">c    2.0</span></span><br><span class="line"><span class="string">d    3.0</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">obj[<span class="string">&#x27;b&#x27;</span>] <span class="comment"># 1.0</span></span><br><span class="line">obj[<span class="number">2</span>:<span class="number">4</span>]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">c    2.0</span></span><br><span class="line"><span class="string">d    3.0</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">obj[[<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;d&#x27;</span>]]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">b    1.0</span></span><br><span class="line"><span class="string">a    0.0</span></span><br><span class="line"><span class="string">d    3.0</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">obj[[<span class="number">1</span>,<span class="number">3</span>]]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">b    1.0</span></span><br><span class="line"><span class="string">d    3.0</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">obj[obj&lt;<span class="number">2</span>]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">a    0.0</span></span><br><span class="line"><span class="string">b    1.0</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Series切片（不同于Python切片）</p>
+<ul>
+<li>使用切片修改值会修改Series的相应部分：<code>obj[‘b’ : ‘c’]</code></li>
+<li>使用单个值或序列，可以从DataFrame中索引出一个或多个列</li>
+<li>可根据布尔值数组切片选择数据<ul>
+<li><code>data[:2]</code> # 选前两行</li>
+<li><code>data[data[‘three’]&gt;5]</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用布尔值DataFrame进行索引，可以和标量比较产生</p>
+<ul>
+<li><code>data &lt; 5</code> (data是DataFrame类型)</li>
+<li><code>data[data&lt;5] = 0</code> （小于5的数赋值为0）</li>
+</ul>
+</li>
+</ul>
+<p><strong>使用loc和iloc选择数据</strong></p>
+<blockquote>
+<p>DataFrame允许你使用轴标签（loc）或整数标签（iloc）以NumPy风格的语法从DataFrame中选出数组的行和列的子集</p>
+</blockquote>
+<ul>
+<li><p>示例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">data.loc[<span class="string">&#x27;Colorado&#x27;</span>,[<span class="string">&#x27;two&#x27;</span>,<span class="string">&#x27;three&#x27;</span>]]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">two      5</span></span><br><span class="line"><span class="string">three    6</span></span><br><span class="line"><span class="string">Name: Colorado, dtype: int32</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># 整数标签iloc进行类似的数据选择</span></span><br><span class="line">data.iloc[<span class="number">2</span>,[<span class="number">3</span>,<span class="number">0</span>,<span class="number">1</span>]]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">four    11</span></span><br><span class="line"><span class="string">one      8</span></span><br><span class="line"><span class="string">two      9</span></span><br><span class="line"><span class="string">Name: Utah, dtype: int32</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>所以用于切片</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">data.loc[:<span class="string">&#x27;Utah&#x27;</span>,<span class="string">&#x27;two&#x27;</span>]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">Ohio        1</span></span><br><span class="line"><span class="string">Colorado    5</span></span><br><span class="line"><span class="string">Utah        9</span></span><br><span class="line"><span class="string">Name: two, dtype: int32</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">data.iloc[:,:<span class="number">3</span>][data.three &gt;<span class="number">5</span>]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">one	two	three</span></span><br><span class="line"><span class="string">Colorado	4	5	6</span></span><br><span class="line"><span class="string">Utah	8	9	10</span></span><br><span class="line"><span class="string">New York	12	13	14</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>DataFrame索引选项</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_74" alt="epub_22739904_74" style="zoom:50%;" /></li>
+</ul>
+<h3 id="整数索引"><a href="#整数索引" class="headerlink" title="整数索引"></a>整数索引</h3><ul>
+<li><p>在pandas对象上使用整数索引会产生歧义，非整数索引不会有潜在的歧义</p>
+</li>
+<li><p>使用<strong>loc</strong>（用于标签）或<strong>iloc</strong>（用于整数）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">ser = pd.Series(np.arange(<span class="number">3.</span>))</span><br><span class="line">ser</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">0    0.0</span></span><br><span class="line"><span class="string">1    1.0</span></span><br><span class="line"><span class="string">2    2.0</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">ser[:<span class="number">1</span>] </span><br><span class="line"><span class="comment"># 0    0.0</span></span><br><span class="line"><span class="comment"># dtype: float64</span></span><br><span class="line">ser.loc[:<span class="number">1</span>]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">0    0.0</span></span><br><span class="line"><span class="string">1    1.0</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">ser.iloc[:<span class="number">1</span>]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">0    0.0</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="算术和数据对齐"><a href="#算术和数据对齐" class="headerlink" title="算术和数据对齐"></a>算术和数据对齐</h3><ul>
+<li><p>对象相加时，索引对不相同，返回结果的索引将是索引对的<strong>并集</strong>，类似于数据库的<strong>自动外连接（Outer join）</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">s1 = pd.Series([<span class="number">7.3</span>,-<span class="number">2.5</span>,<span class="number">3.4</span>,<span class="number">1.5</span>],index=[<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;d&#x27;</span>,<span class="string">&#x27;e&#x27;</span>])</span><br><span class="line">s2 = pd.Series([-<span class="number">2.1</span>,<span class="number">3.6</span>,-<span class="number">1.5</span>,<span class="number">4</span>,<span class="number">3.1</span>],index=[<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;e&#x27;</span>,<span class="string">&#x27;f&#x27;</span>,<span class="string">&#x27;g&#x27;</span>])</span><br><span class="line">s1 +s2</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">a    5.2</span></span><br><span class="line"><span class="string">c    1.1</span></span><br><span class="line"><span class="string">d    NaN</span></span><br><span class="line"><span class="string">e    0.0</span></span><br><span class="line"><span class="string">f    NaN</span></span><br><span class="line"><span class="string">g    NaN</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将DataFrame对象加在一起，返回一个DataFrame，它的索引、列是每个DataFrame的索引、列的并集。</p>
+<ul>
+<li>两个行或列完全不同的DataFrame对象相加，结果将全部为空</li>
+</ul>
+</li>
+</ul>
+<p><strong>使用填充值的算术方法</strong></p>
+<ul>
+<li><p>两个DataFrame对象相加时，一些不重叠的位置会出现NA值，举例：填充0：<code>df1.add(df2,fill_value=0)</code></p>
+</li>
+<li><p>灵活算术方法</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_75" alt="epub_22739904_75" style="zoom:50%;" />
+
+<p>以r开头的副本方法的参数是翻转的，1&#x2F;df1和df1.rdiv(1)等价</p>
+</li>
+</ul>
+<p><strong>DataFrame和Series间的操作</strong></p>
+<blockquote>
+<p>和NumPy中不同维度数组间的操作类似</p>
+</blockquote>
+<ul>
+<li><p>考虑二维数组和其中一行的区别，<strong>广播机制</strong>：减法在每一行都进行了操作（<strong>对列进行匹配，并广播到各行</strong>）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">arr = np.arange(<span class="number">12.</span>).reshape((<span class="number">3</span>,<span class="number">4</span>))</span><br><span class="line">arr[<span class="number">0</span>] <span class="comment"># array([0., 1., 2., 3.])</span></span><br><span class="line">arr - arr[<span class="number">0</span>]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">array([[0., 0., 0., 0.],</span></span><br><span class="line"><span class="string">       [4., 4., 4., 4.],</span></span><br><span class="line"><span class="string">       [8., 8., 8., 8.]])</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在列上进行广播，在行上匹配，必须使用算术方法的一种：<code>frame.sub(series3,axis=‘index’)</code>，使用axis&#x3D;‘index’或axis&#x3D;0</p>
+</li>
+</ul>
+<h3 id="函数应用和映射"><a href="#函数应用和映射" class="headerlink" title="函数应用和映射"></a>函数应用和映射</h3><ul>
+<li><p>NumPy的通用函数（逐元素数组方法）对pandas对象也有效：<code>np.abs(frame)</code></p>
+</li>
+<li><p>DataFrame的apply方法将函数应用到<strong>一行或一列（默认）</strong>的一维数组上</p>
+<ul>
+<li><p>举例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">frame = pd.DataFrame(np.random.randn(<span class="number">4</span>,<span class="number">3</span>),columns=<span class="built_in">list</span>(<span class="string">&#x27;bde&#x27;</span>),</span><br><span class="line">                    index=[<span class="string">&#x27;Utah&#x27;</span>,<span class="string">&#x27;Ohio&#x27;</span>,<span class="string">&#x27;Texas&#x27;</span>,<span class="string">&#x27;Oregon&#x27;</span>])</span><br><span class="line"><span class="comment"># 函数f，可以计算Series最大值和最小值的差，会被frame中的每一列调用一次</span></span><br><span class="line"><span class="comment"># 结果是一个以frame的列作为索引的Series</span></span><br><span class="line">f =  <span class="keyword">lambda</span> x:x.<span class="built_in">max</span>() - x.<span class="built_in">min</span>()</span><br><span class="line">frame.apply(f)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">b    3.071398</span></span><br><span class="line"><span class="string">d    2.095664</span></span><br><span class="line"><span class="string">e    2.016091</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># 函数每行被调用一次</span></span><br><span class="line">frame.apply(f,axis=<span class="string">&#x27;columns&#x27;</span>)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">Utah      2.410035</span></span><br><span class="line"><span class="string">Ohio      0.303477</span></span><br><span class="line"><span class="string">Texas     0.808933</span></span><br><span class="line"><span class="string">Oregon    1.718999</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>大部分最常用的数组统计（sum和mean）都是DataFrame的方法，<strong>apply不是必需的</strong></p>
+</li>
+<li><p>传递给apply的不一定要返回一个标量值，也可以返回带有多个值的Series</p>
+</li>
+</ul>
+</li>
+<li><p>可以使用逐元素的Python函数，举例：根据frame总的每个浮点数计算一个格式化字符串，可以使用<strong>applymap</strong>方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">format</span> = <span class="keyword">lambda</span> x: <span class="string">&#x27;%.2f&#x27;</span> % x</span><br><span class="line">frame.applymap(<span class="built_in">format</span>)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">b	d	e</span></span><br><span class="line"><span class="string">Utah	-0.86	1.53	0.19</span></span><br><span class="line"><span class="string">Ohio	0.25	0.46	-1.16</span></span><br><span class="line"><span class="string">Texas	-0.59	-0.60	-1.08</span></span><br><span class="line"><span class="string">Oregon	-1.09	0.36	-0.19</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>用applymap作为函数名是因为Series有map方法</p>
+<p>将逐元素应用到Series上：frame[‘e’].map(format)</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="排序和排名"><a href="#排序和排名" class="headerlink" title="排序和排名"></a>排序和排名</h3><p><strong>排序</strong></p>
+<ul>
+<li>按行或列索引进行字典型排序，使用<strong>sort_index</strong>方法，返回一个新的、排序好的对象<ul>
+<li>默认升序，也可以降序排序：ascending&#x3D;False</li>
+<li>对DataFrame进行排序时，使用一列或多列作为排序键，通过给<strong>sort_values的可选参数by</strong>实现<ul>
+<li><code>frame.sort_values(by=‘b’)</code></li>
+<li><code>frame.sort_values(by = [‘a’,’b])</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>使用<strong>sort_values</strong>方法根据Series的值进行排序<ul>
+<li>默认所有的缺失值都会被排序至Series的尾部</li>
+</ul>
+</li>
+</ul>
+<p><strong>排名</strong></p>
+<blockquote>
+<p>排名是指对数组从1到有效数据点总数分配名次的操作</p>
+</blockquote>
+<ul>
+<li><p>Series和DataFrame的<strong>rank方法</strong>是实现排名的方法。</p>
+<ul>
+<li><p>默认通过平均排名分配到每个组来打破平级关系。</p>
+</li>
+<li><p>也可以根据他们在数据中的观察顺序进行分配</p>
+<ul>
+<li>对条目0和2设置的名次为6和7，而不是之前的平均排名6.5，是因为在数据中标签0在标签2的前面。</li>
+</ul>
+</li>
+<li><p>按降序排名：<code>obj.rank(ascending=False,method=‘max’)</code></p>
+</li>
+<li><p>排名中的平级关系打破方法</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_76" alt="img" style="zoom:50%;" />
+</li>
+<li><p>DataFrame可以对行或列计算排名：frame.rank(axis &#x3D; ‘columns’)</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="含有重复标签的轴索引"><a href="#含有重复标签的轴索引" class="headerlink" title="含有重复标签的轴索引"></a>含有重复标签的轴索引</h3><ul>
+<li><p>轴索引并不是强制唯一性，但pandas函数（比如reindex）需要的标签是唯一的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">obj = pd.Series(<span class="built_in">range</span>(<span class="number">5</span>),index=[<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>])</span><br><span class="line">obj</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">a    0</span></span><br><span class="line"><span class="string">a    1</span></span><br><span class="line"><span class="string">b    2</span></span><br><span class="line"><span class="string">b    3</span></span><br><span class="line"><span class="string">c    4</span></span><br><span class="line"><span class="string">dtype: int64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>索引的is_unique属性：标签是否唯一</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">obj.index.is_unique <span class="comment"># False</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>有重复索引时，标签索引多个条目会返回一个<strong>序列</strong>，单个条目会返回<strong>标量值</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">obj[<span class="string">&#x27;a&#x27;</span>]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">a    0</span></span><br><span class="line"><span class="string">a    1</span></span><br><span class="line"><span class="string">dtype: int64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">obj[<span class="string">&#x27;c&#x27;</span>] <span class="comment"># 4</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重复索引会使代码更复杂，因为来自索引的输出类型可能因标签是否重复而有所不同</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="5-3-描述性统计的概述与计算"><a href="#5-3-描述性统计的概述与计算" class="headerlink" title="5.3 描述性统计的概述与计算"></a>5.3 描述性统计的概述与计算</h2><ul>
+<li><p>Pandas对象封装了常用数学、统计学方法的集合，大部分属于<strong>规约或汇总统计</strong>的类别。</p>
+<ul>
+<li><p>从DataFrame的行或列中抽取一个Series或一系列值的单个值（如总和或平均值）</p>
+</li>
+<li><p>内建了处理缺失值的功能</p>
+</li>
+<li><p>传入axis&#x3D;’columns’或axis&#x3D;1，则会将<strong>一行上各个列</strong>的值相加：<code>df.sum(axis=‘columns’)</code></p>
+</li>
+<li><p>NA值会被自动排除（除非全都是），可以通过禁用skipna来实现不排除NA值</p>
+</li>
+<li><p>规约方法可选参数</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_77" alt="img" style="zoom:50%;" />
+</li>
+<li><p>有一些方法返回间接统计信息：比如最小值或最大值的索引值：比如idxmin和idxmax</p>
+</li>
+</ul>
+</li>
+<li><p>积累型方法：<code>df.cumsum()</code></p>
+</li>
+<li><p>describe方法：<strong>一次产生多个汇总统计</strong>，既不是规约方法也不是积累型方法。</p>
+<ul>
+<li>describe方法也可以描述非数值型数据</li>
+</ul>
+</li>
+<li><p>描述性统计和汇总统计方法</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_78" alt="img" style="zoom:50%;" /></li>
+</ul>
+<h3 id="相关性和协方差"><a href="#相关性和协方差" class="headerlink" title="相关性和协方差"></a>相关性和协方差</h3><ul>
+<li>Series的corr方法计算的是两个Series中重叠的、非NA的、按索引对齐的值的相关性。相应地，cov计算的是协方差。<ul>
+<li><code>returns[‘MSFT’].corr(returns[‘IBM’])</code></li>
+<li><code>returns.MSFT.corr(returns.IBM)</code>，MSFT是一个有效的Python属性</li>
+<li>以DataFrame的形式返回相关性和协方差矩阵</li>
+</ul>
+</li>
+<li>DataFrame的<strong>corrwith方法</strong>：DataFrame中的行或列与另一个序列或DataFrame的相关性<ul>
+<li>传入一个Series时，会返回一个含有为每列计算相关性值的Series</li>
+<li>传入一个DataFrame时，会计算匹配到列名的相关性数值</li>
+<li>传入axis&#x3D;’columns’会逐行地进行计算</li>
+</ul>
+</li>
+</ul>
+<h3 id="唯一值、计数和成员属性"><a href="#唯一值、计数和成员属性" class="headerlink" title="唯一值、计数和成员属性"></a>唯一值、计数和成员属性</h3><blockquote>
+<p>另一类相关的方法可以从一维Series包含的数值中提取信息</p>
+</blockquote>
+<ul>
+<li><p>unique：给出Series中的唯一值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line">obj = pd.Series([<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;d&#x27;</span>,<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;c&#x27;</span>])</span><br><span class="line">uniques = obj.unique()</span><br><span class="line">uniques <span class="comment"># array([&#x27;c&#x27;, &#x27;a&#x27;, &#x27;d&#x27;, &#x27;b&#x27;], dtype=object)</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>排序：<code>uniques.sort()</code></li>
+</ul>
+</li>
+<li><p>计算Series包含值的个数：<code>value_counts()</code></p>
+<ul>
+<li>按照数量降序排序：<code>pd.value_counts(obj.values,sort=False)</code></li>
+</ul>
+</li>
+<li><p>isin执行向量化的成员属性检查，将数据集以Series或DataFrame一列的形式过滤为数据集的值子集。</p>
+<ul>
+<li><p>示例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">obj</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">0    c</span></span><br><span class="line"><span class="string">1    a</span></span><br><span class="line"><span class="string">2    d</span></span><br><span class="line"><span class="string">3    a</span></span><br><span class="line"><span class="string">4    a</span></span><br><span class="line"><span class="string">5    b</span></span><br><span class="line"><span class="string">6    b</span></span><br><span class="line"><span class="string">7    c</span></span><br><span class="line"><span class="string">8    c</span></span><br><span class="line"><span class="string">dtype: object</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">mask = obj.isin([<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>])</span><br><span class="line">mask</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">0     True</span></span><br><span class="line"><span class="string">1    False</span></span><br><span class="line"><span class="string">2    False</span></span><br><span class="line"><span class="string">3    False</span></span><br><span class="line"><span class="string">4    False</span></span><br><span class="line"><span class="string">5     True</span></span><br><span class="line"><span class="string">6     True</span></span><br><span class="line"><span class="string">7     True</span></span><br><span class="line"><span class="string">8     True</span></span><br><span class="line"><span class="string">dtype: bool</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">obj[mask]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">0    c</span></span><br><span class="line"><span class="string">5    b</span></span><br><span class="line"><span class="string">6    b</span></span><br><span class="line"><span class="string">7    c</span></span><br><span class="line"><span class="string">8    c</span></span><br><span class="line"><span class="string">dtype: object</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>isin相关的Index.get_indexer方法：提供一个索引数组可以将可能非唯一值数组转换为另一个唯一值数组</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">to_match = pd.Series([<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;a&#x27;</span>])</span><br><span class="line">unique_vals = pd.Series([<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;a&#x27;</span>])</span><br><span class="line">pd.Index(unique_vals).get_indexer(to_match)</span><br><span class="line"><span class="comment"># array([0, 2, 1, 1, 0, 2], dtype=int64)</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>唯一值、计数和集合成员属性方法</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_80" alt="img" style="zoom:50%;" />
+</li>
+<li><p>计算DataFrame多个相关列的直方图</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/%E6%97%A0%E6%A0%87%E9%A2%98.png" alt="无标题" style="zoom:50%;" />
+
+<p>这里，结果中的行标签是所有列中出现的不同值，数值则是这些不同值在每个列中出现的次数。</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/" rel="tag"># 数据处理</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/28/%E4%BA%8C%E3%80%81Python%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%E3%80%81IPython%E5%8F%8AJupytermotebook%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" rel="prev" title="二、Python语言基础、IPython及Jupytermotebook——《利用Python进行数据分析》">
+      <i class="fa fa-chevron-left"></i> 二、Python语言基础、IPython及Jupytermotebook——《利用Python进行数据分析》
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/28/%E4%B8%89%E3%80%81%E5%86%85%E5%BB%BA%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E3%80%81%E5%87%BD%E6%95%B0%E5%8F%8A%E6%96%87%E4%BB%B6%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" rel="next" title="三、内建数据结构、函数及文件——《利用Python进行数据分析》">
+      三、内建数据结构、函数及文件——《利用Python进行数据分析》 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0-Pandas%E5%85%A5%E9%97%A8"><span class="nav-number">1.</span> <span class="nav-text">第五章 Pandas入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-pandas%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.1.</span> <span class="nav-text">5.1 pandas数据结构介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Series"><span class="nav-number">1.1.1.</span> <span class="nav-text">Series</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DataFrame"><span class="nav-number">1.1.2.</span> <span class="nav-text">DataFrame</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A2%9E%E5%8A%A0%E4%B8%80%E5%88%97%E5%B8%83%E5%B0%94%E5%80%BC%EF%BC%8C%E5%88%A4%E6%96%AD%E6%9D%A1%E4%BB%B6%E6%98%AFstate%E6%98%AF%E5%90%A6%E4%B8%BA%E2%80%99ohio%E2%80%99"><span class="nav-number">2.</span> <span class="nav-text">增加一列布尔值，判断条件是state是否为’ohio’</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%EF%BC%9A-frame2-eastern%E7%9A%84%E8%AF%AD%E6%B3%95%E6%97%A0%E6%B3%95%E5%88%9B%E5%BB%BA%E6%96%B0%E7%9A%84%E5%88%97"><span class="nav-number">3.</span> <span class="nav-text">注意： frame2.eastern的语法无法创建新的列</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#del%E7%A7%BB%E9%99%A4%E4%B9%8B%E5%89%8D%E6%96%B0%E5%BB%BA%E7%9A%84%E5%88%97"><span class="nav-number">4.</span> <span class="nav-text">del移除之前新建的列</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E5%AF%B9%E8%B1%A1"><span class="nav-number">4.0.1.</span> <span class="nav-text">索引对象</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-%E5%9F%BA%E6%9C%AC%E5%8A%9F%E8%83%BD"><span class="nav-number">4.1.</span> <span class="nav-text">5.2 基本功能</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%BB%BA%E7%B4%A2%E5%BC%95"><span class="nav-number">4.1.1.</span> <span class="nav-text">重建索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%B4%E5%90%91%E4%B8%8A%E5%88%A0%E9%99%A4%E6%9D%A1%E7%9B%AE"><span class="nav-number">4.1.2.</span> <span class="nav-text">轴向上删除条目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E3%80%81%E9%80%89%E6%8B%A9%E4%B8%8E%E8%BF%87%E6%BB%A4"><span class="nav-number">4.1.3.</span> <span class="nav-text">索引、选择与过滤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B4%E6%95%B0%E7%B4%A2%E5%BC%95"><span class="nav-number">4.1.4.</span> <span class="nav-text">整数索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%9C%AF%E5%92%8C%E6%95%B0%E6%8D%AE%E5%AF%B9%E9%BD%90"><span class="nav-number">4.1.5.</span> <span class="nav-text">算术和数据对齐</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E5%BA%94%E7%94%A8%E5%92%8C%E6%98%A0%E5%B0%84"><span class="nav-number">4.1.6.</span> <span class="nav-text">函数应用和映射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%92%E5%BA%8F%E5%92%8C%E6%8E%92%E5%90%8D"><span class="nav-number">4.1.7.</span> <span class="nav-text">排序和排名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AB%E6%9C%89%E9%87%8D%E5%A4%8D%E6%A0%87%E7%AD%BE%E7%9A%84%E8%BD%B4%E7%B4%A2%E5%BC%95"><span class="nav-number">4.1.8.</span> <span class="nav-text">含有重复标签的轴索引</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-%E6%8F%8F%E8%BF%B0%E6%80%A7%E7%BB%9F%E8%AE%A1%E7%9A%84%E6%A6%82%E8%BF%B0%E4%B8%8E%E8%AE%A1%E7%AE%97"><span class="nav-number">4.2.</span> <span class="nav-text">5.3 描述性统计的概述与计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%80%A7%E5%92%8C%E5%8D%8F%E6%96%B9%E5%B7%AE"><span class="nav-number">4.2.1.</span> <span class="nav-text">相关性和协方差</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%94%AF%E4%B8%80%E5%80%BC%E3%80%81%E8%AE%A1%E6%95%B0%E5%92%8C%E6%88%90%E5%91%98%E5%B1%9E%E6%80%A7"><span class="nav-number">4.2.2.</span> <span class="nav-text">唯一值、计数和成员属性</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="TT"
+      src="/images/header.jpg">
+  <p class="site-author-name" itemprop="name">TT</p>
+  <div class="site-description" itemprop="description">The Journey Is the Reward</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TT</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'TNUpeWIcsOXnq5yrEo6XphL5-gzGzoHsz',
+      appKey     : 'HdE2XffT6XTWRYvV2zovg336',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

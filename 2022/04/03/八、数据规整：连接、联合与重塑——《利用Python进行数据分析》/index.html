@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="第八章 数据规整：连接、联合与重塑8.1 分层索引 分层索引允许在一个轴向上拥有多个（两个或两个以上）索引层级  Series分层索引  创建 123456789101112131415data &#x3D; pd.Series(np.random.randn(9),                 index&#x3D;[[&amp;#x27;a&amp;#x27;, &amp;#x27;a&amp;#x27;, &amp;#x27;a&amp;#x27;, &amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="八、数据规整：连接、联合与重塑——《利用Python进行数据分析》">
+<meta property="og:url" content="http://example.com/2022/04/03/%E5%85%AB%E3%80%81%E6%95%B0%E6%8D%AE%E8%A7%84%E6%95%B4%EF%BC%9A%E8%BF%9E%E6%8E%A5%E3%80%81%E8%81%94%E5%90%88%E4%B8%8E%E9%87%8D%E5%A1%91%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/index.html">
+<meta property="og:site_name" content="TT&#39;Blog">
+<meta property="og:description" content="第八章 数据规整：连接、联合与重塑8.1 分层索引 分层索引允许在一个轴向上拥有多个（两个或两个以上）索引层级  Series分层索引  创建 123456789101112131415data &#x3D; pd.Series(np.random.randn(9),                 index&#x3D;[[&amp;#x27;a&amp;#x27;, &amp;#x27;a&amp;#x27;, &amp;#x27;a&amp;#x27;, &amp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403103053939.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403100304726.png">
+<meta property="og:image" content="c:/Users/TSY/Desktop/%E6%97%A0%E6%A0%87%E9%A2%98.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403102450286.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/1.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/22.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403105650872.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/re_set.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/%E5%86%85%E5%A4%96.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_103">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403114948604.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_105">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/333.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/444.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/heb.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403140431340.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403140557533.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403140811873.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_106">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403142053075.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403174621301.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403175303626.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403183953595.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403184419500.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403184717460.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403184906941.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403190157927.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403190300797.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/1111.png">
+<meta property="article:published_time" content="2022-04-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-09-13T11:31:22.375Z">
+<meta property="article:author" content="TT">
+<meta property="article:tag" content="数据处理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403103053939.png">
+
+<link rel="canonical" href="http://example.com/2022/04/03/%E5%85%AB%E3%80%81%E6%95%B0%E6%8D%AE%E8%A7%84%E6%95%B4%EF%BC%9A%E8%BF%9E%E6%8E%A5%E3%80%81%E8%81%94%E5%90%88%E4%B8%8E%E9%87%8D%E5%A1%91%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>八、数据规整：连接、联合与重塑——《利用Python进行数据分析》 | TT'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">TT'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/03/%E5%85%AB%E3%80%81%E6%95%B0%E6%8D%AE%E8%A7%84%E6%95%B4%EF%BC%9A%E8%BF%9E%E6%8E%A5%E3%80%81%E8%81%94%E5%90%88%E4%B8%8E%E9%87%8D%E5%A1%91%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="TT">
+      <meta itemprop="description" content="The Journey Is the Reward">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TT'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          八、数据规整：连接、联合与重塑——《利用Python进行数据分析》
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-04-03 00:00:00" itemprop="dateCreated datePublished" datetime="2022-04-03T00:00:00+08:00">2022-04-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-13 19:31:22" itemprop="dateModified" datetime="2023-09-13T19:31:22+08:00">2023-09-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%EF%BC%9A-%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">机器学习： 数据分析</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2022/04/03/%E5%85%AB%E3%80%81%E6%95%B0%E6%8D%AE%E8%A7%84%E6%95%B4%EF%BC%9A%E8%BF%9E%E6%8E%A5%E3%80%81%E8%81%94%E5%90%88%E4%B8%8E%E9%87%8D%E5%A1%91%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" class="post-meta-item leancloud_visitors" data-flag-title="八、数据规整：连接、联合与重塑——《利用Python进行数据分析》" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/04/03/%E5%85%AB%E3%80%81%E6%95%B0%E6%8D%AE%E8%A7%84%E6%95%B4%EF%BC%9A%E8%BF%9E%E6%8E%A5%E3%80%81%E8%81%94%E5%90%88%E4%B8%8E%E9%87%8D%E5%A1%91%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/03/%E5%85%AB%E3%80%81%E6%95%B0%E6%8D%AE%E8%A7%84%E6%95%B4%EF%BC%9A%E8%BF%9E%E6%8E%A5%E3%80%81%E8%81%94%E5%90%88%E4%B8%8E%E9%87%8D%E5%A1%91%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="第八章-数据规整：连接、联合与重塑"><a href="#第八章-数据规整：连接、联合与重塑" class="headerlink" title="第八章 数据规整：连接、联合与重塑"></a>第八章 数据规整：连接、联合与重塑</h1><h2 id="8-1-分层索引"><a href="#8-1-分层索引" class="headerlink" title="8.1 分层索引"></a>8.1 分层索引</h2><blockquote>
+<p>分层索引允许在一个轴向上拥有多个（两个或两个以上）索引层级</p>
+</blockquote>
+<p><strong>Series分层索引</strong></p>
+<ul>
+<li><p>创建</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">data = pd.Series(np.random.randn(<span class="number">9</span>),</span><br><span class="line">                 index=[[<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;d&#x27;</span>, <span class="string">&#x27;d&#x27;</span>],</span><br><span class="line">                        [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>]])</span><br><span class="line"><span class="string">&quot;&quot;&quot;输出</span></span><br><span class="line"><span class="string">a  1   -0.204708</span></span><br><span class="line"><span class="string">   2    0.478943</span></span><br><span class="line"><span class="string">   3   -0.519439</span></span><br><span class="line"><span class="string">b  1   -0.555730</span></span><br><span class="line"><span class="string">   3    1.965781</span></span><br><span class="line"><span class="string">c  1    1.393406</span></span><br><span class="line"><span class="string">   2    0.092908</span></span><br><span class="line"><span class="string">d  2    0.281746</span></span><br><span class="line"><span class="string">   3    0.769023</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>各种索引方式</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 以MultiIndex作为索引的Series的美化视图</span></span><br><span class="line">data.index</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">MultiIndex([(&#x27;a&#x27;, 1),</span></span><br><span class="line"><span class="string">            (&#x27;a&#x27;, 2),</span></span><br><span class="line"><span class="string">            (&#x27;a&#x27;, 3),</span></span><br><span class="line"><span class="string">            (&#x27;b&#x27;, 1),</span></span><br><span class="line"><span class="string">            (&#x27;b&#x27;, 3),</span></span><br><span class="line"><span class="string">            (&#x27;c&#x27;, 1),</span></span><br><span class="line"><span class="string">            (&#x27;c&#x27;, 2),</span></span><br><span class="line"><span class="string">            (&#x27;d&#x27;, 2),</span></span><br><span class="line"><span class="string">            (&#x27;d&#x27;, 3)],</span></span><br><span class="line"><span class="string">           )</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># 分层索引</span></span><br><span class="line">data[<span class="string">&#x27;b&#x27;</span>]</span><br><span class="line">data[<span class="string">&#x27;b&#x27;</span>:<span class="string">&#x27;c&#x27;</span>]</span><br><span class="line">data.loc[[<span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;d&#x27;</span>]]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">b  1   -0.555730</span></span><br><span class="line"><span class="string">   3    1.965781</span></span><br><span class="line"><span class="string">d  2    0.281746</span></span><br><span class="line"><span class="string">   3    0.769023</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># 在“内部”层级中进行选择</span></span><br><span class="line">data.loc[:, <span class="number">2</span>]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">a    0.478943</span></span><br><span class="line"><span class="string">c    0.092908</span></span><br><span class="line"><span class="string">d    0.281746</span></span><br><span class="line"><span class="string">dtype: float64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><strong>DataFrame分层索引</strong></p>
+<ul>
+<li><p>unstack重新排列</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">data.unstack() <span class="comment"># 将数据在DataFrame中重新排列</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">1	2	3</span></span><br><span class="line"><span class="string">a	-0.204708	0.478943	-0.519439</span></span><br><span class="line"><span class="string">b	-0.555730	NaN	1.965781</span></span><br><span class="line"><span class="string">c	1.393406	0.092908	NaN</span></span><br><span class="line"><span class="string">d	NaN	0.281746	0.769023</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">data.unstack().stack()  <span class="comment"># unstack反操作</span></span><br><span class="line"><span class="comment"># 输出结果为原来模样</span></span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403103053939.png" alt="image-20220403103053939" style="zoom:50%;" />
+</li>
+<li><p><em>在DataFrame中每一层都可以拥有分层索引</em></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">frame = pd.DataFrame(np.arange(<span class="number">12</span>).reshape((<span class="number">4</span>, <span class="number">3</span>)),</span><br><span class="line">                     index=[[<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;b&#x27;</span>], [<span class="number">1</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">2</span>]],</span><br><span class="line">                     columns=[[<span class="string">&#x27;Ohio&#x27;</span>, <span class="string">&#x27;Ohio&#x27;</span>, <span class="string">&#x27;Colorado&#x27;</span>],</span><br><span class="line">                              [<span class="string">&#x27;Green&#x27;</span>, <span class="string">&#x27;Red&#x27;</span>, <span class="string">&#x27;Green&#x27;</span>]])</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403100304726.png" alt="image-20220403100304726" style="zoom:50%;" /></li>
+</ul>
+<p><strong>分层索引名称</strong></p>
+<ul>
+<li><p><em>分层的层级可以有名称（字符串或Python对象）</em></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">frame.index.names = [<span class="string">&#x27;key1&#x27;</span>, <span class="string">&#x27;key2&#x27;</span>]</span><br><span class="line">frame.columns.names = [<span class="string">&#x27;state&#x27;</span>, <span class="string">&#x27;color&#x27;</span>]</span><br><span class="line"></span><br><span class="line">frame[<span class="string">&#x27;Ohio&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="C:/Users/TSY/Desktop/无标题.png" alt="无标题"></p>
+</li>
+<li><p>MultiIndex对象可以使用其<strong>自身的构造函数</strong>创建并复用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">pd.MultiIndex.from_arrays([[<span class="string">&#x27;Ohio&#x27;</span>, <span class="string">&#x27;Ohio&#x27;</span>, <span class="string">&#x27;Colorado&#x27;</span>], [<span class="string">&#x27;Green&#x27;</span>, <span class="string">&#x27;Red&#x27;</span>, <span class="string">&#x27;Green&#x27;</span>]],</span><br><span class="line">                       names=[<span class="string">&#x27;state&#x27;</span>, <span class="string">&#x27;color&#x27;</span>])</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">MultiIndex([(    &#x27;Ohio&#x27;, &#x27;Green&#x27;),</span></span><br><span class="line"><span class="string">            (    &#x27;Ohio&#x27;,   &#x27;Red&#x27;),</span></span><br><span class="line"><span class="string">            (&#x27;Colorado&#x27;, &#x27;Green&#x27;)],</span></span><br><span class="line"><span class="string">           names=[&#x27;state&#x27;, &#x27;color&#x27;])</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="重排序和层级排序"><a href="#重排序和层级排序" class="headerlink" title="重排序和层级排序"></a>重排序和层级排序</h3><blockquote>
+<p>重新排列轴上的层级顺序</p>
+<p>按照特定层级的值对数据进行排序</p>
+</blockquote>
+<ul>
+<li><p>swaplevel接收两个<strong>层级序号</strong>或<strong>层级名称</strong>，返回进行层级变更的<strong>新对象</strong>（但是数据是不变的）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">frame.swaplevel(<span class="string">&#x27;key1&#x27;</span>, <span class="string">&#x27;key2&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403102450286.png" alt="image-20220403102450286" style="zoom:50%;" />
+</li>
+<li><p>sort_index只能在<strong>单一层级</strong>上进行排序，在层级变换时，可以按照层级进行<strong>字典排序</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">frame.sort_index(level=<span class="number">1</span>)</span><br><span class="line">frame.swaplevel(<span class="number">0</span>, <span class="number">1</span>).sort_index(level=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/1.png" alt="1" style="zoom:50%;" />
+
+<blockquote>
+<p>按照字典最外层开始排序数据选择效果更好，调用sort_index(level&#x3D;0)或sort_index可以实现</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="按层级进行汇总统计"><a href="#按层级进行汇总统计" class="headerlink" title="按层级进行汇总统计"></a>按层级进行汇总统计</h3><ul>
+<li><p>在描述性和汇总性统计中使用<strong>level选项</strong>实现在特定轴上进行聚合</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># level要被弃用，使用group代替</span></span><br><span class="line">frame.<span class="built_in">sum</span>(level=<span class="string">&#x27;key2&#x27;</span>)</span><br><span class="line"><span class="comment"># frame.groupby(level=&#x27;key2&#x27;).sum()</span></span><br><span class="line">frame.<span class="built_in">sum</span>(level=<span class="string">&#x27;color&#x27;</span>, axis=<span class="number">1</span>)</span><br><span class="line"><span class="comment"># frame.groupby(level=&#x27;color&#x27;,axis=1).sum()</span></span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/22.png" alt="22" style="zoom:50%;" /></li>
+</ul>
+<h3 id="使用DataFrame的列进行索引"><a href="#使用DataFrame的列进行索引" class="headerlink" title="使用DataFrame的列进行索引"></a>使用DataFrame的列进行索引</h3><ul>
+<li><p>DataFrame数据</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">frame = pd.DataFrame(&#123;<span class="string">&#x27;a&#x27;</span>: <span class="built_in">range</span>(<span class="number">7</span>), <span class="string">&#x27;b&#x27;</span>: <span class="built_in">range</span>(<span class="number">7</span>, <span class="number">0</span>, -<span class="number">1</span>),</span><br><span class="line">                      <span class="string">&#x27;c&#x27;</span>: [<span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;two&#x27;</span>, <span class="string">&#x27;two&#x27;</span>,</span><br><span class="line">                            <span class="string">&#x27;two&#x27;</span>, <span class="string">&#x27;two&#x27;</span>],</span><br><span class="line">                      <span class="string">&#x27;d&#x27;</span>: [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]&#125;)</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403105650872.png" alt="image-20220403105650872" style="zoom:50%;" />
+</li>
+<li><p>DataFrame的<strong>set_index</strong>函数和<strong>reset_index</strong>函数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">frame2 = frame.set_index([<span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;d&#x27;</span>])</span><br><span class="line">frame2</span><br><span class="line"></span><br><span class="line"><span class="comment"># set_index函数会生成一个新的DataFrame，新的DataFrame使用一个或多个列作为索引</span></span><br><span class="line"><span class="comment"># 默认这些列会从DataFrame中移除</span></span><br><span class="line">frame.set_index([<span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;d&#x27;</span>], drop=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># reset_index是set_index的反操作，分层索引的索引层级会被移动到列中</span></span><br><span class="line">frame2.reset_index()</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/re_set.png" alt="re_set" style="zoom:50%;" /></li>
+</ul>
+<h2 id="8-2-联合与合并数据集"><a href="#8-2-联合与合并数据集" class="headerlink" title="8.2 联合与合并数据集"></a>8.2 联合与合并数据集</h2><p><strong>pandas数据联合方式</strong></p>
+<ul>
+<li>pandas.merge根据一个或多个键将行进行连接，数据库的连接操作</li>
+<li>pandas.concat使对象在轴向上进行黏合或“堆叠”</li>
+<li>combine_first实例方法允许将重叠的数据拼接在一起，以使用一个对象中的值填充另一个对象中的缺失值</li>
+</ul>
+<h3 id="数据库风格的DataFrame连接"><a href="#数据库风格的DataFrame连接" class="headerlink" title="数据库风格的DataFrame连接"></a>数据库风格的DataFrame连接</h3><ul>
+<li><p><strong>pandas.merge</strong>函数：将各种join操作运用在数据上</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">df1 = pd.DataFrame(&#123;<span class="string">&#x27;key&#x27;</span>: [<span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>],</span><br><span class="line">                    <span class="string">&#x27;data1&#x27;</span>: <span class="built_in">range</span>(<span class="number">7</span>)&#125;)</span><br><span class="line">df2 = pd.DataFrame(&#123;<span class="string">&#x27;key&#x27;</span>: [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;d&#x27;</span>],</span><br><span class="line">                    <span class="string">&#x27;data2&#x27;</span>: <span class="built_in">range</span>(<span class="number">3</span>)&#125;)</span><br><span class="line"><span class="built_in">print</span>(df1)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">  key  data1</span></span><br><span class="line"><span class="string">0   b      0</span></span><br><span class="line"><span class="string">1   b      1</span></span><br><span class="line"><span class="string">2   a      2</span></span><br><span class="line"><span class="string">3   c      3</span></span><br><span class="line"><span class="string">4   a      4</span></span><br><span class="line"><span class="string">5   a      5</span></span><br><span class="line"><span class="string">6   b      6</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="built_in">print</span>(df2)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">  key  data2</span></span><br><span class="line"><span class="string">0   a      0</span></span><br><span class="line"><span class="string">1   b      1</span></span><br><span class="line"><span class="string">2   d      2</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用merge进行多对一连接</p>
+<ul>
+<li><p>简单示例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># merge会自动将重叠列名作为连接的键</span></span><br><span class="line">pd.merge(df1, df2)</span><br><span class="line"></span><br><span class="line">pd.merge(df1, df2, on=<span class="string">&#x27;key&#x27;</span>) <span class="comment"># 显示指定键</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">key	data1	data2</span></span><br><span class="line"><span class="string">0	b	0	1</span></span><br><span class="line"><span class="string">1	b	1	1</span></span><br><span class="line"><span class="string">2	b	6	1</span></span><br><span class="line"><span class="string">3	a	2	0</span></span><br><span class="line"><span class="string">4	a	4	0</span></span><br><span class="line"><span class="string">5	a	5	0</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>merge默认内连接，只出现表的交集；有可选项’left’、’right’和’outer’（外连接是键的并集）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">df3 = pd.DataFrame(&#123;<span class="string">&#x27;lkey&#x27;</span>: [<span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>],</span><br><span class="line">                    <span class="string">&#x27;data1&#x27;</span>: <span class="built_in">range</span>(<span class="number">7</span>)&#125;)</span><br><span class="line">df4 = pd.DataFrame(&#123;<span class="string">&#x27;rkey&#x27;</span>: [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;d&#x27;</span>],</span><br><span class="line">                    <span class="string">&#x27;data2&#x27;</span>: <span class="built_in">range</span>(<span class="number">3</span>)&#125;)</span><br><span class="line"><span class="built_in">print</span>(df3)</span><br><span class="line"><span class="built_in">print</span>(df4)</span><br><span class="line"><span class="comment"># 指定列名</span></span><br><span class="line">pd.merge(df3, df4, left_on=<span class="string">&#x27;lkey&#x27;</span>, right_on=<span class="string">&#x27;rkey&#x27;</span>) <span class="comment"># 内连接</span></span><br><span class="line"></span><br><span class="line">pd.merge(df1, df2, how=<span class="string">&#x27;outer&#x27;</span>) <span class="comment"># 外连接</span></span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/%E5%86%85%E5%A4%96.png" alt="内外" style="zoom:50%;" />
+</li>
+<li><p>how参数的不同连接类型</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_103" alt="epub_22739904_103" style="zoom:67%;" /></li>
+</ul>
+</li>
+<li><p>使用merge进行多对多连接</p>
+<ul>
+<li><p>多对多连接是行的笛卡尔积</p>
+</li>
+<li><p>使用多个键进行合并时，传入一个列名的列表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pd.merge(left, right, on=[<span class="string">&#x27;key1&#x27;</span>, <span class="string">&#x27;key2&#x27;</span>], how=<span class="string">&#x27;outer&#x27;</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>当你在进行列-列连接时，传递的DataFrame索引对象会被丢弃</p>
+</blockquote>
+<ul>
+<li><p><strong>重叠列名</strong></p>
+<ul>
+<li><p>手动重命名轴标签</p>
+</li>
+<li><p><strong>merge的suffixes</strong>后缀选项：在左右两边有重叠列名时指定需要添加的字符串</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pd.merge(left, right, on=<span class="string">&#x27;key1&#x27;</span>, suffixes=(<span class="string">&#x27;_left&#x27;</span>, <span class="string">&#x27;_right&#x27;</span>))</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403114948604.png" alt="image-20220403114948604" style="zoom:50%;" /></li>
+</ul>
+</li>
+<li><p>merge函数参数</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_105" alt="img" style="zoom: 40%;" /></li>
+</ul>
+<h3 id="根据索引合并"><a href="#根据索引合并" class="headerlink" title="根据索引合并"></a>根据索引合并</h3><ul>
+<li><p>合并的键是它的索引，可以传递left_index&#x3D;True或right_index&#x3D;True（或者都传）来表示索引需要用来作为合并的键。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">left1 = pd.DataFrame(&#123;<span class="string">&#x27;key&#x27;</span>: [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>],</span><br><span class="line">                      <span class="string">&#x27;value&#x27;</span>: <span class="built_in">range</span>(<span class="number">6</span>)&#125;)</span><br><span class="line">right1 = pd.DataFrame(&#123;<span class="string">&#x27;group_val&#x27;</span>: [<span class="number">3.5</span>, <span class="number">7</span>]&#125;, index=[<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>])</span><br><span class="line">left1</span><br><span class="line">right1</span><br><span class="line"><span class="comment"># 默认：连键相交</span></span><br><span class="line">pd.merge(left1, right1, left_on=<span class="string">&#x27;key&#x27;</span>,right_index=<span class="literal">True</span>)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">	key	value	group_val</span></span><br><span class="line"><span class="string">0	a	0	3.5</span></span><br><span class="line"><span class="string">2	a	2	3.5</span></span><br><span class="line"><span class="string">3	a	3	3.5</span></span><br><span class="line"><span class="string">1	b	1	7.0</span></span><br><span class="line"><span class="string">4	b	4	7.0</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用外键进行合并</span></span><br><span class="line">pd.merge(left1, right1, left_on=<span class="string">&#x27;key&#x27;</span>, right_index=<span class="literal">True</span>, how=<span class="string">&#x27;outer&#x27;</span>)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">key	value	group_val</span></span><br><span class="line"><span class="string">0	a	0	3.5</span></span><br><span class="line"><span class="string">2	a	2	3.5</span></span><br><span class="line"><span class="string">3	a	3	3.5</span></span><br><span class="line"><span class="string">1	b	1	7.0</span></span><br><span class="line"><span class="string">4	b	4	7.0</span></span><br><span class="line"><span class="string">5	c	5	NaN</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>多层索引数据：隐式的多键合并</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 必须以列表的方式指明合并所需多个列（请注意使用how=&#x27;outer’处理重复的索引值）</span></span><br><span class="line"><span class="comment"># 在多层索引数据的情况下，在索引上连接是一个隐式的多键合并</span></span><br><span class="line">pd.merge(lefth, righth, left_on=[<span class="string">&#x27;key1&#x27;</span>, <span class="string">&#x27;key2&#x27;</span>], right_index=<span class="literal">True</span>)</span><br><span class="line">pd.merge(lefth, righth, left_on=[<span class="string">&#x27;key1&#x27;</span>, <span class="string">&#x27;key2&#x27;</span>],</span><br><span class="line">        right_index=<span class="literal">True</span>, how=<span class="string">&#x27;outer&#x27;</span>)</span><br><span class="line"><span class="comment"># 使用两边的索引进行合并</span></span><br><span class="line">pd.merge(left2, right2, how=<span class="string">&#x27;outer&#x27;</span>, left_index=<span class="literal">True</span>, right_index=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/333.png" alt="333" style="zoom:50%;" />
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/444.png" alt="444" style="zoom:50%;" />
+</li>
+<li><p>DataFrame的<strong>join</strong>方法：用于按照索引合并，也可用于合并<strong>多个索引相同或相似但没有重叠列</strong>的DataFrame对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">left2.join(right2, how=<span class="string">&#x27;outer&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>join方法进行<strong>左连接</strong>，完全保留左边DataFrame的行索引；支持在连接上<strong>传递索引</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">left1.koin(right1,one=<span class="string">&#x27;key&#x27;</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>索引-索引，向join方法传入DataFrame列表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># concat方法更为通用</span></span><br><span class="line">left2.join([right2, another], how=<span class="string">&#x27;outer&#x27;</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h3 id="沿轴向连接"><a href="#沿轴向连接" class="headerlink" title="沿轴向连接"></a>沿轴向连接</h3><ul>
+<li><p>NumPy的concatenate函数在NumPy数组上实现拼接、绑定或堆叠</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">arr = np.arange(<span class="number">12</span>).reshape((<span class="number">3</span>, <span class="number">4</span>))</span><br><span class="line">arr</span><br><span class="line">np.concatenate([arr, arr], axis=<span class="number">1</span>)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">array([[ 0,  1,  2,  3,  0,  1,  2,  3],</span></span><br><span class="line"><span class="string">       [ 4,  5,  6,  7,  4,  5,  6,  7],</span></span><br><span class="line"><span class="string">       [ 8,  9, 10, 11,  8,  9, 10, 11]])</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>pandas的concat函数</p>
+<ul>
+<li><p>假设存在三个索引不存在重叠的Series</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">s1 = pd.Series([<span class="number">0</span>, <span class="number">1</span>], index=[<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>])</span><br><span class="line">s2 = pd.Series([<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>], index=[<span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;d&#x27;</span>, <span class="string">&#x27;e&#x27;</span>])</span><br><span class="line">s3 = pd.Series([<span class="number">5</span>, <span class="number">6</span>], index=[<span class="string">&#x27;f&#x27;</span>, <span class="string">&#x27;g&#x27;</span>])</span><br><span class="line"><span class="comment"># 使用concat连接 ，默认沿着axis=0的轴向生效的</span></span><br><span class="line">pd.concat([s1, s2, s3])</span><br><span class="line"><span class="comment"># 传递axis=1，返回的结果则是一个DataFrame（axis=1时是列）</span></span><br><span class="line">pd.concat([s1, s2, s3], axis=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/heb.png" alt="heb" style="zoom:50%;" />
+</li>
+<li><p>有重叠轴</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">s4 = pd.concat([s1, s3])</span><br><span class="line">pd.concat([s1, s4], axis=<span class="number">1</span>)</span><br><span class="line">pd.concat([s1, s4], axis=<span class="number">1</span>, join=<span class="string">&#x27;inner&#x27;</span>) <span class="comment"># 标签f和g消失</span></span><br><span class="line">s4</span><br><span class="line"><span class="string">&quot;&quot;&quot;s4</span></span><br><span class="line"><span class="string">a    0</span></span><br><span class="line"><span class="string">b    1</span></span><br><span class="line"><span class="string">f    5</span></span><br><span class="line"><span class="string">g    6</span></span><br><span class="line"><span class="string">dtype: int64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在连接轴上建立<strong>多层索引</strong>，使用参数<strong>keys</strong>来实现：区分连接前的各部分</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">result = pd.concat([s1, s1, s3], keys=[<span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;two&#x27;</span>, <span class="string">&#x27;three&#x27;</span>])</span><br><span class="line">result</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">one    a    0</span></span><br><span class="line"><span class="string">       b    1</span></span><br><span class="line"><span class="string">two    a    0</span></span><br><span class="line"><span class="string">       b    1</span></span><br><span class="line"><span class="string">three  f    5</span></span><br><span class="line"><span class="string">       g    6</span></span><br><span class="line"><span class="string">dtype: int64</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>沿着轴向axis&#x3D;1连接Series的时候，keys则成为DataFrame的列头</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pd.concat([s1, s2, s3], axis=<span class="number">1</span>, keys=[<span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;two&#x27;</span>, <span class="string">&#x27;three&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403140431340.png" alt="image-20220403140431340" style="zoom:50%;" />
+</li>
+<li><p>Series扩展到DataFrame对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">df1 = pd.DataFrame(np.arange(<span class="number">6</span>).reshape(<span class="number">3</span>, <span class="number">2</span>), index=[<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>],</span><br><span class="line">                   columns=[<span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;two&#x27;</span>])</span><br><span class="line">df2 = pd.DataFrame(<span class="number">5</span> + np.arange(<span class="number">4</span>).reshape(<span class="number">2</span>, <span class="number">2</span>), index=[<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;c&#x27;</span>],</span><br><span class="line">                   columns=[<span class="string">&#x27;three&#x27;</span>, <span class="string">&#x27;four&#x27;</span>])</span><br><span class="line"></span><br><span class="line">pd.concat([df1, df2], axis=<span class="number">1</span>, keys=[<span class="string">&#x27;level1&#x27;</span>, <span class="string">&#x27;level2&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403140557533.png" alt="image-20220403140557533" style="zoom:50%;" />
+</li>
+<li><p>如果传递字典，字典的键会用于keys选项</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pd.concat(&#123;<span class="string">&#x27;level1&#x27;</span>: df1, <span class="string">&#x27;level2&#x27;</span>: df2&#125;, axis=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用names参数生成轴层级</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pd.concat([df1, df2], axis=<span class="number">1</span>, keys=[<span class="string">&#x27;level1&#x27;</span>, <span class="string">&#x27;level2&#x27;</span>],names=[<span class="string">&#x27;upper&#x27;</span>, <span class="string">&#x27;lower&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403140811873.png" alt="image-20220403140811873" style="zoom:50%;" />
+</li>
+<li><p>行索引中不包含任何相关数据的DataFrame，传入<code>ignore_index = True</code></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>concat函数的参数（join_axes好像已经弃用）</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_106" alt="img" style="zoom:50%;" /></li>
+</ul>
+<h3 id="联合重叠数据"><a href="#联合重叠数据" class="headerlink" title="联合重叠数据"></a>联合重叠数据</h3><p>展示几种数据有重叠部分的情况</p>
+<ul>
+<li><p>NumPy的where函数，面向数组的if-else等价操作</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">a = pd.Series([np.nan, <span class="number">2.5</span>, np.nan, <span class="number">3.5</span>, <span class="number">4.5</span>, np.nan],</span><br><span class="line">              index=[<span class="string">&#x27;f&#x27;</span>, <span class="string">&#x27;e&#x27;</span>, <span class="string">&#x27;d&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;a&#x27;</span>])</span><br><span class="line">b = pd.Series(np.arange(<span class="built_in">len</span>(a), dtype=np.float64),</span><br><span class="line">              index=[<span class="string">&#x27;f&#x27;</span>, <span class="string">&#x27;e&#x27;</span>, <span class="string">&#x27;d&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;a&#x27;</span>])</span><br><span class="line">b[-<span class="number">1</span>] = np.nan</span><br><span class="line"><span class="built_in">print</span>(a)</span><br><span class="line"><span class="built_in">print</span>(b)</span><br><span class="line">np.where(pd.isnull(a), b, a)</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403142053075.png" alt="image-20220403142053075" style="zoom:50%;" />
+</li>
+<li><p>Series的<strong>combine_first</strong>方法，类似于pandas常见的数据对齐逻辑的轴向操作；针对DataFrame逐列做相同的操作。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">b.combine_first(a)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="8-3-重塑和透视"><a href="#8-3-重塑和透视" class="headerlink" title="8.3 重塑和透视"></a>8.3 重塑和透视</h2><blockquote>
+<p>重排列表格型数据的操作被称为重塑或透视</p>
+</blockquote>
+<h3 id="使用多层索引进行重塑"><a href="#使用多层索引进行重塑" class="headerlink" title="使用多层索引进行重塑"></a>使用多层索引进行重塑</h3><p><strong>两个基础操作</strong></p>
+<ul>
+<li>**stack(堆叠)**：该操作会“旋转”或将列中的数据透视到行</li>
+<li>**unstack(拆堆)**：该操作会将行中的数据透视到列</li>
+</ul>
+<p><strong>例子说明</strong></p>
+<ul>
+<li><p>效果演示</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">data = pd.DataFrame(np.arange(<span class="number">6</span>).reshape((<span class="number">2</span>, <span class="number">3</span>)),</span><br><span class="line">                    index=pd.Index([<span class="string">&#x27;Ohio&#x27;</span>, <span class="string">&#x27;Colorado&#x27;</span>], name=<span class="string">&#x27;state&#x27;</span>),</span><br><span class="line">                    columns=pd.Index([<span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;two&#x27;</span>, <span class="string">&#x27;three&#x27;</span>],</span><br><span class="line">                    name=<span class="string">&#x27;number&#x27;</span>))</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">number	one	two	three</span></span><br><span class="line"><span class="string">state			</span></span><br><span class="line"><span class="string">Ohio	0	1	2</span></span><br><span class="line"><span class="string">Colorado	3	4	5</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># 用stack方法会将列透视到行，产生一个新的Series</span></span><br><span class="line">result = data.stack()</span><br><span class="line">result</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">state     number</span></span><br><span class="line"><span class="string">Ohio      one       0</span></span><br><span class="line"><span class="string">          two       1</span></span><br><span class="line"><span class="string">          three     2</span></span><br><span class="line"><span class="string">Colorado  one       3</span></span><br><span class="line"><span class="string">          two       4</span></span><br><span class="line"><span class="string">          three     5</span></span><br><span class="line"><span class="string">dtype: int32</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># 使用unstack方法将数据重排列后放入一个DataFrame中</span></span><br><span class="line">result.unstack() <span class="comment"># 还原</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>默认最内层是已拆堆的，可以传入<strong>层级序号或名称</strong>来拆分一个不同的层级</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result.unstack(<span class="number">0</span>) <span class="comment"># 传入序号来拆分不同的层级</span></span><br><span class="line">result.unstack(<span class="string">&#x27;state&#x27;</span>) <span class="comment"># 传入名称来拆分不同的层级</span></span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403174621301.png" alt="image-20220403174621301" style="zoom:50%;" />
+</li>
+<li><p>拆堆可能会引入缺失值，堆叠会过滤出缺失值，两个操作可逆</p>
+</li>
+<li><p>在DataFrame中拆堆时，被拆堆的层级会变为结果中最低的层级</p>
+</li>
+<li><p>在调用stack方法时，我们可以指明需要堆叠的轴向名称</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df.unstack(<span class="string">&#x27;state&#x27;</span>).stack(<span class="string">&#x27;side&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403175303626.png" alt="image-20220403175303626" style="zoom:50%;" /></li>
+</ul>
+<h3 id="将“长”透视为“宽”"><a href="#将“长”透视为“宽”" class="headerlink" title="将“长”透视为“宽”"></a>将“长”透视为“宽”</h3><blockquote>
+<p>在数据库和CSV中存储多时间序列的方式就是所谓的长格式或堆叠格式</p>
+</blockquote>
+<ul>
+<li><p>使用PeriodIndex将数据处理后形成Idata</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403183953595.png" alt="image-20220403183953595" style="zoom:50%;" />
+
+<p>多时间序列的长格式，或具有两个或更多个键的数据（键date和item）</p>
+</li>
+<li><p>使用DataFrame的<strong>pivot方法</strong>将数据处理为按date列时间戳进行索引且每个不同的item独立为一列</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 前两个值是分别用作行和列索引的列</span></span><br><span class="line"><span class="comment"># 然后是可选的数值列以填充DataFrame</span></span><br><span class="line">pivoted = ldata.pivot(<span class="string">&#x27;date&#x27;</span>, <span class="string">&#x27;item&#x27;</span>, <span class="string">&#x27;value&#x27;</span>)</span><br><span class="line">pivoted</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403184419500.png" alt="image-20220403184419500" style="zoom:50%;" />
+</li>
+<li><p>同时重塑两个数值列</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ldata[<span class="string">&#x27;value2&#x27;</span>] = np.random.randn(<span class="built_in">len</span>(ldata))</span><br><span class="line">ldata[:<span class="number">10</span>]</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403184717460.png" alt="image-20220403184717460" style="zoom:50%;" />
+
+<p>遗漏最后一个参数，你会得到一个含有多层列的DataFrame</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pivoted = ldata.pivot(<span class="string">&#x27;date&#x27;</span>, <span class="string">&#x27;item&#x27;</span>)</span><br><span class="line">pivoted[:<span class="number">5</span>]</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403184906941.png" alt="image-20220403184906941" style="zoom:50%;" />
+</li>
+<li><p>pivot方法等价于使用set_index创建分层索引，然后调用unstack</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">unstacked = ldata.set_index([<span class="string">&#x27;date&#x27;</span>,<span class="string">&#x27;item&#x27;</span>]).unstack(<span class="string">&#x27;item&#x27;</span>)</span><br><span class="line">unstacked[:<span class="number">7</span>]</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="将“宽”透视为“长”"><a href="#将“宽”透视为“长”" class="headerlink" title="将“宽”透视为“长”"></a>将“宽”透视为“长”</h3><blockquote>
+<p>DataFrame的pivot方法的反操作：pandas.melt，将多列合并成一列，产生一个新的DataFrame</p>
+</blockquote>
+<ul>
+<li><p>数据<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403190157927.png" alt="image-20220403190157927" style="zoom:50%;" /></p>
+</li>
+<li><p>‘key’列可以作为分组指标，其他列均为数据值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">melted = pd.melt(df, [<span class="string">&#x27;key&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220403190300797.png" alt="image-20220403190300797" style="zoom:50%;" />
+</li>
+<li><p>使用pivot方法可以重回原来布局</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">reshaped = melted.pivot(<span class="string">&#x27;key&#x27;</span>, <span class="string">&#x27;variable&#x27;</span>, <span class="string">&#x27;value&#x27;</span>)</span><br><span class="line"><span class="comment"># pivot的结果根据作为行标签的列生成了索引</span></span><br><span class="line"><span class="comment"># 使用reset_index来将数据回移一列</span></span><br><span class="line">reshaped.reset_index()</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/1111.png" alt="1111" style="zoom:50%;" />
+</li>
+<li><p>可以指定列的子集作为值列，也可以无须任何分组指标</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 指定列的子集作为值列</span></span><br><span class="line">pd.melt(df, id_vars=[<span class="string">&#x27;key&#x27;</span>], value_vars=[<span class="string">&#x27;A&#x27;</span>, <span class="string">&#x27;B&#x27;</span>])</span><br><span class="line"><span class="comment"># 无须任何分组指标直接使用</span></span><br><span class="line">pd.melt(df, value_vars=[<span class="string">&#x27;A&#x27;</span>, <span class="string">&#x27;B&#x27;</span>, <span class="string">&#x27;C&#x27;</span>])</span><br><span class="line">pd.melt(df, value_vars=[<span class="string">&#x27;key&#x27;</span>, <span class="string">&#x27;A&#x27;</span>, <span class="string">&#x27;B&#x27;</span>])</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/" rel="tag"># 数据处理</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/29/%E4%B8%83%E3%80%81%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97%E4%B8%8E%E5%87%86%E5%A4%87%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" rel="prev" title="七、数据清洗与准备——《利用Python进行数据分析》">
+      <i class="fa fa-chevron-left"></i> 七、数据清洗与准备——《利用Python进行数据分析》
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/04/%E4%B9%9D%E3%80%81%E7%BB%98%E5%9B%BE%E4%B8%8E%E5%8F%AF%E8%A7%86%E5%8C%96%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" rel="next" title="九、绘图与可视化——《利用Python进行数据分析》">
+      九、绘图与可视化——《利用Python进行数据分析》 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%85%AB%E7%AB%A0-%E6%95%B0%E6%8D%AE%E8%A7%84%E6%95%B4%EF%BC%9A%E8%BF%9E%E6%8E%A5%E3%80%81%E8%81%94%E5%90%88%E4%B8%8E%E9%87%8D%E5%A1%91"><span class="nav-number">1.</span> <span class="nav-text">第八章 数据规整：连接、联合与重塑</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#8-1-%E5%88%86%E5%B1%82%E7%B4%A2%E5%BC%95"><span class="nav-number">1.1.</span> <span class="nav-text">8.1 分层索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E6%8E%92%E5%BA%8F%E5%92%8C%E5%B1%82%E7%BA%A7%E6%8E%92%E5%BA%8F"><span class="nav-number">1.1.1.</span> <span class="nav-text">重排序和层级排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%89%E5%B1%82%E7%BA%A7%E8%BF%9B%E8%A1%8C%E6%B1%87%E6%80%BB%E7%BB%9F%E8%AE%A1"><span class="nav-number">1.1.2.</span> <span class="nav-text">按层级进行汇总统计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8DataFrame%E7%9A%84%E5%88%97%E8%BF%9B%E8%A1%8C%E7%B4%A2%E5%BC%95"><span class="nav-number">1.1.3.</span> <span class="nav-text">使用DataFrame的列进行索引</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-2-%E8%81%94%E5%90%88%E4%B8%8E%E5%90%88%E5%B9%B6%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">1.2.</span> <span class="nav-text">8.2 联合与合并数据集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E9%A3%8E%E6%A0%BC%E7%9A%84DataFrame%E8%BF%9E%E6%8E%A5"><span class="nav-number">1.2.1.</span> <span class="nav-text">数据库风格的DataFrame连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B9%E6%8D%AE%E7%B4%A2%E5%BC%95%E5%90%88%E5%B9%B6"><span class="nav-number">1.2.2.</span> <span class="nav-text">根据索引合并</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B2%BF%E8%BD%B4%E5%90%91%E8%BF%9E%E6%8E%A5"><span class="nav-number">1.2.3.</span> <span class="nav-text">沿轴向连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%81%94%E5%90%88%E9%87%8D%E5%8F%A0%E6%95%B0%E6%8D%AE"><span class="nav-number">1.2.4.</span> <span class="nav-text">联合重叠数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-3-%E9%87%8D%E5%A1%91%E5%92%8C%E9%80%8F%E8%A7%86"><span class="nav-number">1.3.</span> <span class="nav-text">8.3 重塑和透视</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%A4%9A%E5%B1%82%E7%B4%A2%E5%BC%95%E8%BF%9B%E8%A1%8C%E9%87%8D%E5%A1%91"><span class="nav-number">1.3.1.</span> <span class="nav-text">使用多层索引进行重塑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86%E2%80%9C%E9%95%BF%E2%80%9D%E9%80%8F%E8%A7%86%E4%B8%BA%E2%80%9C%E5%AE%BD%E2%80%9D"><span class="nav-number">1.3.2.</span> <span class="nav-text">将“长”透视为“宽”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86%E2%80%9C%E5%AE%BD%E2%80%9D%E9%80%8F%E8%A7%86%E4%B8%BA%E2%80%9C%E9%95%BF%E2%80%9D"><span class="nav-number">1.3.3.</span> <span class="nav-text">将“宽”透视为“长”</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="TT"
+      src="/images/header.jpg">
+  <p class="site-author-name" itemprop="name">TT</p>
+  <div class="site-description" itemprop="description">The Journey Is the Reward</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TT</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'TNUpeWIcsOXnq5yrEo6XphL5-gzGzoHsz',
+      appKey     : 'HdE2XffT6XTWRYvV2zovg336',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

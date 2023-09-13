@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="第六章 数据载入、存储及文件格式6.1 文本格式数据的读写 将表格型数据读取为DataFrame对象：read_csv()和read_table()  Pandas的解析函数    可选参数  索引：可以将一或多个列作为返回的DataFrame 类型推断和数据转换：包括用户自定义的值转换和自定义的缺失值符号列表。 日期时间解析：包括组合功能，包括将分散在多个列上的日期和时间信息组合成结果中的单个列">
+<meta property="og:type" content="article">
+<meta property="og:title" content="六、数据载入、存储及文件格式《利用Python进行数据分析》">
+<meta property="og:url" content="http://example.com/2022/03/29/%E5%85%AD%E3%80%81%E6%95%B0%E6%8D%AE%E8%BD%BD%E5%85%A5%E3%80%81%E5%AD%98%E5%82%A8%E5%8F%8A%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/index.html">
+<meta property="og:site_name" content="TT&#39;Blog">
+<meta property="og:description" content="第六章 数据载入、存储及文件格式6.1 文本格式数据的读写 将表格型数据读取为DataFrame对象：read_csv()和read_table()  Pandas的解析函数    可选参数  索引：可以将一或多个列作为返回的DataFrame 类型推断和数据转换：包括用户自定义的值转换和自定义的缺失值符号列表。 日期时间解析：包括组合功能，包括将分散在多个列上的日期和时间信息组合成结果中的单个列">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_82">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_84">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220328231634813.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_85">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220328233731729.png">
+<meta property="article:published_time" content="2022-03-28T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-09-13T11:32:41.726Z">
+<meta property="article:author" content="TT">
+<meta property="article:tag" content="数据处理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_82">
+
+<link rel="canonical" href="http://example.com/2022/03/29/%E5%85%AD%E3%80%81%E6%95%B0%E6%8D%AE%E8%BD%BD%E5%85%A5%E3%80%81%E5%AD%98%E5%82%A8%E5%8F%8A%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>六、数据载入、存储及文件格式《利用Python进行数据分析》 | TT'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">TT'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/29/%E5%85%AD%E3%80%81%E6%95%B0%E6%8D%AE%E8%BD%BD%E5%85%A5%E3%80%81%E5%AD%98%E5%82%A8%E5%8F%8A%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="TT">
+      <meta itemprop="description" content="The Journey Is the Reward">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TT'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          六、数据载入、存储及文件格式《利用Python进行数据分析》
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-29 00:00:00" itemprop="dateCreated datePublished" datetime="2022-03-29T00:00:00+08:00">2022-03-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-13 19:32:41" itemprop="dateModified" datetime="2023-09-13T19:32:41+08:00">2023-09-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%EF%BC%9A-%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">机器学习： 数据分析</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2022/03/29/%E5%85%AD%E3%80%81%E6%95%B0%E6%8D%AE%E8%BD%BD%E5%85%A5%E3%80%81%E5%AD%98%E5%82%A8%E5%8F%8A%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" class="post-meta-item leancloud_visitors" data-flag-title="六、数据载入、存储及文件格式《利用Python进行数据分析》" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/03/29/%E5%85%AD%E3%80%81%E6%95%B0%E6%8D%AE%E8%BD%BD%E5%85%A5%E3%80%81%E5%AD%98%E5%82%A8%E5%8F%8A%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/29/%E5%85%AD%E3%80%81%E6%95%B0%E6%8D%AE%E8%BD%BD%E5%85%A5%E3%80%81%E5%AD%98%E5%82%A8%E5%8F%8A%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="第六章-数据载入、存储及文件格式"><a href="#第六章-数据载入、存储及文件格式" class="headerlink" title="第六章 数据载入、存储及文件格式"></a>第六章 数据载入、存储及文件格式</h1><h2 id="6-1-文本格式数据的读写"><a href="#6-1-文本格式数据的读写" class="headerlink" title="6.1 文本格式数据的读写"></a>6.1 文本格式数据的读写</h2><ul>
+<li><p>将表格型数据读取为DataFrame对象：read_csv()和read_table()</p>
+</li>
+<li><p>Pandas的解析函数</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_82" alt="img" style="zoom:50%;" />
+
+<ul>
+<li><p>可选参数</p>
+<ul>
+<li>索引：可以将<strong>一或多个列</strong>作为返回的DataFrame</li>
+<li>类型推断和数据转换：包括用户自定义的值转换和自定义的缺失值符号列表。</li>
+<li>日期时间解析：包括组合功能，包括将分散在多个列上的日期和时间信息组合成结果中的单个列</li>
+<li>迭代：对大型文件的分块迭代</li>
+<li>未清洗数据问题：跳过行、页脚、注释以及其他次要数据，比如使用逗号分隔千位的数字。</li>
+</ul>
+</li>
+<li><p>一些数据载入函数（如pandas.read_csv等）会进行<strong>类型推断</strong>，因为列的数据类型并不是数据格式的一部分，不必指定那一列是数值、整数、布尔值或字符串。</p>
+<ul>
+<li><p>处理<strong>日期</strong>和<strong>自定义类型</strong>数据需要其他努力</p>
+<ul>
+<li><p>pandas默认分配列名，也可以自己指定列名：<code>pd.read_csv(‘examples/ex2.csv’,names=[‘a’,’b’,’c’,’d’,’message’])</code></p>
+</li>
+<li><p>将message列成为DataFrame索引，可以指定位置4的列为索引，或将‘message’传给参数index_col</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">names = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;d&#x27;</span>, <span class="string">&#x27;message&#x27;</span>]</span><br><span class="line">pd.read_csv(<span class="string">&#x27;examples/ex2.csv&#x27;</span>, names=names, index_col=<span class="string">&#x27;message&#x27;</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>从多个列形成分层索引：传入一个包含列序号或列名的列表：<code>pd.read_csv(‘examples/csv_mindex.cav’,index_col=[‘key1’,’key2’])</code></p>
+</li>
+</ul>
+</li>
+<li><p>表的分隔符不固定，使用空白或其他方式来分隔字段</p>
+<ul>
+<li><p>向read_table传入一个<strong>正则表达式</strong>作为分隔符</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result = pd.read_table(<span class="string">&#x27;examples/ex3.txt&#x27;</span>,sep=<span class="string">&#x27;\s+&#x27;</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>使用skiprows来跳过某些行（例：第一行、第三行和第四行）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pd.read_csv(<span class="string">&#x27;examples/ex4.csv&#x27;</span>,skiprows=[<span class="number">0</span>,<span class="number">2</span>,<span class="number">3</span>])</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>缺失值处理</p>
+<ul>
+<li><p>缺失值<strong>不显示（空字符串）</strong>或用<strong>标识值</strong>显示（NA和Null等）</p>
+</li>
+<li><p><strong>na_values</strong>选项可以传入<strong>一个列表</strong>或<strong>一组字符串</strong>来处理缺失值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pd.read_csv(<span class="string">&#x27;examples/ex5.csv&#x27;</span>,na_values=[<span class="string">&#x27;NULL&#x27;</span>])</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在字典中，每列可以指定不同的缺失值标识</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sentinels = &#123;<span class="string">&#x27;message&#x27;</span>: [<span class="string">&#x27;foo&#x27;</span>, <span class="string">&#x27;NA&#x27;</span>], <span class="string">&#x27;something&#x27;</span>:[<span class="string">&#x27;two&#x27;</span>]&#125;</span><br><span class="line">pd.read_csv(<span class="string">&#x27;examples/ex5.csv&#x27;</span>, na_values=sentinels)</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>一些read_csv&#x2F;read_table函数常用参数</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_84" alt="img" style="zoom:50%;" /></li>
+</ul>
+<h3 id="分块读入文本文件"><a href="#分块读入文本文件" class="headerlink" title="分块读入文本文件"></a>分块读入文本文件</h3><p>处理大型文件时，常需要读入文件的一个小片段或者按小块遍历文件</p>
+<ul>
+<li><p>在尝试大文件前，可先对pandas的显示设置进行调整，使之更为紧凑</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pd.options.display.max_rows = <span class="number">10</span></span><br><span class="line"><span class="comment"># 只读取文件的前五行</span></span><br><span class="line">result = pd.read_csv(<span class="string">&#x27;examples/ex6.csv&#x27;</span>,nrows=<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置<strong>chunksize</strong>指定每个分块的行数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chunker = pd.read_csv(<span class="string">&#x27;examples/ex6.csv&#x27;</span>,chunksize=<span class="number">1000</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>read_csv返回TextParser对象，可根据chunksize遍历文件</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 遍历ex6.csv，并对’key’列聚合获得计数值</span></span><br><span class="line">chunker = pd.read_csv(<span class="string">&#x27;examples/ex6.csv&#x27;</span>,chunksize=<span class="number">1000</span>)</span><br><span class="line">tot = pd.Series([])</span><br><span class="line"><span class="keyword">for</span> piece <span class="keyword">in</span> chunker:</span><br><span class="line">    tot = tot.add(piece[<span class="string">&#x27;key&#x27;</span>].value_counts(),fill_value=<span class="number">0</span>)</span><br><span class="line">tot = tot.sort_values(ascending=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>TextParser还具有get_chunk方法，允许你按照任意大小读取数据块</p>
+</li>
+</ul>
+<h3 id="将数据写入文本格式"><a href="#将数据写入文本格式" class="headerlink" title="将数据写入文本格式"></a>将数据写入文本格式</h3><ul>
+<li>DataFrame的<strong>to_csv方法</strong>：将数据导出为逗号分隔的文件，可以通过<strong>sep</strong>设置其他分隔符<ul>
+<li>缺失值在输出时以<strong>空字符串</strong>出现，也可以用其他标识符对缺失值进行标注：<code>data.to_csv(sys.stdout,na_rep=‘NULL’)</code></li>
+<li>默认列和标签都会被写入，可以禁止二者写入：<code>data.to_csv(sys.stdout,index=False,header=False)</code></li>
+<li>按照指定顺序写入列的子集：<code>data.to_csv(sys.stdout,index=False,columns=[‘a’,’b’,’c’])</code></li>
+<li>Series也有to_csv方法</li>
+</ul>
+</li>
+</ul>
+<h3 id="使用分隔格式"><a href="#使用分隔格式" class="headerlink" title="使用分隔格式"></a>使用分隔格式</h3><ul>
+<li><p>read_table无法接收一个带有一行或多行错误的文件</p>
+</li>
+<li><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220328231634813.png" alt="image-20220328231634813" style="zoom:50%;" />
+</li>
+<li><p>使用Python的<strong>csv模块</strong>处理带有单字符分隔符的文件，将打开的文件型对象传给<strong>csv.reader</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> csv</span><br><span class="line">f = <span class="built_in">open</span>(<span class="string">&#x27;examples/ex7.csv&#x27;</span>)</span><br><span class="line">reader = csv.reader(f)</span><br><span class="line"><span class="comment"># 像遍历文件一样，遍历reader会产生元组</span></span><br><span class="line"><span class="keyword">for</span> line <span class="keyword">in</span> reader:</span><br><span class="line">    <span class="built_in">print</span>(line)  <span class="comment"># 元组的值为删除了引号的字符</span></span><br><span class="line">    </span><br><span class="line"><span class="comment"># 将文件读取为行的列表</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;examples/ex7.csv&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    lines = <span class="built_in">list</span>(csv.reader(f))</span><br><span class="line"><span class="comment"># 将数据拆分为列名行和数据行</span></span><br><span class="line">header,values = lines[<span class="number">0</span>],lines[<span class="number">1</span>:]</span><br><span class="line"><span class="comment"># 使用字典推导式和表达式zip(*values)生成一个包含数据列的字典，字典中行转置成列</span></span><br><span class="line">data_dict = &#123;h: v <span class="keyword">for</span> h,v <span class="keyword">in</span> <span class="built_in">zip</span>(header,<span class="built_in">zip</span>(*values))&#125;</span><br><span class="line">data_dict</span><br><span class="line"><span class="comment"># &#123;&#x27;a&#x27;: (&#x27;1&#x27;, &#x27;1&#x27;), &#x27;b&#x27;: (&#x27;2&#x27;, &#x27;2&#x27;), &#x27;c&#x27;: (&#x27;3&#x27;, &#x27;3&#x27;)&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<strong>csv.Dialect</strong>定义子类处理不同风格的文件，比如不同的分隔符、字符串引用约定或行终止符等</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">my_dialect</span>(csv.Dialect):</span><br><span class="line">    lineterminator = <span class="string">&#x27;\n&#x27;</span></span><br><span class="line">    delimiter = <span class="string">&#x27;;&#x27;</span></span><br><span class="line">    quotechar = <span class="string">&#x27;&quot;&#x27;</span></span><br><span class="line">    quoting = csv.QUOTE_MINIMAL</span><br><span class="line">reader = csv.reader(f,dialect=my_dialect)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 不定义子类，直接将CSV方言参数传入csv.reader的关键字参数</span></span><br><span class="line">reader = csv.reader(f,delimiter=<span class="string">&#x27;|&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>csv.Dialect中的一些属性及其用途</p>
+<p><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_85" alt="img"></p>
+</li>
+<li><blockquote>
+<p>对于具有更复杂或固定的多字符分隔符的文件，你将无法使用csv模块.</p>
+<p>使用字符串的split方法或正则表达式方法re.split进行拆分和其他清理工作</p>
+</blockquote>
+</li>
+<li><p>使用csv.writer手动写入被分隔的文件</p>
+<ul>
+<li>接收 一个已打开可写入文件对象 和 csv.reader相同的CSV方言、格式选项</li>
+<li><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220328233731729.png" alt="image-20220328233731729" style="zoom:50%;" /></li>
+</ul>
+</li>
+</ul>
+<h3 id="JSON数据"><a href="#JSON数据" class="headerlink" title="JSON数据"></a>JSON数据</h3><blockquote>
+<p>JSON（JavaScript Object Notation的简写）已经成为Web浏览器和其他应用间通过HTTP请求发送数据的标准格式。</p>
+</blockquote>
+<ul>
+<li><p>除空值null和一些细微差别（例如不允许列表末尾的逗号）之外，JSON非常接近Python。</p>
+<ul>
+<li>基本类型是对象（字典）、数组（列表）、字符串、数字、布尔值和空值</li>
+<li>所有<strong>键</strong>都必须是<strong>字符串</strong></li>
+</ul>
+</li>
+<li><p>JSON字符串和Python互相转换</p>
+<ul>
+<li><p>json.loads方法将JSON字符串转换为Python形式</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">obj = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">&#123;&quot;name&quot;: &quot;Wes&quot;,</span></span><br><span class="line"><span class="string"> &quot;places_lived&quot;: [&quot;United States&quot;, &quot;Spain&quot;, &quot;Germany&quot;],</span></span><br><span class="line"><span class="string"> &quot;pet&quot;: null,</span></span><br><span class="line"><span class="string"> &quot;siblings&quot;: [&#123;&quot;name&quot;: &quot;Scott&quot;, &quot;age&quot;: 30, &quot;pets&quot;: [&quot;Zeus&quot;, &quot;Zuko&quot;]&#125;,</span></span><br><span class="line"><span class="string">              &#123;&quot;name&quot;: &quot;Katie&quot;, &quot;age&quot;: 38,</span></span><br><span class="line"><span class="string">               &quot;pets&quot;: [&quot;Sixes&quot;, &quot;Stache&quot;, &quot;Cisco&quot;]&#125;]</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line">result = json.loads(obj)</span><br><span class="line">result</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">&#123;&#x27;name&#x27;: &#x27;Wes&#x27;,</span></span><br><span class="line"><span class="string"> &#x27;places_lived&#x27;: [&#x27;United States&#x27;, &#x27;Spain&#x27;, &#x27;Germany&#x27;],</span></span><br><span class="line"><span class="string"> &#x27;pet&#x27;: None,</span></span><br><span class="line"><span class="string"> &#x27;siblings&#x27;: [&#123;&#x27;name&#x27;: &#x27;Scott&#x27;, &#x27;age&#x27;: 30, &#x27;pets&#x27;: [&#x27;Zeus&#x27;, &#x27;Zuko&#x27;]&#125;,</span></span><br><span class="line"><span class="string">  &#123;&#x27;name&#x27;: &#x27;Katie&#x27;, &#x27;age&#x27;: 38, &#x27;pets&#x27;: [&#x27;Sixes&#x27;, &#x27;Stache&#x27;, &#x27;Cisco&#x27;]&#125;]&#125;</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>json.dumps</strong>可以将Python对象转换回JSON：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">asjson = json.dumps(result)</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>将JSON转换成其他数据结构，方便的是将字典构成的列表（之前是JSON对象）传入DataFrame构造函数，并选出数据字段的子集</p>
+<ul>
+<li>&#96;&#96;&#96;python<br>import pandas as pd<br>siblings &#x3D; pd.DataFrame(result[‘siblings’], columns&#x3D;[‘name’, ‘age’])<br>siblings<br>“””<br>name    age<br>0    Scott    30<br>1    Katie    38<br>“””<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  - pandas.read_json可以自动将JSON数据集按照指定次序转换为Series或DataFrame。</span><br><span class="line"></span><br><span class="line">    - pandas.read_json默认JSON数组中的每个对象是表里的一行</span><br><span class="line"></span><br><span class="line">- 从pandas中将数据导出为JSON，对Series和DataFrame使用to_json方法</span><br><span class="line"></span><br><span class="line">### XML和HTML：网络抓取</span><br><span class="line"></span><br><span class="line">&gt; Python有很多针对HTML和XML格式进行读取、写入数据的库</span><br><span class="line">&gt;</span><br><span class="line">&gt; lxml（http://lxml.de）、Beautiful Soup、html5lib</span><br><span class="line">&gt;</span><br><span class="line">&gt; lxml更快，其他库操作更多</span><br><span class="line"></span><br><span class="line">**html**</span><br><span class="line"></span><br><span class="line">- pandas的内建函数**read_html**可以使用lxml和BeautifulSoup等库将HTML中的表自动解析为DataFrame对象</span><br><span class="line"></span><br><span class="line">  - 安装</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+conda install lxml<br>pip install beautifulsoup4 html5lib<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- pandas.read_html函数存在很多选项，默认搜索并尝试解析所有包含在&lt;table&gt;标签中的表格型数据，返回的结果是DataFrame对象的列表</span><br><span class="line"></span><br><span class="line">- 举例：从美国FDIC政府机构下载了显示银行倒闭数据的HTML文件（在pandas文档中使用）</span><br><span class="line"></span><br><span class="line">  ```python</span><br><span class="line">  tables = pd.read_html(&#x27;examples/fdic_failed_bank_list.html&#x27;)</span><br><span class="line">  len(tables) # 1</span><br><span class="line">  failures = tables[0] </span><br><span class="line">  failures.head()</span><br><span class="line">  # failures有很多列，pandas在行内插入了换行符\</span><br><span class="line">  # 计算每年银行倒闭的数量</span><br><span class="line">  close_timestamps = pd.to_datetime(failures[&#x27;Closing Date&#x27;])</span><br><span class="line">  close_timestamps.dt.year.value_counts()</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<p><strong>使用lxml.objectify解析XML</strong></p>
+<blockquote>
+<p>XML（eXtensible Markup Language）是结构化数据格式，它使用元数据支持分层、嵌套数据。</p>
+</blockquote>
+<p><strong>示例背景</strong>：纽约大都会交通局（MTA）发布了一份关于其公交、火车服务（<a target="_blank" rel="noopener" href="http://www.mta.info/developers/down">http://www.mta.info/developers/down</a> loadhtml）的数据集。每个火车或公交服务都有一个不同的文件（例如Performance_MNR.xml代表地铁-北铁路），文件中以一系列XML记录的方式包含了按月的数据。</p>
+<ul>
+<li><p>使用<strong>lxml.objectify</strong>解析文件，用<strong>getroot</strong>获得XML文件根节点的引用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> lxml <span class="keyword">import</span> objectify</span><br><span class="line">path = <span class="string">&#x27;datasets/mta_perf/Performance_MNR.xml&#x27;</span></span><br><span class="line">parsed = objectify.parse(<span class="built_in">open</span>(path))</span><br><span class="line">root= parsed.getroot()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>root.INDICATOR返回一个生成器，可以产生每一个<INDICATOR>XML元素</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># root.INDICATOR返回一个生成器，可以产生每一个&lt;INDICATOR&gt;XML元素（不包括几个标签）</span></span><br><span class="line">data = []</span><br><span class="line"></span><br><span class="line">skip_fields = [<span class="string">&#x27;PARENT_SEQ&#x27;</span>, <span class="string">&#x27;INDICATOR_SEQ&#x27;</span>,</span><br><span class="line">               <span class="string">&#x27;DESIRED_CHANGE&#x27;</span>, <span class="string">&#x27;DECIMAL_PLACES&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> elt <span class="keyword">in</span> root.INDICATOR:</span><br><span class="line">    el_data = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> child <span class="keyword">in</span> elt.getchildren():</span><br><span class="line">        <span class="keyword">if</span> child.tag <span class="keyword">in</span> skip_fields:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        el_data[child.tag] = child.pyval</span><br><span class="line">    data.append(el_data)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>XML标签可以更复杂，每个标签可以包含元数据。一个HYML连接标签，也是有效的XML</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> io <span class="keyword">import</span> StringIO</span><br><span class="line">tag = <span class="string">&#x27;&lt;a href=&quot;http://www.google.com&quot;&gt;Google&lt;/a&gt;&#x27;</span></span><br><span class="line">root = objectify.parse(StringIO(tag)).getroot()</span><br><span class="line"><span class="comment"># 现在可以访问标签或链接文本中的任何字段（如href）</span></span><br><span class="line">root <span class="comment"># &lt;Element a at 0x7f6b15817748&gt;</span></span><br><span class="line">root.get(<span class="string">&#x27;href&#x27;</span>) <span class="comment"># &#x27;http://www.google.com&#x27;</span></span><br><span class="line">root.text <span class="comment"># &#x27;Google&#x27;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="6-2-二进制格式"><a href="#6-2-二进制格式" class="headerlink" title="6.2 二进制格式"></a>6.2 二进制格式</h2><p><strong>pickle</strong></p>
+<ul>
+<li><p>使用Python内建的<strong>pickle</strong>序列化模块进行<strong>二进制格式操作</strong></p>
+<ul>
+<li><p>pandas对象使用<strong>to_pickle</strong>方法将数据以pickle格式写入硬盘</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">frame = pd.read_csv(<span class="string">&#x27;examples/ex1.csv&#x27;</span>)</span><br><span class="line">frame.to_pickle(<span class="string">&#x27;examples/frame_pickle&#x27;</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<strong>pandas.read_pickle</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pd.read_pickle(<span class="string">&#x27;examples/frame_pickle&#x27;</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>pickle仅作为<strong>短期</strong>存储来使用，被pickle化的对象可能因为库版本更新而<strong>无法反序列化</strong></p>
+</li>
+</ul>
+</li>
+<li><p>Python支持的其他两个二进制格式：HDF5和MessagePack</p>
+</li>
+<li><p>pandas或NumPy其他存储格式</p>
+<ul>
+<li>bcolz（<a target="_blank" rel="noopener" href="http://bcolz.blosc.org/%EF%BC%89%EF%BC%9A%E5%9F%BA%E4%BA%8EBlosc%E5%8E%8B%E7%BC%A9%E5%BA%93%E7%9A%84%E5%8F%AF%E5%8E%8B%E7%BC%A9%E5%88%97%E5%BC%8F%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%A0%BC%E5%BC%8F">http://bcolz.blosc.org/）：基于Blosc压缩库的可压缩列式二进制格式</a></li>
+<li>基于Blosc压缩库的可压缩列式二进制格式</li>
+<li>R编程社区的Hadley Wickham（<a target="_blank" rel="noopener" href="http://hadley.nz/%EF%BC%89%E8%AE%BE%E8%AE%A1%E7%9A%84%E8%B7%A8%E8%AF%AD%E8%A8%80%E5%88%97%E5%BC%8F%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F">http://hadley.nz/）设计的跨语言列式文件格式</a></li>
+<li>Feather使用Apache箭头（<a target="_blank" rel="noopener" href="http://arrow.apache.org)列式存储器格式/">http://arrow.apache.org）列式存储器格式</a></li>
+</ul>
+</li>
+</ul>
+<p><strong>使用HDF5格式</strong></p>
+<blockquote>
+<p>存储大量的科学数组数据，以C库的形式提供，有很多其他语言接口</p>
+<p>用于处理不适合在内存中存储的超大型数据，可以仅高效读写一小块</p>
+</blockquote>
+<ul>
+<li><p>“HDF”代表分层数据格式，每个HDF5文件可以存储多个数据集并且支持元数据。</p>
+</li>
+<li><p>HDF5支持多种压缩模式的即时压缩，重复模式的数据可以更高效地存储</p>
+</li>
+<li><p>可使用PyTables或h5py等库直接访问HDF5文件，但pandas提供高阶接口：<strong>HDFStore类</strong>，可以像字典一样处理细节，简化Series和DataFrame的存储。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">frame = pd.DataFrame(&#123;<span class="string">&#x27;a&#x27;</span>: np.random.randn(<span class="number">100</span>)&#125;)</span><br><span class="line">store = pd.HDFStore(<span class="string">&#x27;mydata.h5&#x27;</span>)</span><br><span class="line">store[<span class="string">&#x27;obj1&#x27;</span>] = frame</span><br><span class="line">store[<span class="string">&#x27;obj1_col&#x27;</span>] = frame[<span class="string">&#x27;a&#x27;</span>]</span><br><span class="line">store</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>包含在HDF5文件中的对象可以用字典型API进行检索</p>
+</li>
+<li><p>HDFStore支持两种存储模式，’fixed’和’table’（后者更慢，但支持一种特殊语法的查询操作）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># put是store [&#x27;obj2&#x27;]=frame方法的显式版本，但允许我们设置其他选项，如存储格式</span></span><br><span class="line">store.put(<span class="string">&#x27;obj2&#x27;</span>, frame, <span class="built_in">format</span>=<span class="string">&#x27;table&#x27;</span>)</span><br><span class="line">store.select(<span class="string">&#x27;obj2&#x27;</span>, where=[<span class="string">&#x27;index &gt;= 10 and index &lt;= 15&#x27;</span>])</span><br><span class="line">store.close()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>pandas.read_hdf函数可以用作快捷方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">frame.to_hdf(<span class="string">&#x27;mydata.h5&#x27;</span>, <span class="string">&#x27;obj3&#x27;</span>, <span class="built_in">format</span>=<span class="string">&#x27;table&#x27;</span>)</span><br><span class="line">pd.read_hdf(<span class="string">&#x27;mydata.h5&#x27;</span>, <span class="string">&#x27;obj3&#x27;</span>, where=[<span class="string">&#x27;index &lt; 5&#x27;</span>])</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>处理远程服务器上的数据时，使用专门为分布式存储而设计的二进制格式更为合适，比如Apache Parquet（<a target="_blank" rel="noopener" href="http://parquet.apache.org)./">http://parquet.apache.org）。</a></p>
+</li>
+<li><p>处理大量本地数据时，尝试使用PyTables和h5py。</p>
+</li>
+<li><p>很多数据分析的困难在于I&#x2F;O密集（而不是CPU密集），使用类似HDF5可以加速</p>
+</li>
+</ul>
+<blockquote>
+<p>HDF5并不是数据库，它是一种适合一次写入多次读取的数据集.</p>
+<p>多个写入者持续写入，文件可能会损坏</p>
+</blockquote>
+<p><strong>读取Microsoft Excel文件</strong></p>
+<blockquote>
+<p>pandas也支持通过ExcelFile类或pandas.read_excel函数来读取存储在Excel表格型数据</p>
+<p>使用附加包xlrd和openpyxl来分别读取XLS和XLSX文件的</p>
+</blockquote>
+<ul>
+<li><p>通过将xls或xlsx的路径传入ExcelFile，生成一个实例。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xlsx = pd.ExcelFile(<span class="string">&#x27;examples/ex1.xlsx&#x27;</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>表格数据可以通过pandas.read_excel读取到DataFrame中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pd.read_excel(xlsx, <span class="string">&#x27;Sheet1&#x27;</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>含有多个表的文件，生成ExcelFile更快，但也可以更简便地将文件名传入pandas.read_excel</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">frame = pd.read_excel(<span class="string">&#x27;examples/ex1.xlsx&#x27;</span>, <span class="string">&#x27;Sheet1&#x27;</span>)</span><br><span class="line">frame</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将pandas数据写入到Excel格式中</p>
+<ul>
+<li>先生成一个ExcelWriter</li>
+<li>使用pandas对象的to_excel方法将数据写入</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">writer = pd.ExcelWriter(<span class="string">&#x27;examples/ex2.xlsx&#x27;</span>)</span><br><span class="line">frame.to_excel(writer, <span class="string">&#x27;Sheet1&#x27;</span>)</span><br><span class="line">writer.save()</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>也可以将文件路径传给to_excel，避免直接调用ExcelWriter</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">frame.to_excel(<span class="string">&#x27;examples/ex2.xlsx&#x27;</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="6-3-与Web-API交互"><a href="#6-3-与Web-API交互" class="headerlink" title="6.3 与Web API交互"></a>6.3 与Web API交互</h2><blockquote>
+<p>使用requests包（<a target="_blank" rel="noopener" href="http://docs.python-requests.orgt)与web/">http://docs.python-requests.orgt）与Web</a> API交互更简单</p>
+</blockquote>
+<p>获取GitHub上最新的30条关于pandas的问题</p>
+<ul>
+<li><p>用附加库requests发送一个HTTP GET请求</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">url = <span class="string">&#x27;https://api.github.com/repos/pandas-dev/pandas/issues&#x27;</span></span><br><span class="line">resp = requests.get(url)</span><br><span class="line">resp</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Response（响应）对象的json方法将返回一个包含解析为本地Python对象的JSON的字典</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># data中的每个元素都是一个包含GitHub问题页面上的所有数据的字典（注释除外）</span></span><br><span class="line">data = resp.json()</span><br><span class="line">data[<span class="number">0</span>][<span class="string">&#x27;title&#x27;</span>]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将data直接传给DataFrame，并提取感兴趣的字段</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">issues = pd.DataFrame(data, columns=[<span class="string">&#x27;number&#x27;</span>, <span class="string">&#x27;title&#x27;</span>,</span><br><span class="line">                                     <span class="string">&#x27;labels&#x27;</span>, <span class="string">&#x27;state&#x27;</span>])</span><br><span class="line">issues</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="6-4-与数据库交互"><a href="#6-4-与数据库交互" class="headerlink" title="6.4 与数据库交互"></a>6.4 与数据库交互</h2><blockquote>
+<p>业务场景中，基于SQL的关系型数据库（例如SQL Server、PostgreSQL和MySQL）使用广泛</p>
+<p>pandas很多函数可以从SQL中将数据读取为DataFrame</p>
+<p>SQLAlchemy项目（<a target="_blank" rel="noopener" href="http://www.sqlalchemy.org/%EF%BC%89%E6%98%AF%E4%B8%80%E4%B8%AA%E6%B5%81%E8%A1%8C%E7%9A%84PythonSQL%E5%B7%A5%E5%85%B7%E5%8C%85%EF%BC%8C%E6%8A%BD%E8%B1%A1%E5%8E%BB%E9%99%A4%E4%BA%86SQL%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B9%8B%E9%97%B4%E7%9A%84%E8%AE%B8%E5%A4%9A%E5%B8%B8%E8%A7%81%E5%B7%AE%E5%BC%82%E3%80%82">http://www.sqlalchemy.org/）是一个流行的PythonSQL工具包，抽象去除了SQL数据库之间的许多常见差异。</a></p>
+</blockquote>
+<ul>
+<li><p>使用Python内建的<strong>sqlite3</strong>驱动来生成一个<strong>SQLite数据库</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sqlite3</span><br><span class="line">query = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">CREATE TABLE test</span></span><br><span class="line"><span class="string">(a VARCHAR(20), b VARCHAR(20),</span></span><br><span class="line"><span class="string"> c REAL,        d INTEGER</span></span><br><span class="line"><span class="string">);&quot;&quot;&quot;</span></span><br><span class="line">con = sqlite3.connect(<span class="string">&#x27;mydata.sqlite&#x27;</span>)</span><br><span class="line">con.execute(query)</span><br><span class="line">con.commit()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>插入几行数据</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">data = [(<span class="string">&#x27;Atlanta&#x27;</span>, <span class="string">&#x27;Georgia&#x27;</span>, <span class="number">1.25</span>, <span class="number">6</span>),</span><br><span class="line">        (<span class="string">&#x27;Tallahassee&#x27;</span>, <span class="string">&#x27;Florida&#x27;</span>, <span class="number">2.6</span>, <span class="number">3</span>),</span><br><span class="line">        (<span class="string">&#x27;Sacramento&#x27;</span>, <span class="string">&#x27;California&#x27;</span>, <span class="number">1.7</span>, <span class="number">5</span>)]</span><br><span class="line">stmt = <span class="string">&quot;INSERT INTO test VALUES(?, ?, ?, ?)&quot;</span></span><br><span class="line">con.executemany(stmt, data)</span><br><span class="line">con.commit()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>大部分Python的SQL驱动（PyODBC、psycopg2、MySQLdb、pymssql等）返回的是元组的列表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cursor = con.execute(<span class="string">&#x27;select * from test&#x27;</span>)</span><br><span class="line">rows = cursor.fetchall()</span><br><span class="line">rows</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将元组的列表传给DataFrame构造函数,要包含在游标的description属性中的列名</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cursor.description</span><br><span class="line">pd.DataFrame(rows, columns=[x[<span class="number">0</span>] <span class="keyword">for</span> x <span class="keyword">in</span> cursor.description])</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>pandas中read_sql函数可以从通用的SQLAlchemy连接中轻松地读取数据</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用SQLAlchemy连接到相同的SQLite数据库，并从之前创建的表中读取数据</span></span><br><span class="line"><span class="keyword">import</span> sqlalchemy <span class="keyword">as</span> sqla</span><br><span class="line">db = sqla.create_engine(<span class="string">&#x27;sqlite:///mydata.sqlite&#x27;</span>)</span><br><span class="line">pd.read_sql(<span class="string">&#x27;select * from test&#x27;</span>, db)</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/" rel="tag"># 数据处理</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/28/%E4%B8%89%E3%80%81%E5%86%85%E5%BB%BA%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E3%80%81%E5%87%BD%E6%95%B0%E5%8F%8A%E6%96%87%E4%BB%B6%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" rel="prev" title="三、内建数据结构、函数及文件——《利用Python进行数据分析》">
+      <i class="fa fa-chevron-left"></i> 三、内建数据结构、函数及文件——《利用Python进行数据分析》
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/29/%E4%B8%83%E3%80%81%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97%E4%B8%8E%E5%87%86%E5%A4%87%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" rel="next" title="七、数据清洗与准备——《利用Python进行数据分析》">
+      七、数据清洗与准备——《利用Python进行数据分析》 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%85%AD%E7%AB%A0-%E6%95%B0%E6%8D%AE%E8%BD%BD%E5%85%A5%E3%80%81%E5%AD%98%E5%82%A8%E5%8F%8A%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">第六章 数据载入、存储及文件格式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-%E6%96%87%E6%9C%AC%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE%E7%9A%84%E8%AF%BB%E5%86%99"><span class="nav-number">1.1.</span> <span class="nav-text">6.1 文本格式数据的读写</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%9D%97%E8%AF%BB%E5%85%A5%E6%96%87%E6%9C%AC%E6%96%87%E4%BB%B6"><span class="nav-number">1.1.1.</span> <span class="nav-text">分块读入文本文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86%E6%95%B0%E6%8D%AE%E5%86%99%E5%85%A5%E6%96%87%E6%9C%AC%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.1.2.</span> <span class="nav-text">将数据写入文本格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%88%86%E9%9A%94%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.1.3.</span> <span class="nav-text">使用分隔格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JSON%E6%95%B0%E6%8D%AE"><span class="nav-number">1.1.4.</span> <span class="nav-text">JSON数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.2.</span> <span class="nav-text">6.2 二进制格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-3-%E4%B8%8EWeb-API%E4%BA%A4%E4%BA%92"><span class="nav-number">1.3.</span> <span class="nav-text">6.3 与Web API交互</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-4-%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%A4%E4%BA%92"><span class="nav-number">1.4.</span> <span class="nav-text">6.4 与数据库交互</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="TT"
+      src="/images/header.jpg">
+  <p class="site-author-name" itemprop="name">TT</p>
+  <div class="site-description" itemprop="description">The Journey Is the Reward</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TT</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'TNUpeWIcsOXnq5yrEo6XphL5-gzGzoHsz',
+      appKey     : 'HdE2XffT6XTWRYvV2zovg336',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

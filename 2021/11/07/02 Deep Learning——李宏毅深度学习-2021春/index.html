@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="02-1 机器学习任务攻略（General Guidance）机器学习任务框架   从训练数据中找到最优化的参数$\theta^*$，将$\theta^*$带入到假设函数中预测结果 当机器学习任务预测的结果不满意时，可以按照下图所示方法检查问题出现在哪 发现问题从训练集loss值开始     1. 训练集loss值大1.1 模型偏差 model bias   原因：模型太简单了，不够复杂，弹性不够">
+<meta property="og:type" content="article">
+<meta property="og:title" content="02 机器学习任务攻略——李宏毅深度学习2021春">
+<meta property="og:url" content="http://example.com/2021/11/07/02%20Deep%20Learning%E2%80%94%E2%80%94%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2021%E6%98%A5/index.html">
+<meta property="og:site_name" content="TT&#39;Blog">
+<meta property="og:description" content="02-1 机器学习任务攻略（General Guidance）机器学习任务框架   从训练数据中找到最优化的参数$\theta^*$，将$\theta^*$带入到假设函数中预测结果 当机器学习任务预测的结果不满意时，可以按照下图所示方法检查问题出现在哪 发现问题从训练集loss值开始     1. 训练集loss值大1.1 模型偏差 model bias   原因：模型太简单了，不够复杂，弹性不够">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111042034399.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111042040700.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111042058554.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111051432295.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111051625534.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111051633185.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111091745706.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111091749507.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111091752661.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111091759702.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111091813921.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111091823574.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111091831368.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111092132287.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111100918927.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111100930768.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111100933135.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111100938327.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111100955858.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111101002845.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111101017888.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111101020945.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111101030250.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152015703.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152018883.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152024449.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152027157.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152039818.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152045004.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152046382.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152051866.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152055323.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111161935633.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111161944428.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111161952647.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111161954557.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111162003235.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111162009766.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111162015783.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152128746.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152130199.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152132555.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152137501.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152207269.png">
+<meta property="article:published_time" content="2021-11-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-09-13T11:49:17.509Z">
+<meta property="article:author" content="TT">
+<meta property="article:tag" content="机器学习，深度学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111042034399.png">
+
+<link rel="canonical" href="http://example.com/2021/11/07/02%20Deep%20Learning%E2%80%94%E2%80%94%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2021%E6%98%A5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>02 机器学习任务攻略——李宏毅深度学习2021春 | TT'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">TT'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/07/02%20Deep%20Learning%E2%80%94%E2%80%94%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2021%E6%98%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="TT">
+      <meta itemprop="description" content="The Journey Is the Reward">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TT'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          02 机器学习任务攻略——李宏毅深度学习2021春
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-11-07 00:00:00" itemprop="dateCreated datePublished" datetime="2021-11-07T00:00:00+08:00">2021-11-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-13 19:49:17" itemprop="dateModified" datetime="2023-09-13T19:49:17+08:00">2023-09-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/11/07/02%20Deep%20Learning%E2%80%94%E2%80%94%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2021%E6%98%A5/" class="post-meta-item leancloud_visitors" data-flag-title="02 机器学习任务攻略——李宏毅深度学习2021春" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/11/07/02%20Deep%20Learning%E2%80%94%E2%80%94%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2021%E6%98%A5/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/07/02%20Deep%20Learning%E2%80%94%E2%80%94%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2021%E6%98%A5/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="02-1-机器学习任务攻略（General-Guidance）"><a href="#02-1-机器学习任务攻略（General-Guidance）" class="headerlink" title="02-1 机器学习任务攻略（General Guidance）"></a>02-1 机器学习任务攻略（General Guidance）</h1><p><strong>机器学习任务框架</strong></p>
+<img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111042034399.png" alt="image-20211104203451301" style="zoom:67%;" />
+
+<p>从训练数据中找到最优化的参数$\theta^*$，将$\theta^*$带入到假设函数中预测结果</p>
+<p>当机器学习任务预测的结果不满意时，可以按照下图所示方法检查问题出现在哪</p>
+<p>发现问题从训练集<strong>loss</strong>值开始</p>
+<img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111042040700.png" alt="image-20211104204008635" style="zoom: 67%;" />
+
+
+
+<h2 id="1-训练集loss值大"><a href="#1-训练集loss值大" class="headerlink" title="1. 训练集loss值大"></a>1. 训练集loss值大</h2><h3 id="1-1-模型偏差"><a href="#1-1-模型偏差" class="headerlink" title="1.1 模型偏差"></a>1.1 模型偏差</h3><blockquote>
+<p>model bias</p>
+</blockquote>
+<ul>
+<li>原因：模型太简单了，不够复杂，弹性不够大，不能拟合很多复杂情况。</li>
+<li>解决方法：重新设计更复杂的模型<ul>
+<li>增加特征</li>
+<li>使用深度学习（更多的神经元和层数）</li>
+</ul>
+</li>
+</ul>
+<h3 id="1-2-优化问题"><a href="#1-2-优化问题" class="headerlink" title="1.2 优化问题"></a>1.2 优化问题</h3><blockquote>
+<p>Optimization</p>
+</blockquote>
+<ul>
+<li><p>原因：可能陷入<strong>局部最优解</strong>，没有得到参数的最优方案。</p>
+</li>
+<li><p>解决方法：探寻更好的优化方法</p>
+</li>
+<li><p>思考：如果在训练集上<strong>损失值很大</strong>，不一定是因为这个模型太复杂导致过拟合，很可能是因为没有做好优化，致使复杂的模型没有表现出更好的效果。</p>
+<img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111042058554.png" alt="image-20211104205810485" style="zoom: 67%;" />
+
+<p>如图，看到测试集数据，我们很容易认为这是<strong>过拟合</strong>问题，但是检查训练数据后才发现，比【20层模型】更有弹性、更复杂的【56层模型】竟然在训练集数据上表现的没有【20层模型】。</p>
+<p>越复杂的模型就越能拟合训练集的数据，出现这种反常情况，就是因为没有做好模型优化，也就是说<strong>参数的优化问题</strong>限制了【56层模型】的发挥。</p>
+<p>那如何判断复杂模型性能不好是因为过拟合还是参数优化问题呢？</p>
+<ul>
+<li>同时从<strong>测试集</strong>和<strong>训练集</strong>的实验结果中分析</li>
+<li>从更容易训练的较浅的网络（或其他模型）开始</li>
+<li>如果更深的网络在训练数据上没有获得更小的损失，则存在优化问题</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-训练集loss值小"><a href="#2-训练集loss值小" class="headerlink" title="2. 训练集loss值小"></a>2. 训练集loss值小</h2><p>训练集loss值小就要去检查<strong>测试集的loss值</strong>了</p>
+<h3 id="2-1-训练集loss值小-amp-测试集loss小"><a href="#2-1-训练集loss值小-amp-测试集loss小" class="headerlink" title="2.1 训练集loss值小&amp;测试集loss小"></a>2.1 训练集loss值小&amp;测试集loss小</h3><p>模型很成功</p>
+<h3 id="2-2-训练集loss值小-amp-测试集loss大"><a href="#2-2-训练集loss值小-amp-测试集loss大" class="headerlink" title="2.2  训练集loss值小&amp;测试集loss大"></a>2.2  训练集loss值小&amp;测试集loss大</h3><h4 id="2-2-1-过拟合"><a href="#2-2-1-过拟合" class="headerlink" title="2.2.1 过拟合"></a>2.2.1 过拟合</h4><blockquote>
+<p>Overfitting</p>
+</blockquote>
+<ul>
+<li><p>原因：在训练集中模型自由发展，过度地拟合了训练集中的数据，不能很好的泛化。</p>
+</li>
+<li><p>解决方法：</p>
+<ul>
+<li><p>提供更多的训练数据</p>
+<ul>
+<li>寻找更多的数据来训练</li>
+<li>根据对特定问题的了解<strong>扩充数据</strong></li>
+</ul>
+</li>
+<li><p>给模型一些<strong>限制</strong></p>
+<ul>
+<li>规定假设函数的形式，就起到了限制模型的作用。比如一个二次函数，怎么更改参数形状也不会随意变化</li>
+<li>设置更少数量的参数或共享参数（比如减少神经元的数量）</li>
+<li>正则化</li>
+<li>Early spotting</li>
+<li>Dropout</li>
+</ul>
+<blockquote>
+<p>限制也不能太多哦，如果只是一个一次函数，再怎么训练也不能拟合复杂的数据，这就又回到了<strong>模型偏差</strong>的问题</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-2-2-mismatch"><a href="#2-2-2-mismatch" class="headerlink" title="2.2.2 mismatch"></a>2.2.2 mismatch</h4><ul>
+<li><p>原因：训练集和测试集不匹配，简单地提升训练数据于事无补。</p>
+<p><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111051432295.png" alt="image-20211105143219217"></p>
+</li>
+</ul>
+<h2 id="3-交叉验证"><a href="#3-交叉验证" class="headerlink" title="3. 交叉验证"></a>3. 交叉验证</h2><p>在训练的时候使用交叉验证，比如<strong>N折交叉验证</strong></p>
+<h1 id="02-2-临界点"><a href="#02-2-临界点" class="headerlink" title="02-2 临界点"></a>02-2 临界点</h1><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111051625534.png" alt="image-20211105162515443" style="zoom: 33%;" />
+
+<p>如上图所示，在使用梯度下降方法训练时，很有可能出现<strong>loss值不够小</strong>或者<strong>loss值干脆不变化</strong>的情况，到达临界点后再怎么训练也于事无补。</p>
+<p>两种可能：<strong>局部最小值（local minima）</strong>和到达<strong>鞍点（saddle point）</strong></p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111051633185.png" alt="image-20211105163301079" style="zoom: 50%;" />
+
+<p>到达局部最优解就意味着随机下降真的无路可走了，但是到达鞍点还可以通过计算识别并逃离。</p>
+<h2 id="1-数学知识-泰勒公式"><a href="#1-数学知识-泰勒公式" class="headerlink" title="1. 数学知识-泰勒公式"></a>1. 数学知识-泰勒公式</h2><blockquote>
+<p>Tayler Series Approximation </p>
+</blockquote>
+<p>根据泰勒公式，$\theta^&#96;$周围的公式可以表示成如下形式</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111091745706.png" alt="image-20211109174520587" style="zoom:50%;" />
+
+<p>其中<strong>g</strong>和<strong>H</strong>是两个矩阵</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111091749507.png" alt="image-20211109174922459" style="zoom:60%;" />
+
+<p>在临界点的时候，<strong>g为零向量</strong>，只剩下原式子的第三项，我们可以根据第三项的<strong>正负号</strong>来判断这个点是<strong>局部最优解</strong>还是<strong>鞍点</strong>。</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111091752661.png" alt="image-20211109175258600" style="zoom:67%;" />
+
+<p>如果第三项<strong>一直是正数</strong>，代表$\theta^&#96;$周围的值都比它大，那么它是局部最小值</p>
+<p>如果第三项<strong>一直是负数</strong>，代表$\theta^&#96;$周围的值都比它小，那么它是局部最大值</p>
+<p>如果第三项<strong>有正有负</strong>，代表$\theta^&#96;$周围既有比它大的值也有比它小的值，那么它是鞍点，还可以找到方式来优化</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111091759702.png" alt="image-20211109175959619" style="zoom: 60%;" />
+
+<h2 id="2-例子-判断是局部最小值还是鞍点"><a href="#2-例子-判断是局部最小值还是鞍点" class="headerlink" title="2. 例子-判断是局部最小值还是鞍点"></a>2. 例子-判断是局部最小值还是鞍点</h2><p><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111091813921.png" alt="image-20211109181317865"></p>
+<p>$\lambda_1$为正，$\lambda_2$为负，说明这是一个<strong>鞍点</strong>，<strong>矩阵H</strong>会帮助我们计算接下来递归下降的方向。</p>
+<p>假设$u$是H的特征向量，$\lambda$是$u$的特征值，如果$\lambda&lt;0$，则有如下推导：</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111091823574.png" alt="image-20211109182307518" style="zoom:67%;" />
+
+<p>当$\lambda&#x3D;-2$时，有特征向量<br>$$<br>u&#x3D;<br>\begin{vmatrix}<br>1  \<br>1<br>\end{vmatrix}<br>$$<br>沿着这个方向更新参数，就可以逃离鞍点，减小损失函数的值</p>
+<blockquote>
+<p>展望：当有很多参数存在时，局部最小值可能是罕见的。</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111091831368.png" alt="image-20211109183104296" style="zoom:50%;" />
+</blockquote>
+<h2 id="3-批处理Batch"><a href="#3-批处理Batch" class="headerlink" title="3. 批处理Batch"></a>3. 批处理Batch</h2><p>借用下图回顾一下用批处理方法来做优化的形式</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111092132287.png" alt="image-20211109213204206" style="zoom:50%;" />
+
+<p>1个<strong>epoch</strong> &#x3D; 1次更新所有的batches，在每一个<strong>epoch</strong>之后<strong>Shuffle</strong></p>
+<p>接下来比较<strong>Small Batch</strong>和<strong>Large Batch</strong>（small batch就是batch size小）</p>
+<p>假设有20个样本，分两种Batch size训练</p>
+<blockquote>
+<p>左图：Batch size &#x3D; N (Full Batch)   20个样本更新一次，共更新一次</p>
+<p>右图：Batch size &#x3D; 1  每个样本更新一次，共更新20次</p>
+</blockquote>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111100918927.png" alt="image-20211110091821813" style="zoom:50%;" />
+
+<ul>
+<li><p>按照正常的想法，如果batch size越大，<strong>训练时间</strong>就会越长。但是随着<strong>GPU</strong>的发展，计算机并行计算能力加强，除非batch size特别大，不然batch size的大小几乎不会影响训练时间。</p>
+</li>
+<li><p><strong>batch size太小</strong>每训练一个<strong>epoch</strong>花费时间就更长</p>
+</li>
+</ul>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111100930768.png" alt="image-20211110093040684" style="zoom:50%;" />
+
+<ul>
+<li><strong>small batch</strong>在训练时会体现出更好的<strong>性能</strong></li>
+</ul>
+<p>​    <img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111100933135.png" alt="image-20211110093327068" style="zoom: 67%;" /></p>
+<p>​    为什么会有这样奇怪的现象呢？</p>
+<p>​    其实每一个batch内就有一个<strong>新的样本分布形式</strong>，batch数量越多，数据的分布形式就越多，每一次更新时<strong>损    失函数</strong>都有所变化，不容易卡在某个位置。</p>
+<p>​    <img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111100938327.png" alt="image-20211110093813280" style="zoom:50%;" /></p>
+<p>​    左图Full Batch卡在某一个地方之后，就没办法继续走下去了。但是如果分了很多batch,就有多次更新的机会，在一个batch中卡住不要紧，可能会在下一个batch中继续求出梯度。逐步优化。</p>
+<ul>
+<li><p>batch数量多有有助于<strong>泛化</strong>，在测试集上表现效果更好。</p>
+<blockquote>
+<p>引用On Large Batch Training for Deep Learning: Generalization Gap and Sharp Minima(<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1609.04836)%E7%9A%84%E7%BB%93%E6%9E%9C">https://arxiv.org/abs/1609.04836)的结果</a></p>
+</blockquote>
+<p>实验发现：在训练集上把<strong>大的batch</strong>和<strong>小的batch</strong>训练的差不多好，但是在测试集上<strong>小的batch</strong>表现更好。</p>
+<p>如何解释这一现象呢？论文作者有如下猜想。</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111100955858.png" alt="image-20211110095516754" style="zoom:50%;" />
+
+<p>图中<strong>实线</strong>为<strong>训练集</strong>的loss曲线，<strong>虚线</strong>为<strong>测试集</strong>的loss曲线。每一个问题的loss曲线都会遇到各种<strong>局部最小值</strong>，有的较平坦，有的较陡峭，想比较而言，我们更喜欢<strong>较平坦</strong>的局部最小值。</p>
+<p>由于样本抽取不同等原因，训练集loss和测试集loss的分布会存在一定偏差，图中是假设测试集loss向右平移。这样一来，在<strong>较陡峭局部最小值</strong>的地方可能在测试集中对应着较大的loss值，导致泛化能力很差</p>
+</li>
+</ul>
+<p><strong>总结</strong></p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111101002845.png" alt="image-20211110100230779" style="zoom:67%;" />
+
+<p>&#x3D;&#x3D;<strong>Batch Size</strong>也是一个需要决定的<strong>参数</strong>哦&#x3D;&#x3D;</p>
+<h2 id="4-Momentum"><a href="#4-Momentum" class="headerlink" title="4. Momentum"></a>4. Momentum</h2><blockquote>
+<p>解决优化损失函数时，卡在局部最小值时的状况。</p>
+</blockquote>
+<h3 id="4-1-梯度下降"><a href="#4-1-梯度下降" class="headerlink" title="4.1 梯度下降"></a>4.1 梯度下降</h3><p>每一次梯度下降的方向都是某一点<strong>偏导数的反方向</strong></p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111101017888.png" alt="image-20211110101759828" style="zoom:50%;" />
+
+<h3 id="4-2-梯度下降-动量"><a href="#4-2-梯度下降-动量" class="headerlink" title="4.2 梯度下降+动量"></a>4.2 梯度下降+动量</h3><p>移动方向 &#x3D; 上一步移动方向 - 现在的梯度方向</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111101020945.png" alt="image-20211110102006879" style="zoom:50%;" />
+
+<p>每一次移动的方向都考量了前面所有方向<br>$$ {align*}<br>m^0 &#x3D;0 \<br>m^1 &#x3D; -\eta g^0 \<br>m^2 &#x3D; - \lambda \eta g^0 - \eta g^1\<br>……<br>$$ {align*}<br><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111101030250.png" alt="image-20211110103003184" style="zoom:50%;" /></p>
+<p>如图，在局部最小值仍然可以向前移动，这是因为，前边累加了太多的力量，可以让它逃离局部最小值。</p>
+<h2 id="5-临界点总结"><a href="#5-临界点总结" class="headerlink" title="5.临界点总结"></a>5.临界点总结</h2><ul>
+<li><strong>临界点</strong>的梯度是<strong>0</strong></li>
+<li>临界点可能是<strong>鞍点</strong>或<strong>局部最小值</strong><ul>
+<li><strong>Hessian矩阵</strong>可以帮助缺点临界点是<strong>鞍点</strong>还是<strong>局部最小值</strong></li>
+<li>局部最小值的情况很<strong>罕见</strong></li>
+<li>根据<strong>Hessian矩阵特征向量</strong>可以逃离<strong>鞍点</strong></li>
+</ul>
+</li>
+<li><strong>小的Batch Size</strong>和<strong>动量（Momentum）</strong>可以帮助逃离临界点</li>
+</ul>
+<h1 id="02-3-学习率"><a href="#02-3-学习率" class="headerlink" title="02-3 学习率"></a>02-3 学习率</h1><h2 id="1-Adaptive-Learning-Rate"><a href="#1-Adaptive-Learning-Rate" class="headerlink" title="1. Adaptive Learning Rate"></a>1. Adaptive Learning Rate</h2><p>很多时候训练模型卡住了都不是因为临界点（梯度很小或者无法再下降），因为在loss值几乎稳定的时候，很有可能梯度并不是0，而且在反复横跳。多数训练在还没有走到临界点时就已经停止了。</p>
+<p><strong>不同的参数需要不同的学习率</strong>，有一个大致的原则，如果有一个方向很平缓，希望学习率大一点；如果很陡峭，希望学习率小一点。</p>
+<p>以一个参数$\theta_i$为例，其他可以推广</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152015703.png" alt="image-20211115201533635" style="zoom:50%;" />
+
+<p>不同的参数有不同的$\sigma$，同一个参数不同的迭代次数$\sigma$的值也不同。</p>
+<p>如何计算$\sigma$?有不同的策略</p>
+<h3 id="1-1-Root-Mean-Square"><a href="#1-1-Root-Mean-Square" class="headerlink" title="1.1 Root Mean Square"></a>1.1 Root Mean Square</h3><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152018883.png" alt="image-20211115201857815" style="zoom:50%;" />
+
+<p>这种策略在Adagrad中被使用，这一方法为什么奏效呢？设想一下有$\theta_1$和$\theta_2$两种曲线：</p>
+<ul>
+<li><p>$\theta_1$更平滑，计算得到的g就更小，$\sihma$就更小，相应地学习率就变大</p>
+</li>
+<li><p>$\theta_2$更陡峭，计算得到的g就更大，$\sihma$就更大，相应地学习率就变小</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152024449.png" alt="image-20211115202409401" style="zoom:50%;" /></li>
+</ul>
+<p>但是这种方法并不总是有效的，因为很多时候即使在同一个方向我们也希望学习率的大小是有变化的，可以动态调整。于是出现了RMSProp</p>
+<h3 id="1-2-RMSProp"><a href="#1-2-RMSProp" class="headerlink" title="1.2 RMSProp"></a>1.2 RMSProp</h3><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152027157.png" alt="image-20211115202703094" style="zoom:50%;" />
+
+<p><strong>$(1-\alpha)$可以动态地调整</strong></p>
+<p>现在最常用的策略就是<strong>Adam:RMSProp+Momentum</strong>(pyTorch可以掉包)</p>
+<h3 id="1-3-Learning-Rate-Scheduling"><a href="#1-3-Learning-Rate-Scheduling" class="headerlink" title="1.3 Learning Rate Scheduling"></a>1.3 Learning Rate Scheduling</h3><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152039818.png" alt="image-20211115203907761" style="zoom:60%;" />
+
+<p>在梯度下降的过程中为什么会出现横跳的情况呢？因为本来梯度很小，逐渐行走，但是<strong>多个小的梯度累加之后</strong>，$\sigma$就会产生变化，方向也就跟着改变了，但是会逐步调整回来</p>
+<p>这个时候可以给学习率加一个<strong>时间</strong>的变化，比如：随着训练的进行，$\eta^t$越来越小；也可以先增大再减小</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152045004.png" alt="image-20211115204504958" style="zoom:50%;" />
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152046382.png" alt="image-20211115204626330" style="zoom:50%;" />
+
+<p>warm up没有一个有说服力的解释，只是由训练时的经验得到。</p>
+<blockquote>
+<p>warm up可能的解释：一开始学习率小一点，有助于学到更多关于error surface的知识</p>
+</blockquote>
+<h3 id="1-4-总结"><a href="#1-4-总结" class="headerlink" title="1.4 总结"></a>1.4 总结</h3><p>学习率有多种方式去改变它，只不过课上讲解的方式更常用，还可以加<strong>动量</strong>。</p>
+<p><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152051866.png" alt="image-20211115205100819"></p>
+<p>动量m和$\theta$都是结合了过去所有的梯度，一个在分子一个在分母，会不会抵消掉呢？不会的，一个重点结合过去的方向，一个重点结合过去的大小。</p>
+<p>我们还可以有其他方法来解决训练时遇到的问题，比如试试改变<strong>error surface</strong>呢？把它变得更平滑。</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152055323.png" alt="image-20211115205531215" style="zoom:50%;" />
+
+<h1 id="02-4-Batch-Normalization"><a href="#02-4-Batch-Normalization" class="headerlink" title="02-4 Batch Normalization"></a>02-4 Batch Normalization</h1><h2 id="1-改变landscape"><a href="#1-改变landscape" class="headerlink" title="1. 改变landscape"></a>1. 改变landscape</h2><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111161935633.png" alt="image-20211116193532495" style="zoom: 67%;" />
+
+<p>如图所示，w变化一点，y就会变化一点，相应地L就会变化一点。但是$x1$很小，变化$w_1$对L的影响就很小；$x_2$很大，变化$w_2$对L的影响就很大。这样每个特征对损失函数的影响不同，如果让特征里不同的维度有同样的数值范围，就可以制造比较好的error surface，训练就变得容易一些。</p>
+<h2 id="2-Feature-Normalization"><a href="#2-Feature-Normalization" class="headerlink" title="2. Feature Normalization"></a>2. Feature Normalization</h2><blockquote>
+<p>有很多方法，只介绍其中几种</p>
+</blockquote>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111161944428.png" alt="image-20211116194440336" style="zoom: 60%;" />
+
+<p>考虑深度学习的特征标准化，对<strong>激活函数前的z</strong>和<strong>激活函数后的a</strong>做标准化都可以，如果激活函数是sigmoid，推荐在其之前标准化，因为sigmoid函数在0附近斜率比较大，算出来的gradient也比较大。</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111161952647.png" alt="image-20211116195202506" style="zoom: 33%;" />
+
+<p>以标准化z为例</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111161954557.png" alt="image-20211116195426467" style="zoom: 67%;" />
+
+<p>和以前神经网络不同的是，现在变化$z_1$会对三个输出层都有影响（因为它参与计算了平均数和标准差）。</p>
+<p>每一层神经网络都要标准化，这样网络变得更大了，GPU的运算能力可能无法承载。所以要引入<strong>batch</strong>，在每一个batch内部进行标准化，这就是<strong>Batch Normalization</strong>。</p>
+<p>为了不让z在0之间活动，对<strong>标准化后的z</strong>，做一些更改<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111162003235.png" alt="image-20211116200315192" style="zoom:67%;" /></p>
+<h2 id="3-批处理标准化——测试"><a href="#3-批处理标准化——测试" class="headerlink" title="3. 批处理标准化——测试"></a>3. 批处理标准化——测试</h2><p>如果是线上的应用，模型是要随时预测数据的，不能等到积累了一个batch size大小的数据才开始训练（计算平均值和标准差等）。解决这一困境的方式就是计算<strong>滑动窗口（moving average)</strong></p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111162009766.png" alt="image-20211116200939720" style="zoom:60%;" />
+
+<p>记录下每一个batch的平均值，以便后续计算，p也是参数</p>
+<p>其他知名的正则化方式</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111162015783.png" alt="image-20211116201512724" style="zoom:67%;" />
+
+<h1 id="02-5-分类"><a href="#02-5-分类" class="headerlink" title="02-5 分类"></a><strong>02-5 分类</strong></h1><blockquote>
+<p>李宏毅老师y表示的是预测值，$\hat{y}$表示真实值</p>
+</blockquote>
+<p>分类类似于回归，但是输出值如果是1,2,3等数字来代表类别会有一些问题，比如是不是1和2更接近，1和3更远？这些数字可以在数学上区别开来，所以应该换一种方式表示。</p>
+<p>想要预测三个类别，我们就可以让神经网络输出三个结果组成矩阵，采用<strong>one-hot编码</strong>来预测类别</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152128746.png" alt="image-20211115212856681" style="zoom:50%;" />
+
+<p>与回归不同的时，在分类时，预测值y通常需要<strong>softmax函数</strong>转换为$y^&#96;$再去和真实值比较</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152130199.png" alt="image-20211115213046150" style="zoom:50%;" />
+
+<p>输出值可能是任何值，但是类别只能用0和1表示，所以要经过转换，变成0,1之间的数字，这样才便于区分类别。举例：如下图所示：</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152132555.png" alt="image-20211115213227488" style="zoom:50%;" />
+
+<p>如果是二分类问题，直接用sigmoid做转换就可以啦，和Soft-max的功能一样</p>
+<p>分类时，损失函数也有很多种，比如<strong>Mean Square Error (MSE)<strong>和</strong>交叉熵Cross-entropy</strong>(最小交叉熵等于极大似然)</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152137501.png" alt="image-20211115213702442" style="zoom:50%;" />
+
+<p>最常用的就是交叉熵，常用到pyTorch的包已经将softmax和交叉熵绑定在一起，不需要你自己定义。使用的时候如果你再定义，就是使用了两遍。</p>
+<p>为什么交叉熵更常用呢？</p>
+<ul>
+<li><p>因为使用平方差很可能让训练陷入困境，在损失函数图像中，它有导数的地方占比比较小，会有无法求出梯度的情况，像下面这个例子一样。</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111152207269.png" alt="image-20211115220719160" style="zoom:50%;" />
+</li>
+<li><p>如图，$y_3$的值可以忽略不计，损失函数的右下方为最优解位置，MSE会因为没有导数而困在左上方</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%EF%BC%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习，深度学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/07/01%20Introduction%E2%80%94%E2%80%94%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2021%E6%98%A5/" rel="next" title="01 Introduction 简介和回归——李宏毅深度学习2021春">
+      01 Introduction 简介和回归——李宏毅深度学习2021春 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#02-1-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BB%BB%E5%8A%A1%E6%94%BB%E7%95%A5%EF%BC%88General-Guidance%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">02-1 机器学习任务攻略（General Guidance）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%AE%AD%E7%BB%83%E9%9B%86loss%E5%80%BC%E5%A4%A7"><span class="nav-number">1.1.</span> <span class="nav-text">1. 训练集loss值大</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E6%A8%A1%E5%9E%8B%E5%81%8F%E5%B7%AE"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 模型偏差</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E4%BC%98%E5%8C%96%E9%97%AE%E9%A2%98"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 优化问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E8%AE%AD%E7%BB%83%E9%9B%86loss%E5%80%BC%E5%B0%8F"><span class="nav-number">1.2.</span> <span class="nav-text">2. 训练集loss值小</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E8%AE%AD%E7%BB%83%E9%9B%86loss%E5%80%BC%E5%B0%8F-amp-%E6%B5%8B%E8%AF%95%E9%9B%86loss%E5%B0%8F"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 训练集loss值小&amp;测试集loss小</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E8%AE%AD%E7%BB%83%E9%9B%86loss%E5%80%BC%E5%B0%8F-amp-%E6%B5%8B%E8%AF%95%E9%9B%86loss%E5%A4%A7"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2  训练集loss值小&amp;测试集loss大</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-%E8%BF%87%E6%8B%9F%E5%90%88"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">2.2.1 过拟合</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-2-mismatch"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">2.2.2 mismatch</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81"><span class="nav-number">1.3.</span> <span class="nav-text">3. 交叉验证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#02-2-%E4%B8%B4%E7%95%8C%E7%82%B9"><span class="nav-number">2.</span> <span class="nav-text">02-2 临界点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86-%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F"><span class="nav-number">2.1.</span> <span class="nav-text">1. 数学知识-泰勒公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%BE%8B%E5%AD%90-%E5%88%A4%E6%96%AD%E6%98%AF%E5%B1%80%E9%83%A8%E6%9C%80%E5%B0%8F%E5%80%BC%E8%BF%98%E6%98%AF%E9%9E%8D%E7%82%B9"><span class="nav-number">2.2.</span> <span class="nav-text">2. 例子-判断是局部最小值还是鞍点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%89%B9%E5%A4%84%E7%90%86Batch"><span class="nav-number">2.3.</span> <span class="nav-text">3. 批处理Batch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Momentum"><span class="nav-number">2.4.</span> <span class="nav-text">4. Momentum</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D"><span class="nav-number">2.4.1.</span> <span class="nav-text">4.1 梯度下降</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D-%E5%8A%A8%E9%87%8F"><span class="nav-number">2.4.2.</span> <span class="nav-text">4.2 梯度下降+动量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E4%B8%B4%E7%95%8C%E7%82%B9%E6%80%BB%E7%BB%93"><span class="nav-number">2.5.</span> <span class="nav-text">5.临界点总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#02-3-%E5%AD%A6%E4%B9%A0%E7%8E%87"><span class="nav-number">3.</span> <span class="nav-text">02-3 学习率</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Adaptive-Learning-Rate"><span class="nav-number">3.1.</span> <span class="nav-text">1. Adaptive Learning Rate</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-Root-Mean-Square"><span class="nav-number">3.1.1.</span> <span class="nav-text">1.1 Root Mean Square</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-RMSProp"><span class="nav-number">3.1.2.</span> <span class="nav-text">1.2 RMSProp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-Learning-Rate-Scheduling"><span class="nav-number">3.1.3.</span> <span class="nav-text">1.3 Learning Rate Scheduling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-%E6%80%BB%E7%BB%93"><span class="nav-number">3.1.4.</span> <span class="nav-text">1.4 总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#02-4-Batch-Normalization"><span class="nav-number">4.</span> <span class="nav-text">02-4 Batch Normalization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%94%B9%E5%8F%98landscape"><span class="nav-number">4.1.</span> <span class="nav-text">1. 改变landscape</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Feature-Normalization"><span class="nav-number">4.2.</span> <span class="nav-text">2. Feature Normalization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%89%B9%E5%A4%84%E7%90%86%E6%A0%87%E5%87%86%E5%8C%96%E2%80%94%E2%80%94%E6%B5%8B%E8%AF%95"><span class="nav-number">4.3.</span> <span class="nav-text">3. 批处理标准化——测试</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#02-5-%E5%88%86%E7%B1%BB"><span class="nav-number">5.</span> <span class="nav-text">02-5 分类</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="TT"
+      src="/images/header.jpg">
+  <p class="site-author-name" itemprop="name">TT</p>
+  <div class="site-description" itemprop="description">The Journey Is the Reward</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TT</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'TNUpeWIcsOXnq5yrEo6XphL5-gzGzoHsz',
+      appKey     : 'HdE2XffT6XTWRYvV2zovg336',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

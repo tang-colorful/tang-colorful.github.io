@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="训练一个分类器原文链接 1. 数据通常来说，当你处理图像、文本、音频和视频数据时，可以使用标准的Python包将数据加载为numpy array形式，然后将数组转换成torch.*Tensor  图像数据：Pillow、Opencv 音频数据：scipy、librosa 文本数据：原始Python或Cpython来加载，或者使用NLTK、SpaCy  视觉数据有一些特殊，有一个包torchvisi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="60分钟入门PyTorch——训练一个图片分类器">
+<meta property="og:url" content="http://example.com/2022/07/19/classifier/index.html">
+<meta property="og:site_name" content="TT&#39;Blog">
+<meta property="og:description" content="训练一个分类器原文链接 1. 数据通常来说，当你处理图像、文本、音频和视频数据时，可以使用标准的Python包将数据加载为numpy array形式，然后将数组转换成torch.*Tensor  图像数据：Pillow、Opencv 音频数据：scipy、librosa 文本数据：原始Python或Cpython来加载，或者使用NLTK、SpaCy  视觉数据有一些特殊，有一个包torchvisi">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pytorch.org/tutorials/_images/cifar10.png">
+<meta property="og:image" content="https://pytorch.org/tutorials/_images/sphx_glr_cifar10_tutorial_001.png">
+<meta property="og:image" content="https://pytorch.org/tutorials/_images/sphx_glr_cifar10_tutorial_002.png">
+<meta property="article:published_time" content="2022-07-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-09-13T11:51:24.485Z">
+<meta property="article:author" content="TT">
+<meta property="article:tag" content="PyTorch">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pytorch.org/tutorials/_images/cifar10.png">
+
+<link rel="canonical" href="http://example.com/2022/07/19/classifier/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>60分钟入门PyTorch——训练一个图片分类器 | TT'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">TT'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/19/classifier/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="TT">
+      <meta itemprop="description" content="The Journey Is the Reward">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TT'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          60分钟入门PyTorch——训练一个图片分类器
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-07-19 00:00:00" itemprop="dateCreated datePublished" datetime="2022-07-19T00:00:00+08:00">2022-07-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-13 19:51:24" itemprop="dateModified" datetime="2023-09-13T19:51:24+08:00">2023-09-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%EF%BC%9A-PyTorch/" itemprop="url" rel="index"><span itemprop="name">深度学习： PyTorch</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2022/07/19/classifier/" class="post-meta-item leancloud_visitors" data-flag-title="60分钟入门PyTorch——训练一个图片分类器" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/07/19/classifier/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/07/19/classifier/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="训练一个分类器"><a href="#训练一个分类器" class="headerlink" title="训练一个分类器"></a>训练一个分类器</h1><p><a target="_blank" rel="noopener" href="https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py">原文链接</a></p>
+<h2 id="1-数据"><a href="#1-数据" class="headerlink" title="1. 数据"></a>1. 数据</h2><p>通常来说，当你处理图像、文本、音频和视频数据时，可以使用标准的Python包将数据加载为numpy array形式，然后将数组转换成<code>torch.*Tensor</code></p>
+<ul>
+<li>图像数据：Pillow、Opencv</li>
+<li>音频数据：scipy、librosa</li>
+<li>文本数据：原始Python或Cpython来加载，或者使用NLTK、SpaCy</li>
+</ul>
+<p>视觉数据有一些特殊，有一个包<code>torchvision</code>，可以加载常见数据集，比如ImageNet、CIFAR10、MINIST等，也包括图像转换器，即<code>torchvision.datasets</code>和<code>torch.utils.data.DataLoader</code></p>
+<p>这给我们提供了极大的便利，同时避免样板代码（boilerplate code）</p>
+<p>在本教程中，使用CIFAR10数据集。它包含类： ‘airplane’, ‘automobile’, ‘bird’, ‘cat’, ‘deer’, ‘dog’, ‘frog’, ‘horse’, ‘ship’, ‘truck’。CIFAR10的图像大小为3×32×32，即3个颜色通道，像素大小32×32.</p>
+<p><img src="https://pytorch.org/tutorials/_images/cifar10.png" alt="cifar10"></p>
+<hr>
+<h2 id="2-训练一个图片分类器"><a href="#2-训练一个图片分类器" class="headerlink" title="2. 训练一个图片分类器"></a>2. 训练一个图片分类器</h2><p>按序执行如下步骤</p>
+<ul>
+<li>使用<code>torchvision</code>加载并标准化CIFAR10的训练集和测试集</li>
+<li>定义一个卷积神经网络</li>
+<li>定义一个损失函数</li>
+<li>在训练数据上训练网络</li>
+<li>在测试数据上测试网络</li>
+</ul>
+<h3 id="（1）加载和标准化CIFAR10"><a href="#（1）加载和标准化CIFAR10" class="headerlink" title="（1）加载和标准化CIFAR10"></a>（1）加载和标准化CIFAR10</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torchvision</span><br><span class="line"><span class="keyword">import</span> torchvision.transforms <span class="keyword">as</span> transforms</span><br></pre></td></tr></table></figure>
+
+<p><code>torchvision</code>数据集的输出是[0,1]的PILImage图像，将它们转换成Tensor类型，并标准化在[-1,1]范围内</p>
+<blockquote>
+<p>如果在Windows上运行出现了BrokenPipeError，尝试将<code>torch.utils.data.DataLoader()</code>的num_worker设置为0</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">transform = transforms.Compose(</span><br><span class="line">    [transforms.ToTensor(),</span><br><span class="line">    transforms.Normalize((<span class="number">0.5</span>,<span class="number">0.5</span>,<span class="number">0.5</span>),(<span class="number">0.5</span>,<span class="number">0.5</span>,<span class="number">0.5</span>))]</span><br><span class="line">)</span><br><span class="line">batch_size = <span class="number">4</span></span><br><span class="line">trainset = torchvision.datasets.CIFAR10(root=<span class="string">&#x27;./data&#x27;</span>,train=<span class="literal">True</span>,download=<span class="literal">True</span>,transform=transform)</span><br><span class="line">trainloader = torch.utils.data.DataLoader(trainset,batch_size=batch_size,shuffle=<span class="literal">True</span>,num_workers=<span class="number">2</span>)</span><br><span class="line">testset = torchvision.datasets.CIFAR10(root=<span class="string">&#x27;./data&#x27;</span>,train=<span class="literal">False</span>,download=<span class="literal">True</span>,transform=transform)</span><br><span class="line">testloader = torch.utils.data.DataLoader(testset,batch_size=batch_size,shuffle=<span class="literal">False</span>,num_workers=<span class="number">2</span>)</span><br><span class="line">classes = (<span class="string">&#x27;plane&#x27;</span>, <span class="string">&#x27;car&#x27;</span>, <span class="string">&#x27;bird&#x27;</span>, <span class="string">&#x27;cat&#x27;</span>,</span><br><span class="line">           <span class="string">&#x27;deer&#x27;</span>, <span class="string">&#x27;dog&#x27;</span>, <span class="string">&#x27;frog&#x27;</span>, <span class="string">&#x27;horse&#x27;</span>, <span class="string">&#x27;ship&#x27;</span>, <span class="string">&#x27;truck&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Downloading https://www.cs.toronto.edu/~kriz/cifar-<span class="number">10</span>-python.tar.gz to ./data/cifar-<span class="number">10</span>-python.tar.gz</span><br><span class="line">Extracting ./data/cifar-<span class="number">10</span>-python.tar.gz to ./data</span><br><span class="line">Files already downloaded <span class="keyword">and</span> verified</span><br></pre></td></tr></table></figure>
+
+<p>展示一些有趣的训练图像</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">imshow</span>(<span class="params">img</span>):</span><br><span class="line">    img = img/<span class="number">2</span> + <span class="number">0.5</span>  <span class="comment"># 未标准化</span></span><br><span class="line">    npimg = img.numpy()</span><br><span class="line">    <span class="comment"># 将数组的值以图片的形式展示出来</span></span><br><span class="line">    plt.imshow(np.transpose(npimg,(<span class="number">1</span>,<span class="number">2</span>,<span class="number">0</span>)))</span><br><span class="line">    plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 得到一些随机的训练图片</span></span><br><span class="line">dataiter = <span class="built_in">iter</span>(trainloader)</span><br><span class="line">images,labels = dataiter.<span class="built_in">next</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 展示图片</span></span><br><span class="line">imshow(torchvision.utils.make_grid(images))</span><br><span class="line"><span class="comment"># 输出标签</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27; &#x27;</span>.join(<span class="string">f&#x27;<span class="subst">&#123;classes[labels[j]]:5s&#125;</span>&#x27;</span> <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(batch_size)))</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://pytorch.org/tutorials/_images/sphx_glr_cifar10_tutorial_001.png" alt="../../_images/sphx_glr_cifar10_tutorial_001.png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">car   bird  cat   cat</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）定义一个卷积神经网络"><a href="#（2）定义一个卷积神经网络" class="headerlink" title="（2）定义一个卷积神经网络"></a>（2）定义一个卷积神经网络</h3><p>复制神经网络教程的神经网络代码，并将它修改成适用于3个channel图片的形式</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Net</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.conv1 = nn.Conv2d(<span class="number">3</span>, <span class="number">6</span>, <span class="number">5</span>)</span><br><span class="line">        self.pool = nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line">        self.conv2 = nn.Conv2d(<span class="number">6</span>, <span class="number">16</span>, <span class="number">5</span>)</span><br><span class="line">        self.fc1 = nn.Linear(<span class="number">16</span> * <span class="number">5</span> * <span class="number">5</span>, <span class="number">120</span>)</span><br><span class="line">        self.fc2 = nn.Linear(<span class="number">120</span>, <span class="number">84</span>)</span><br><span class="line">        self.fc3 = nn.Linear(<span class="number">84</span>, <span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        x = self.pool(F.relu(self.conv1(x)))</span><br><span class="line">        x = self.pool(F.relu(self.conv2(x)))</span><br><span class="line">        x = torch.flatten(x, <span class="number">1</span>) <span class="comment"># flatten all dimensions except batch</span></span><br><span class="line">        x = F.relu(self.fc1(x))</span><br><span class="line">        x = F.relu(self.fc2(x))</span><br><span class="line">        x = self.fc3(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">net = Net()</span><br></pre></td></tr></table></figure>
+
+<h3 id="（3）定义损失函数和优化器"><a href="#（3）定义损失函数和优化器" class="headerlink" title="（3）定义损失函数和优化器"></a>（3）定义损失函数和优化器</h3><p>使用交叉熵损失分类，含有momentum的SGD优化</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"></span><br><span class="line">criterion = nn.CrossEntropyLoss()</span><br><span class="line">optimizer = optim.SGD(net.parameters(),lr=<span class="number">0.001</span>,momentum=<span class="number">0.9</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="（4）训练网络"><a href="#（4）训练网络" class="headerlink" title="（4）训练网络"></a>（4）训练网络</h3><p>这时候开始变得有趣，我们只需简单地在迭代数据上循环，并将输入数据输送到网络并优化</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>):  <span class="comment"># 循环数据集多次</span></span><br><span class="line">    running_loss = <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i , data <span class="keyword">in</span> <span class="built_in">enumerate</span>(trainloader,<span class="number">0</span>):</span><br><span class="line">        <span class="comment"># 得到输入数据，数据是[inputs,labels]形式的列表</span></span><br><span class="line">        inputs,labels =data</span><br><span class="line">        <span class="comment"># 参数梯度置为0</span></span><br><span class="line">        optimizer.zero_grad()</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 前向传播 + 后向传播 + 优化</span></span><br><span class="line">        outputs = net(inputs)</span><br><span class="line">        loss = criterion(outputs,labels)</span><br><span class="line">        loss.backward()</span><br><span class="line">        optimizer.step()</span><br><span class="line"></span><br><span class="line">        <span class="comment">#输出统计数据</span></span><br><span class="line">        running_loss += loss.item()</span><br><span class="line">        <span class="keyword">if</span> i%<span class="number">2000</span> == <span class="number">1999</span>: <span class="comment"># 每2000个mini-batchs输出一次</span></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;[<span class="subst">&#123;epoch+<span class="number">1</span>&#125;</span>,<span class="subst">&#123;i+<span class="number">1</span>:5d&#125;</span>] loss:<span class="subst">&#123;running_loss/<span class="number">2000</span>:<span class="number">.3</span>f&#125;</span>&#x27;</span>)</span><br><span class="line">            running_loss = <span class="number">0.0</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;完成训练&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">1</span>,  <span class="number">2000</span>] loss: <span class="number">2.144</span></span><br><span class="line">[<span class="number">1</span>,  <span class="number">4000</span>] loss: <span class="number">1.828</span></span><br><span class="line">[<span class="number">1</span>,  <span class="number">6000</span>] loss: <span class="number">1.659</span></span><br><span class="line">[<span class="number">1</span>,  <span class="number">8000</span>] loss: <span class="number">1.579</span></span><br><span class="line">[<span class="number">1</span>, <span class="number">10000</span>] loss: <span class="number">1.530</span></span><br><span class="line">[<span class="number">1</span>, <span class="number">12000</span>] loss: <span class="number">1.491</span></span><br><span class="line">[<span class="number">2</span>,  <span class="number">2000</span>] loss: <span class="number">1.405</span></span><br><span class="line">[<span class="number">2</span>,  <span class="number">4000</span>] loss: <span class="number">1.379</span></span><br><span class="line">[<span class="number">2</span>,  <span class="number">6000</span>] loss: <span class="number">1.359</span></span><br><span class="line">[<span class="number">2</span>,  <span class="number">8000</span>] loss: <span class="number">1.329</span></span><br><span class="line">[<span class="number">2</span>, <span class="number">10000</span>] loss: <span class="number">1.309</span></span><br><span class="line">[<span class="number">2</span>, <span class="number">12000</span>] loss: <span class="number">1.299</span></span><br><span class="line">Finished Training</span><br></pre></td></tr></table></figure>
+
+<p>快速保存好我们训练的模型</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PATH = <span class="string">&#x27;./cifar_net.pth&#x27;</span></span><br><span class="line">torch.save(net.state_dict(),PATH)</span><br></pre></td></tr></table></figure>
+
+<h3 id="（5）在测试集上测试网络"><a href="#（5）在测试集上测试网络" class="headerlink" title="（5）在测试集上测试网络"></a>（5）在测试集上测试网络</h3><p>我们已经在训练集上训练了2次网络，但是我们需要检查网络有没有学到东西</p>
+<p>网络的输出作为预测的类标签，检查它和真实值之间的差距，如果预测正确，我们将样本添加到正确预测的列表中</p>
+<p>第一步，展示测试集的图片熟悉下内容</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">dataiter = <span class="built_in">iter</span>(testloader)</span><br><span class="line">images,labels = dataiter.<span class="built_in">next</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出图片</span></span><br><span class="line">imshow(torchvision.utils.make_grid(images))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;GroundTruth: &#x27;</span>, <span class="string">&#x27; &#x27;</span>.join(<span class="string">f&#x27;<span class="subst">&#123;classes[labels[j]]:5s&#125;</span>&#x27;</span> <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>)))</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GroundTruth:  cat   ship  ship  plane</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://pytorch.org/tutorials/_images/sphx_glr_cifar10_tutorial_002.png" alt="../../_images/sphx_glr_cifar10_tutorial_002.png"></p>
+<p>接下来，加载回存储过的模型（注意：存储并且再加载模型不是必要的步骤，这里这是说明如何做）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">net = Net()</span><br><span class="line">net.load_state_dict(torch.load(PATH))</span><br></pre></td></tr></table></figure>
+
+<p>现在，让我们来看看神经网络认为以上图片是什么</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">outputs = net(images)</span><br></pre></td></tr></table></figure>
+
+<p>输出10个标签的概率，一个类别的概率越大，神经网络越认为它是这个类别，所以我们得到最高概率的标签</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">_, predicted = torch.<span class="built_in">max</span>(outputs, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Predicted: &#x27;</span>, <span class="string">&#x27; &#x27;</span>.join(<span class="string">f&#x27;<span class="subst">&#123;classes[predicted[j]]:5s&#125;</span>&#x27;</span></span><br><span class="line">                              <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>)))</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Predicted:  cat   car   car   plane</span><br></pre></td></tr></table></figure>
+
+<p>结果看起来不错</p>
+<p>让我们看看在整个数据集上网络的表现效果</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 网络在整个数据集上的表现效果</span></span><br><span class="line">correct = <span class="number">0</span></span><br><span class="line">total = <span class="number">0</span></span><br><span class="line"><span class="comment"># 不训练，就不需要计算输出的梯度</span></span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    images,labels = data</span><br><span class="line">    <span class="comment"># 将图片传进网络计算输出</span></span><br><span class="line">    outputs = net(images)</span><br><span class="line">    <span class="comment"># 在哪个类别上概率最高，就是预测的类别结果</span></span><br><span class="line">    _,predicted = torch.<span class="built_in">max</span>(outputs.data,<span class="number">1</span>)</span><br><span class="line">    total += labels.size(<span class="number">0</span>)</span><br><span class="line">    correct = (predicted==labels).<span class="built_in">sum</span>().item()</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;神经网络在10000条测试图像上的准确率为：<span class="subst">&#123;<span class="number">100</span> * correct // total&#125;</span>%&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Accuracy of the network on the <span class="number">10000</span> test images: <span class="number">54</span> %</span><br></pre></td></tr></table></figure>
+
+<p>结果看起来比随机猜测效果要好，因为随机猜测的准确率是10%，网络似乎学到了一些东西</p>
+<p>在哪些类上的预测效果比较好，哪些不好呢？</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># prepare to count predictions for each class</span></span><br><span class="line">correct_pred = &#123;classname: <span class="number">0</span> <span class="keyword">for</span> classname <span class="keyword">in</span> classes&#125;</span><br><span class="line">total_pred = &#123;classname: <span class="number">0</span> <span class="keyword">for</span> classname <span class="keyword">in</span> classes&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># again no gradients needed</span></span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    <span class="keyword">for</span> data <span class="keyword">in</span> testloader:</span><br><span class="line">        images, labels = data</span><br><span class="line">        outputs = net(images)</span><br><span class="line">        _, predictions = torch.<span class="built_in">max</span>(outputs, <span class="number">1</span>)</span><br><span class="line">        <span class="comment"># collect the correct predictions for each class</span></span><br><span class="line">        <span class="keyword">for</span> label, prediction <span class="keyword">in</span> <span class="built_in">zip</span>(labels, predictions):</span><br><span class="line">            <span class="keyword">if</span> label == prediction:</span><br><span class="line">                correct_pred[classes[label]] += <span class="number">1</span></span><br><span class="line">            total_pred[classes[label]] += <span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># print accuracy for each class</span></span><br><span class="line"><span class="keyword">for</span> classname, correct_count <span class="keyword">in</span> correct_pred.items():</span><br><span class="line">    accuracy = <span class="number">100</span> * <span class="built_in">float</span>(correct_count) / total_pred[classname]</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;Accuracy for class: <span class="subst">&#123;classname:5s&#125;</span> is <span class="subst">&#123;accuracy:<span class="number">.1</span>f&#125;</span> %&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Accuracy <span class="keyword">for</span> <span class="keyword">class</span>: plane <span class="keyword">is</span> <span class="number">54.2</span> %</span><br><span class="line">Accuracy <span class="keyword">for</span> <span class="keyword">class</span>: car   <span class="keyword">is</span> <span class="number">85.1</span> %</span><br><span class="line">Accuracy <span class="keyword">for</span> <span class="keyword">class</span>: bird  <span class="keyword">is</span> <span class="number">41.1</span> %</span><br><span class="line">Accuracy <span class="keyword">for</span> <span class="keyword">class</span>: cat   <span class="keyword">is</span> <span class="number">33.9</span> %</span><br><span class="line">Accuracy <span class="keyword">for</span> <span class="keyword">class</span>: deer  <span class="keyword">is</span> <span class="number">38.7</span> %</span><br><span class="line">Accuracy <span class="keyword">for</span> <span class="keyword">class</span>: dog   <span class="keyword">is</span> <span class="number">55.8</span> %</span><br><span class="line">Accuracy <span class="keyword">for</span> <span class="keyword">class</span>: frog  <span class="keyword">is</span> <span class="number">66.7</span> %</span><br><span class="line">Accuracy <span class="keyword">for</span> <span class="keyword">class</span>: horse <span class="keyword">is</span> <span class="number">70.5</span> %</span><br><span class="line">Accuracy <span class="keyword">for</span> <span class="keyword">class</span>: ship  <span class="keyword">is</span> <span class="number">55.3</span> %</span><br><span class="line">Accuracy <span class="keyword">for</span> <span class="keyword">class</span>: truck <span class="keyword">is</span> <span class="number">44.6</span> %</span><br></pre></td></tr></table></figure>
+
+<p>如何在GPU上训练神经网络呢？</p>
+<h2 id="3-在GPU上训练"><a href="#3-在GPU上训练" class="headerlink" title="3. 在GPU上训练"></a>3. 在GPU上训练</h2><p>就像是如何把一个tensor转换到GPU上，也同样把神经网络转换到GPU上</p>
+<p>如果我们有可用的CUDA，首先将我们的设备定义为一个可用的CUDA设备</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">device = torch.device(<span class="string">&#x27;cuda:0&#x27;</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">&#x27;cpu&#x27;</span>)</span><br><span class="line"><span class="comment"># 假设我们在CUDA机器上，应该打印一个CUDA设备</span></span><br><span class="line"><span class="built_in">print</span>(device)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cuda:<span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>下面的<code>device</code>就是一个CUDA设备</p>
+<p>然后，这些方法将递归遍历所有模块，并且将它们的参数和缓冲区转换成CUDA tensor</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">net.to(device)</span><br><span class="line"><span class="comment"># 必须在每个步骤中将输入和目标发送到GPU</span></span><br><span class="line">inputs,labels = data[<span class="number">0</span>].to(device),data[<span class="number">1</span>].to(device)</span><br></pre></td></tr></table></figure>
+
+<p>为什么没注意到和CPU相比要较大的速度提升呢？因为模型太小了。</p>
+<p><strong>实践练习</strong>：</p>
+<p>尝试提升网络的宽度（第一个<code>nn.Conv2d</code>的第二个参数，第二个<code>nn.Conv2d</code>的第一个参数，它们应该是相同的数字），看看你得到了什么样的加速</p>
+<p><strong>已实现目标</strong>：</p>
+<ul>
+<li>深入了解PyTorch的Tensor库和神经网络</li>
+<li>训练一个小的网络去分类图片</li>
+</ul>
+<hr>
+<h2 id="4-在多个GPU上训练"><a href="#4-在多个GPU上训练" class="headerlink" title="4. 在多个GPU上训练"></a>4. 在多个GPU上训练</h2><p>如果你希望使用所有的GPU来获得更大的加快速度，请看选读：<a target="_blank" rel="noopener" href="https://pytorch.org/tutorials/beginner/blitz/data_parallel_tutorial.html">数据并行</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PyTorch/" rel="tag"># PyTorch</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/07/18/Neural%20Nwtworks/" rel="prev" title="60分钟入门PyTorch——神经网络（用PyTorch构建一个神经网络）">
+      <i class="fa fa-chevron-left"></i> 60分钟入门PyTorch——神经网络（用PyTorch构建一个神经网络）
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E4%B8%80%E4%B8%AA%E5%88%86%E7%B1%BB%E5%99%A8"><span class="nav-number">1.</span> <span class="nav-text">训练一个分类器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%95%B0%E6%8D%AE"><span class="nav-number">1.1.</span> <span class="nav-text">1. 数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E8%AE%AD%E7%BB%83%E4%B8%80%E4%B8%AA%E5%9B%BE%E7%89%87%E5%88%86%E7%B1%BB%E5%99%A8"><span class="nav-number">1.2.</span> <span class="nav-text">2. 训练一个图片分类器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%881%EF%BC%89%E5%8A%A0%E8%BD%BD%E5%92%8C%E6%A0%87%E5%87%86%E5%8C%96CIFAR10"><span class="nav-number">1.2.1.</span> <span class="nav-text">（1）加载和标准化CIFAR10</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AA%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">1.2.2.</span> <span class="nav-text">（2）定义一个卷积神经网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%883%EF%BC%89%E5%AE%9A%E4%B9%89%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E5%92%8C%E4%BC%98%E5%8C%96%E5%99%A8"><span class="nav-number">1.2.3.</span> <span class="nav-text">（3）定义损失函数和优化器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%884%EF%BC%89%E8%AE%AD%E7%BB%83%E7%BD%91%E7%BB%9C"><span class="nav-number">1.2.4.</span> <span class="nav-text">（4）训练网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%885%EF%BC%89%E5%9C%A8%E6%B5%8B%E8%AF%95%E9%9B%86%E4%B8%8A%E6%B5%8B%E8%AF%95%E7%BD%91%E7%BB%9C"><span class="nav-number">1.2.5.</span> <span class="nav-text">（5）在测试集上测试网络</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%9C%A8GPU%E4%B8%8A%E8%AE%AD%E7%BB%83"><span class="nav-number">1.3.</span> <span class="nav-text">3. 在GPU上训练</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%9C%A8%E5%A4%9A%E4%B8%AAGPU%E4%B8%8A%E8%AE%AD%E7%BB%83"><span class="nav-number">1.4.</span> <span class="nav-text">4. 在多个GPU上训练</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="TT"
+      src="/images/header.jpg">
+  <p class="site-author-name" itemprop="name">TT</p>
+  <div class="site-description" itemprop="description">The Journey Is the Reward</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TT</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'TNUpeWIcsOXnq5yrEo6XphL5-gzGzoHsz',
+      appKey     : 'HdE2XffT6XTWRYvV2zovg336',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

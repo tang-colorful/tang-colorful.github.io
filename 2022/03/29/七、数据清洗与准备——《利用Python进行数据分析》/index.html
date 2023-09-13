@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="第七章 数据清洗与准备 讨论用于缺失值、重复值、字符串操作和其他分析数据转换的工具  7.1  处理缺失值 pandas对象的所有描述性统计信息默认情况下是排除缺失值的   对于数值型数据，pandas使用浮点值NaN（Not a Number来表示缺失值）  NA（not available，不可用） Python内建的None值在对象数组中也被当作NA处理   NA处理方法   过滤缺失值 过">
+<meta property="og:type" content="article">
+<meta property="og:title" content="七、数据清洗与准备——《利用Python进行数据分析》">
+<meta property="og:url" content="http://example.com/2022/03/29/%E4%B8%83%E3%80%81%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97%E4%B8%8E%E5%87%86%E5%A4%87%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/index.html">
+<meta property="og:site_name" content="TT&#39;Blog">
+<meta property="og:description" content="第七章 数据清洗与准备 讨论用于缺失值、重复值、字符串操作和其他分析数据转换的工具  7.1  处理缺失值 pandas对象的所有描述性统计信息默认情况下是排除缺失值的   对于数值型数据，pandas使用浮点值NaN（Not a Number来表示缺失值）  NA（not available，不可用） Python内建的None值在对象数组中也被当作NA处理   NA处理方法   过滤缺失值 过">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_91">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_92">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329161532043.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329163415871.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329163828079.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329185902275.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329194222196.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329194345505.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329202000815.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329203834522.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329195456052.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_95">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329225833993.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329224259419.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_99">
+<meta property="article:published_time" content="2022-03-28T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-09-13T11:33:02.922Z">
+<meta property="article:author" content="TT">
+<meta property="article:tag" content="数据处理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_91">
+
+<link rel="canonical" href="http://example.com/2022/03/29/%E4%B8%83%E3%80%81%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97%E4%B8%8E%E5%87%86%E5%A4%87%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>七、数据清洗与准备——《利用Python进行数据分析》 | TT'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">TT'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/29/%E4%B8%83%E3%80%81%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97%E4%B8%8E%E5%87%86%E5%A4%87%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="TT">
+      <meta itemprop="description" content="The Journey Is the Reward">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TT'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          七、数据清洗与准备——《利用Python进行数据分析》
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-29 00:00:00" itemprop="dateCreated datePublished" datetime="2022-03-29T00:00:00+08:00">2022-03-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-13 19:33:02" itemprop="dateModified" datetime="2023-09-13T19:33:02+08:00">2023-09-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%EF%BC%9A-%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">机器学习： 数据分析</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2022/03/29/%E4%B8%83%E3%80%81%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97%E4%B8%8E%E5%87%86%E5%A4%87%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" class="post-meta-item leancloud_visitors" data-flag-title="七、数据清洗与准备——《利用Python进行数据分析》" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/03/29/%E4%B8%83%E3%80%81%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97%E4%B8%8E%E5%87%86%E5%A4%87%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/29/%E4%B8%83%E3%80%81%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97%E4%B8%8E%E5%87%86%E5%A4%87%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="第七章-数据清洗与准备"><a href="#第七章-数据清洗与准备" class="headerlink" title="第七章 数据清洗与准备"></a>第七章 数据清洗与准备</h1><blockquote>
+<p>讨论用于缺失值、重复值、字符串操作和其他分析数据转换的工具</p>
+</blockquote>
+<h2 id="7-1-处理缺失值"><a href="#7-1-处理缺失值" class="headerlink" title="7.1  处理缺失值"></a>7.1  处理缺失值</h2><blockquote>
+<p>pandas对象的所有描述性统计信息默认情况下是排除缺失值的</p>
+</blockquote>
+<ul>
+<li><p>对于数值型数据，pandas使用浮点值NaN（Not a Number来表示缺失值）</p>
+<ul>
+<li>NA（not available，不可用）</li>
+<li>Python内建的None值在对象数组中也被当作NA处理</li>
+</ul>
+</li>
+<li><p>NA处理方法</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_91" alt="epub_22739904_91" style="zoom:50%;" /></li>
+</ul>
+<h3 id="过滤缺失值"><a href="#过滤缺失值" class="headerlink" title="过滤缺失值"></a>过滤缺失值</h3><ul>
+<li><p>过滤缺失值方法</p>
+<ul>
+<li><p>使用pandas.isnull和布尔值索引</p>
+</li>
+<li><p>使用dropna</p>
+<ul>
+<li><p>在Series上使用，会返回Series中所有的非空数据及其索引值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> numpy <span class="keyword">import</span> nan <span class="keyword">as</span> NA</span><br><span class="line">data = pd.Series([<span class="number">1</span>,NA,<span class="number">3.5</span>,NA,<span class="number">7</span>])</span><br><span class="line">data.dropna()</span><br></pre></td></tr></table></figure>
+
+<p>等价表示：<code>data[data.notnull()]</code></p>
+</li>
+<li><p>处理DataFrame对象时，dropna默认删除包含缺失值的<strong>行</strong></p>
+<ul>
+<li><p>传入how&#x3D;’all’时，将删除所有值均为NA的行</p>
+</li>
+<li><p>删除列，传入参数axis&#x3D;1</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data.dropna(axis=<span class="number">1</span>,how=<span class="string">&#x27;all&#x27;</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用thresh参数保留一定数量的观察值的行</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df.dropna(thresh=<span class="number">2</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="补全缺失值"><a href="#补全缺失值" class="headerlink" title="补全缺失值"></a>补全缺失值</h3><ul>
+<li><p>使用fillna方法来补全缺失值</p>
+<ul>
+<li>可以使用一个常数来代替缺失值：<code>df.fillna(0)</code></li>
+<li>调用时使用<strong>字典</strong>来为不同<strong>列</strong>设定不同的填充值：<code>df.fillna(&#123;1:0,2:0&#125;)</code></li>
+<li>fillna返回一个新对象，也可以修改意见存在的对象：<code>df.fillna(0,inplace=True)</code></li>
+<li>用于重建索引的相同的插值方法也可以用于fillna：<code>df.fillna(method=‘ffill’,limit=2)</code></li>
+<li>使用fillna完成创造性填充：<code>data.fillna(data.mean())</code></li>
+</ul>
+</li>
+<li><p>fillna函数参数</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_92" alt="img" style="zoom:50%;" /></li>
+</ul>
+<h2 id="7-2-数据转换"><a href="#7-2-数据转换" class="headerlink" title="7.2 数据转换"></a>7.2 数据转换</h2><h3 id="删除重复值"><a href="#删除重复值" class="headerlink" title="删除重复值"></a>删除重复值</h3><ul>
+<li><p>有些数据会出现<strong>重复行</strong></p>
+<ul>
+<li><p>DataFrame的duplicated方法返回一个布尔值的Series，反映每一行是否与之前出现过相同的行。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">data = pd.DataFrame(&#123;<span class="string">&#x27;k1&#x27;</span>: [<span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;two&#x27;</span>] * <span class="number">3</span> + [<span class="string">&#x27;two&#x27;</span>],</span><br><span class="line">                     <span class="string">&#x27;k2&#x27;</span>: [<span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">4</span>]&#125;)</span><br><span class="line">data</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">	k1	k2</span></span><br><span class="line"><span class="string">0	one	1</span></span><br><span class="line"><span class="string">1	two	1</span></span><br><span class="line"><span class="string">2	one	2</span></span><br><span class="line"><span class="string">3	two	3</span></span><br><span class="line"><span class="string">4	one	3</span></span><br><span class="line"><span class="string">5	two	4</span></span><br><span class="line"><span class="string">6	two	4</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">data.duplicated()</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">0    False</span></span><br><span class="line"><span class="string">1    False</span></span><br><span class="line"><span class="string">2    False</span></span><br><span class="line"><span class="string">3    False</span></span><br><span class="line"><span class="string">4    False</span></span><br><span class="line"><span class="string">5    False</span></span><br><span class="line"><span class="string">6     True</span></span><br><span class="line"><span class="string">dtype: bool</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>drop_duplicates返回duplicated返回数组中为False的部分，格式为DataFrame</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">data.drop_duplicates()</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">	k1	k2</span></span><br><span class="line"><span class="string">0	one	1</span></span><br><span class="line"><span class="string">1	two	1</span></span><br><span class="line"><span class="string">2	one	2</span></span><br><span class="line"><span class="string">3	two	3</span></span><br><span class="line"><span class="string">4	one	3</span></span><br><span class="line"><span class="string">5	two	4</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>方法默认针对<strong>列</strong>，可以指定数据的子集来检测是否有重复</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 假设有一个额外的列，并想基于’k1’列去除重复值</span></span><br><span class="line">data[<span class="string">&#x27;v1&#x27;</span>] = <span class="built_in">range</span>(<span class="number">7</span>)</span><br><span class="line">data.drop_duplicates([<span class="string">&#x27;k1&#x27;</span>])</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">k1	k2	v1</span></span><br><span class="line"><span class="string">0	one	1	0</span></span><br><span class="line"><span class="string">1	two	1	1</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>【注意】</strong>：uplicated和drop_duplicates默认都是保留第一个观测到的值。传入参数keep&#x3D;’last’将会返回最后一个</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="使用函数或映射进行数据转换"><a href="#使用函数或映射进行数据转换" class="headerlink" title="使用函数或映射进行数据转换"></a>使用函数或映射进行数据转换</h3><blockquote>
+<p>基于DataFrame中的数组、列或列中的数值进行一些转换</p>
+<p>map是一种可以便捷执行按元素转换及其他清洗相关操作的方法</p>
+</blockquote>
+<p>收集到的基于肉类的假设数据</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">data = pd.DataFrame(&#123;<span class="string">&#x27;food&#x27;</span>: [<span class="string">&#x27;bacon&#x27;</span>, <span class="string">&#x27;pulled pork&#x27;</span>, <span class="string">&#x27;bacon&#x27;</span>,</span><br><span class="line">                              <span class="string">&#x27;Pastrami&#x27;</span>, <span class="string">&#x27;corned beef&#x27;</span>, <span class="string">&#x27;Bacon&#x27;</span>,</span><br><span class="line">                              <span class="string">&#x27;pastrami&#x27;</span>, <span class="string">&#x27;honey ham&#x27;</span>, <span class="string">&#x27;nova lox&#x27;</span>],</span><br><span class="line">                     <span class="string">&#x27;ounces&#x27;</span>: [<span class="number">4</span>, <span class="number">3</span>, <span class="number">12</span>, <span class="number">6</span>, <span class="number">7.5</span>, <span class="number">8</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">6</span>]&#125;)</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329161532043.png" alt="image-20220329161532043" style="zoom: 50%;" />
+
+<ul>
+<li><p>添加一列用于表明每种食物的动物肉类型，先写下一个食物和肉类的映射</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">meat_to_animal = &#123;</span><br><span class="line">  <span class="string">&#x27;bacon&#x27;</span>: <span class="string">&#x27;pig&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;pulled pork&#x27;</span>: <span class="string">&#x27;pig&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;pastrami&#x27;</span>: <span class="string">&#x27;cow&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;corned beef&#x27;</span>: <span class="string">&#x27;cow&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;honey ham&#x27;</span>: <span class="string">&#x27;pig&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;nova lox&#x27;</span>: <span class="string">&#x27;salmon&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用Series的str.lower方法将每个值都转换为小写</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lowercased = data[<span class="string">&#x27;food&#x27;</span>].<span class="built_in">str</span>.lower()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Series的map方法接收<strong>一个函数</strong>或<strong>一个包含映射关系</strong>的<strong>字典型对象</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data[<span class="string">&#x27;animal&#x27;</span>] = lowercased.<span class="built_in">map</span>(meat_to_animal)</span><br><span class="line">data</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>总结：传入一个能够完成所有工作的函数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data[<span class="string">&#x27;food&#x27;</span>].<span class="built_in">map</span>(<span class="keyword">lambda</span> x: meat_to_animal[x.lower()])</span><br></pre></td></tr></table></figure>
+
+<h3 id="替代值"><a href="#替代值" class="headerlink" title="替代值"></a>替代值</h3><ul>
+<li>使用replace方法更灵活地替代缺失值：<code>data.replace(-999,np.nan)</code></li>
+<li>一次替代多个值，传入一个列表和一个替代值：<code>data.replace([-999,-1000],np.nan)</code></li>
+<li>将不同的值替换为不同的值，可以传入替代值的列表:<code>data.replace([-999, -1000], [np.nan, 0])</code>；也可通过字典传递：<code>data.replace(&#123;-999: np.nan, -1000: 0&#125;)</code></li>
+</ul>
+<blockquote>
+<p>data.replace方法与data.str.replace方法是不同的</p>
+<p>data.str. replace是对字符串进行按元素替代的</p>
+</blockquote>
+<h3 id="重命名轴索引"><a href="#重命名轴索引" class="headerlink" title="重命名轴索引"></a>重命名轴索引</h3><p>数据</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329163415871.png" alt="image-20220329163415871" style="zoom:50%;" />
+
+<ul>
+<li><p>修改轴</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">transform = <span class="keyword">lambda</span> x : x[:<span class="number">4</span>].upper() </span><br><span class="line">data.index.<span class="built_in">map</span>(transform)</span><br><span class="line"><span class="comment"># Index([&#x27;OHIO&#x27;, &#x27;COLO&#x27;, &#x27;NEW &#x27;], dtype=&#x27;object&#x27;)</span></span><br><span class="line"><span class="comment"># 赋值给index，修改DataFrame</span></span><br><span class="line">data.index = data.index.<span class="built_in">map</span>(transform)</span><br><span class="line">data</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329163828079.png" alt="image-20220329163828079" style="zoom:50%;" />
+</li>
+<li><p><strong>rename</strong>：创建数据集转换后的版本，并且不修改原有的数据集</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">data.rename(index=<span class="built_in">str</span>.title,columns=<span class="built_in">str</span>.upper)</span><br><span class="line"><span class="comment"># rename可以结合字典型对象使用，为轴标签的子集提供新的值</span></span><br><span class="line">data.rename(index=&#123;<span class="string">&#x27;OHIO&#x27;</span>:<span class="string">&#x27;INDIANA&#x27;</span>&#125;,</span><br><span class="line">            columns=&#123;<span class="string">&#x27;three&#x27;</span>:<span class="string">&#x27;peekaboo&#x27;</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>想要修改原有的数据，传入<code>inplace=True</code></p>
+</li>
+</ul>
+<h3 id="离散化和分箱"><a href="#离散化和分箱" class="headerlink" title="离散化和分箱"></a>离散化和分箱</h3><blockquote>
+<p>连续值经常需要离散化，或者分离成”箱子“进行分析</p>
+</blockquote>
+<p>假设研究一组人群的数据，将他们进行分组，放入离散的年龄框中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ages = [<span class="number">20</span>, <span class="number">22</span>, <span class="number">25</span>, <span class="number">27</span>, <span class="number">21</span>, <span class="number">23</span>, <span class="number">37</span>, <span class="number">31</span>, <span class="number">61</span>, <span class="number">45</span>, <span class="number">41</span>, <span class="number">32</span>]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>使用<strong>pandas中的cut</strong>将这些年龄分为18～25、26～35、36～60以及61及以上等若干组</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bins = [<span class="number">18</span>,<span class="number">25</span>,<span class="number">35</span>,<span class="number">60</span>,<span class="number">100</span>]</span><br><span class="line">cats = pd.cut(ages,bins)</span><br><span class="line">cats <span class="comment"># 特殊的Categorical对象</span></span><br></pre></td></tr></table></figure>
+
+<p>返回值：一个特殊的Categorical对象，可当作表示箱名字的字符串数组，在内部包含一个categories（类别）数组，指定了不同的类别名称以及codes属性的ages（年龄）数据标签</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cats.codes</span><br><span class="line"><span class="comment"># array([0, 0, 0, 1, 0, 0, 2, 1, 3, 2, 2, 1], dtype=int8)</span></span><br><span class="line">cats.categories</span><br><span class="line"><span class="comment"># IntervalIndex([(18, 25], (25, 35], (35, 60], (60, 100]], dtype=&#x27;interval[int64, right]&#x27;)</span></span><br><span class="line">pd.value_counts(cats) <span class="comment"># 对pandas.cut的结果中的箱数量的计数</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>小括号表示边开放，中括号表示封闭；通过传递right&#x3D;False来改变哪一边是封闭的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pd.cut(ages,[<span class="number">18</span>,<span class="number">26</span>,<span class="number">36</span>,<span class="number">61</span>,<span class="number">100</span>],right=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>向labels选项传递一个列表或数组来传入自定义的箱名</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">group_names = [<span class="string">&#x27;Youth&#x27;</span>, <span class="string">&#x27;YoungAdult&#x27;</span>, <span class="string">&#x27;MiddleAged&#x27;</span>, <span class="string">&#x27;Senior&#x27;</span>]</span><br><span class="line">pd.cut(ages, bins, labels=group_names)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">[[18, 26), [18, 26), [18, 26), [26, 36), [18, 26), ..., [26, 36), [61, 100), [36, 61), [36, 61), [26, 36)]</span></span><br><span class="line"><span class="string">Length: 12</span></span><br><span class="line"><span class="string">Categories (4, interval[int64, left]): [[18, 26) &lt; [26, 36) &lt; [36, 61) &lt; [61, 100)]</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>传给cut整数个的箱来代替显示的箱边，自动根据数据最值计算等长的箱</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 均匀分布的数据被切成四份</span></span><br><span class="line">data = np.random.rand(<span class="number">20</span>)</span><br><span class="line">pd.cut(data,<span class="number">4</span>,precision=<span class="number">2</span>) <span class="comment"># precision=2将十进制精度限制在两位</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>qcut基于样本分位数进行分箱，可以使用qcut获得等长的箱</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">data = np.random.randn(<span class="number">1000</span>)  <span class="comment"># Normally distributed</span></span><br><span class="line">cats = pd.qcut(data, <span class="number">4</span>)  <span class="comment"># Cut into quartiles</span></span><br><span class="line">cats</span><br><span class="line">pd.value_counts(cats) <span class="comment"># 每个箱数量都是250</span></span><br></pre></td></tr></table></figure>
+
+<p>可以传入自定义的分位数（0和1之间的数据，包括边）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pd.qcut(data, [<span class="number">0</span>, <span class="number">0.1</span>, <span class="number">0.5</span>, <span class="number">0.9</span>, <span class="number">1.</span>])</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="检测和过滤异常值"><a href="#检测和过滤异常值" class="headerlink" title="检测和过滤异常值"></a>检测和过滤异常值</h3><ul>
+<li><p>举例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 具有正态分布数据的DataFrame</span></span><br><span class="line">data = pd.DataFrame(np.random.randn(<span class="number">1000</span>,<span class="number">4</span>))</span><br><span class="line"><span class="comment"># 假设你想要找出一列中绝对值大于三的值</span></span><br><span class="line">col = data[<span class="number">2</span>]</span><br><span class="line">col[np.<span class="built_in">abs</span>(col) &gt; <span class="number">3</span>]</span><br><span class="line"><span class="comment"># 选出所有值大于3或小于-3的行，对布尔值DataFrame使用any方法</span></span><br><span class="line">data[(np.<span class="built_in">abs</span>(data)&gt;<span class="number">3</span>).<span class="built_in">any</span>(<span class="number">1</span>)]</span><br><span class="line"><span class="comment"># 限制-3到3之间的数值</span></span><br><span class="line">data[np.<span class="built_in">abs</span>(data)&gt;<span class="number">3</span>] = np.sign(data) * <span class="number">3</span></span><br><span class="line">data.describe()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>np.sign(data)根据数据中的值的正负分别生成1和-1的数值：<code>np.sign(data).head()</code></p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329185902275.png" alt="image-20220329185902275" style="zoom:50%;" /></li>
+</ul>
+<h3 id="置换和随机抽样"><a href="#置换和随机抽样" class="headerlink" title="置换和随机抽样"></a>置换和随机抽样</h3><blockquote>
+<p>使用numpy.random.permutation对DataFrame中的Series或行进行置换（随机重排序）是非常方便的</p>
+</blockquote>
+<ul>
+<li><p>调用permutation时可根据轴长度产生一个新顺序的整数数组</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">df = pd.DataFrame(np.arange(<span class="number">5</span>*<span class="number">4</span>).reshape((<span class="number">5</span>,<span class="number">4</span>)))</span><br><span class="line">sampler = np.random.permutation(<span class="number">5</span>)</span><br><span class="line">sampler <span class="comment"># array([1, 4, 3, 2, 0])</span></span><br><span class="line"><span class="comment"># 整数数组可以用在基于iloc的索引或等价的take函数中</span></span><br><span class="line">df.take(sampler)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>选出不含有替代值的随机子集，可以使用sample方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">df.sample(n=<span class="number">3</span>)</span><br><span class="line"><span class="comment"># 生成带有替代值的样本（允许有重复选择），将replace=True传入sample方法</span></span><br><span class="line">choices = pd.Series([<span class="number">5</span>,<span class="number">7</span>,-<span class="number">1</span>,<span class="number">6</span>,<span class="number">4</span>])</span><br><span class="line">draws = choices.sample(n=<span class="number">10</span>,replace=<span class="literal">True</span>)</span><br><span class="line">draws</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="计算指标、虚拟变量"><a href="#计算指标、虚拟变量" class="headerlink" title="计算指标、虚拟变量"></a>计算指标、虚拟变量</h3><blockquote>
+<p>将分类变量转换为“虚拟”或“指标”矩阵</p>
+</blockquote>
+<ul>
+<li><p>如果DataFrame中的一列有k个不同的值，则可以衍生一个k列的值为1和0的矩阵或DataFrame（pandas有一个<strong>get_dummies函数</strong>用于实现该功能）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">df = pd.DataFrame(&#123;<span class="string">&#x27;key&#x27;</span>: [<span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>],</span><br><span class="line">                   <span class="string">&#x27;data1&#x27;</span>: <span class="built_in">range</span>(<span class="number">6</span>)&#125;)</span><br><span class="line">pd.get_dummies(df[<span class="string">&#x27;key&#x27;</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在指标DataFrame的列上加入前缀，然后与其他数据合并</span></span><br><span class="line">dummies = pd.get_dummies(df[<span class="string">&#x27;key&#x27;</span>], prefix=<span class="string">&#x27;key&#x27;</span>)</span><br><span class="line">df_with_dummy = df[[<span class="string">&#x27;data1&#x27;</span>]].join(dummies)</span><br><span class="line">df_with_dummy</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329194222196.png" alt="image-20220329194222196" style="zoom:50%;" /><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329194345505.png" alt="image-20220329194345505" style="zoom:50%;" /></p>
+</li>
+<li><p>多成员构建指标变量</p>
+<ul>
+<li><p>DataFrame中的一行属于多个类别，则情况略为复杂</p>
+<ul>
+<li><p>每个电影流派添加指标变量</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329202000815.png" alt="image-20220329202000815" style="zoom:50%;" />
+</li>
+<li><p>取出所有不同的流派的列表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">all_genres = []</span><br><span class="line"><span class="keyword">for</span> x <span class="keyword">in</span> movies.genres:</span><br><span class="line">    all_genres.extend(x.split(<span class="string">&#x27;|&#x27;</span>))</span><br><span class="line">genres = pd.unique(all_genres)</span><br><span class="line">genres</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>用全0的DataFrame构建指标</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">zero_matrix = np.zeros((<span class="built_in">len</span>(movies),<span class="built_in">len</span>(genres)))</span><br><span class="line">dummies = pd.DataFrame(zero_matrix,columns=genres)</span><br><span class="line"><span class="comment"># 遍历每一部电影，将dummies每一行的条目设置为1</span></span><br><span class="line"><span class="comment"># 使用dummies.columns来计算每一个流派的列指标</span></span><br><span class="line">gen = movies.genres[<span class="number">0</span>]</span><br><span class="line">gen.split(<span class="string">&#x27;|&#x27;</span>)</span><br><span class="line">dummies.columns.get_indexer(gen.split(<span class="string">&#x27;|&#x27;</span>))</span><br><span class="line"><span class="comment"># array([0, 1, 2], dtype=int64)</span></span><br><span class="line"><span class="keyword">for</span> i,gen <span class="keyword">in</span> <span class="built_in">enumerate</span>(movies.genres):</span><br><span class="line">    indices = dummies.columns.get_indexer(gen.split(<span class="string">&#x27;|&#x27;</span>))</span><br><span class="line">    dummies.iloc[i,indices] = <span class="number">1</span></span><br><span class="line"><span class="comment"># 将结果与movies进行联合</span></span><br><span class="line">movies_windic = movies.join(dummies.add_prefix(<span class="string">&#x27;Genre_&#x27;</span>))</span><br><span class="line">movies_windic.iloc[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329203834522.png" alt="image-20220329203834522" style="zoom:50%;" /></li>
+</ul>
+</li>
+<li><p>对于大数据的快速方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 直接将数据写为NumPy数组的底层函数，然后将结果封装进DataFrame</span></span><br><span class="line"><span class="comment"># get_dummies与cut等离散化函数结合使用</span></span><br><span class="line">np.random.seed(<span class="number">12345</span>) <span class="comment"># 置随机种子以确保示例的确定性</span></span><br><span class="line">values = np.random.rand(<span class="number">10</span>)</span><br><span class="line">values</span><br><span class="line"><span class="comment"># array([0.92961609, 0.31637555, 0.18391881, 0.20456028, 0.56772503,</span></span><br><span class="line"><span class="comment">#       0.5955447 , 0.96451452, 0.6531771 , 0.74890664, 0.65356987])</span></span><br><span class="line">bins = [<span class="number">0</span>, <span class="number">0.2</span>, <span class="number">0.4</span>, <span class="number">0.6</span>, <span class="number">0.8</span>, <span class="number">1</span>]</span><br><span class="line">pd.get_dummies(pd.cut(values, bins))</span><br></pre></td></tr></table></figure>
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329195456052.png" alt="image-20220329195456052" style="zoom:50%;" /></li>
+</ul>
+</li>
+</ul>
+<h2 id="7-3-字符串操作"><a href="#7-3-字符串操作" class="headerlink" title="7.3 字符串操作"></a>7.3 字符串操作</h2><blockquote>
+<p>pandas允许你将字符串和正则表达式简洁地应用到整个数组上</p>
+<p>还能处理缺失值带来的困扰</p>
+</blockquote>
+<h3 id="字符串对象方法"><a href="#字符串对象方法" class="headerlink" title="字符串对象方法"></a>字符串对象方法</h3><ul>
+<li><p>一个逗号分隔的字符串可以使用split方法拆分成多块</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val = <span class="string">&#x27;a,b, guido&#x27;</span></span><br><span class="line">val.split(<span class="string">&#x27;,&#x27;</span>) <span class="comment">#val = &#x27;a,b, guido&#x27;a</span></span><br></pre></td></tr></table></figure>
+
+<p>split常和strip一起使用，用于清除空格（包括换行）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">val = <span class="string">&#x27;a,b, guido&#x27;</span></span><br><span class="line">val.split(<span class="string">&#x27;,&#x27;</span>) <span class="comment">#val = &#x27;a,b, guido&#x27;a</span></span><br><span class="line">pieces = [x.strip() <span class="keyword">for</span> x <span class="keyword">in</span> val.split(<span class="string">&#x27;,&#x27;</span>)]</span><br><span class="line">pieces <span class="comment"># [&#x27;a&#x27;, &#x27;b&#x27;, &#x27;guido&#x27;]</span></span><br><span class="line"><span class="comment"># 子字符串可以使用加法与两个冒号分隔符连接在一起</span></span><br><span class="line">first ,second , third=pieces</span><br><span class="line">first+<span class="string">&#x27;::&#x27;</span>+second+<span class="string">&#x27;::&#x27;</span>+third <span class="comment"># &#x27;a::b::guido&#x27;</span></span><br><span class="line"><span class="comment"># 更通用方法</span></span><br><span class="line"><span class="string">&#x27;::&#x27;</span>.join(pieces)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>尽管index和find也可，Python的in关键字是检测子字符串的最佳方法</p>
+<blockquote>
+<p>index在字符串没有找到时会抛出一个异常（而find是返回-1）</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;guido&#x27;</span> <span class="keyword">in</span> val <span class="comment"># True</span></span><br><span class="line">val.index(<span class="string">&#x27;,&#x27;</span>) <span class="comment"># 1</span></span><br><span class="line">val.find(<span class="string">&#x27;:&#x27;</span>) <span class="comment"># -1</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>count返回子字符串出现的次数：<code>val.count(‘,’)</code></p>
+</li>
+<li><p>replace将用一种模式替代另一种模式。它通常也用于传入空字符串来<strong>删除某个模式</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val.replace(<span class="string">&#x27;,&#x27;</span>,<span class="string">&#x27;::&#x27;</span>) <span class="comment"># &#x27;a::b:: guido&#x27;</span></span><br><span class="line">val.replace(<span class="string">&#x27;,&#x27;</span>,<span class="string">&#x27; &#x27;</span>)  <span class="comment"># &#x27;a b  guido&#x27;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Python内建字符串方法</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_95" alt="img" style="zoom:50%;" /></li>
+</ul>
+<h3 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h3><blockquote>
+<p>一种在文本中灵活查找或匹配（通常更为复杂的）字符串模式的方法。单个表达式通常被称为regex，是根据正则表达式语言形成的字符串.</p>
+</blockquote>
+<ul>
+<li><p>Python的re模块是将正则表达式应用到字符串上的库</p>
+<ul>
+<li><p>re模块的三个主题</p>
+<ul>
+<li>模式匹配</li>
+<li>替代</li>
+<li>拆分</li>
+</ul>
+</li>
+<li><p>描述<strong>一个或多个空白字符</strong>的正则表达式是<strong>\s+</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># # 将含有多种空白字符（制表符、空格、换行符）的字符串拆分开</span></span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line">text = <span class="string">&quot;foo    bar\t baz  \tqux&quot;</span></span><br><span class="line">re.split(<span class="string">&#x27;\s+&#x27;</span>, text) <span class="comment"># [&#x27;foo&#x27;, &#x27;bar&#x27;, &#x27;baz&#x27;, &#x27;qux&#x27;]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>用<strong>re.compile</strong>自行编译，形成一个<strong>可复用</strong>的正则表达式对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">regex = re.<span class="built_in">compile</span>(<span class="string">&#x27;\s+&#x27;</span>)</span><br><span class="line">regex.split(text) <span class="comment"># [&#x27;foo&#x27;, &#x27;bar&#x27;, &#x27;baz&#x27;, &#x27;qux&#x27;]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<strong>findall</strong>获得所有匹配正则表达式模式的列表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">regex.findall(text)</span><br><span class="line"><span class="comment"># [&#x27;    &#x27;, &#x27;\t &#x27;, &#x27;  \t&#x27;]</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>在正则表达式中避免转义符\的影响，可以使用原生字符串语法，比如<code>r&#39;C:\x&#39;</code>或者用等价的<code>’C:\\x&#39;</code></p>
+</li>
+<li><p>使用re.compile创建一个正则表达式对象，可以将相同的表达式应用到多个字符串上，这样有利于节约CPU周期</p>
+</li>
+<li><p>match、search、findall</p>
+<ul>
+<li><p>findall返回字符串中所有匹配项</p>
+</li>
+<li><p>search仅返回第一个匹配项</p>
+</li>
+<li><p>match更为严格，只在字符串的起始位置进行匹配</p>
+</li>
+<li><p>例子：识别大部分电子邮件地址的正则表达式</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">text = <span class="string">&quot;&quot;&quot;Dave dave@google.com</span></span><br><span class="line"><span class="string">Steve steve@gmail.com</span></span><br><span class="line"><span class="string">Rob rob@gmail.com</span></span><br><span class="line"><span class="string">Ryan ryan@yahoo.com</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">pattern = <span class="string">r&#x27;[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]&#123;2,4&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># re.IGNORECASE makes the regex case-insensitive</span></span><br><span class="line">regex = re.<span class="built_in">compile</span>(pattern, flags=re.IGNORECASE)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用findall会生成一个电子邮件地址的列表</span></span><br><span class="line">regex.findall(text)</span><br><span class="line"><span class="comment"># [&#x27;dave@google.com&#x27;, &#x27;steve@gmail.com&#x27;, &#x27;rob@gmail.com&#x27;, &#x27;ryan@yahoo.com&#x27;]</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># search返回第一个匹配到的电子邮件地址</span></span><br><span class="line">m =regex.search(text)</span><br><span class="line">m <span class="comment"># &lt;re.Match object; span=(5, 20), match=&#x27;dave@google.com&#x27;&gt;</span></span><br><span class="line"><span class="comment"># 匹配对象只能告诉我们模式在字符串中起始和结束的位置</span></span><br><span class="line">text[m.start():m.end()] <span class="comment"># &#x27;dave@google.com&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># regex.match只在模式出现于字符串起始位置时进行匹配，如果没有匹配到，返回None</span></span><br><span class="line"><span class="built_in">print</span>(regex.match(text)) <span class="comment"># None</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>sub会返回一个新的字符串，原字符串会被新的字符串替代</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(regex.sub(<span class="string">&#x27;REDACTED&#x27;</span>,text))</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">Dave REDACTED</span></span><br><span class="line"><span class="string">Steve REDACTED</span></span><br><span class="line"><span class="string">Rob REDACTED</span></span><br><span class="line"><span class="string">Ryan REDACTED</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将电子邮件地址分为三个部分：用户名、域名和域名后缀，可以用<strong>括号</strong>将模式包起来</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pattern = <span class="string">r&#x27;([A-Z0-9._%+-]+)@([A-Z0-9.-]+)\.([A-Z]&#123;2,4&#125;)&#x27;</span></span><br><span class="line">regex = re.<span class="built_in">compile</span>(pattern, flags=re.IGNORECASE)</span><br><span class="line"><span class="comment"># 使用修改后的对象的groups方法，返回的是模式组件的元组</span></span><br><span class="line">m = regex.match(<span class="string">&#x27;wesm@bright.net&#x27;</span>)</span><br><span class="line">m.groups() <span class="comment"># (&#x27;wesm&#x27;, &#x27;bright&#x27;, &#x27;net&#x27;)</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>模式可以分组时，findall返回的是包含元组的列表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">regex.findall(text)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">[(&#x27;dave&#x27;, &#x27;google&#x27;, &#x27;com&#x27;),</span></span><br><span class="line"><span class="string"> (&#x27;steve&#x27;, &#x27;gmail&#x27;, &#x27;com&#x27;),</span></span><br><span class="line"><span class="string"> (&#x27;rob&#x27;, &#x27;gmail&#x27;, &#x27;com&#x27;),</span></span><br><span class="line"><span class="string"> (&#x27;ryan&#x27;, &#x27;yahoo&#x27;, &#x27;com&#x27;)]</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>sub也可以使用特殊符号，如\1和\2，访问每个匹配对象中的分组</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(regex.sub(<span class="string">r&#x27;Username: \1,Domain: \2,Suffix: \3&#x27;</span>,text))</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">Dave Username: dave,Domain: google,Suffix: com</span></span><br><span class="line"><span class="string">Steve Username: steve,Domain: gmail,Suffix: com</span></span><br><span class="line"><span class="string">Rob Username: rob,Domain: gmail,Suffix: com</span></span><br><span class="line"><span class="string">Ryan Username: ryan,Domain: yahoo,Suffix: com</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>正则表达式方法</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329225833993.png" alt="image-20220329225833993" style="zoom:67%;" /></li>
+</ul>
+<h3 id="pandas中的向量化字符串函数"><a href="#pandas中的向量化字符串函数" class="headerlink" title="pandas中的向量化字符串函数"></a>pandas中的向量化字符串函数</h3><ul>
+<li><p>包含字符串的列有时会含有缺失数据</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/image-20220329224259419.png" alt="image-20220329224259419" style="zoom:67%;" />
+
+<p>可以使用<strong>data.map</strong>将字符串和有效的正则表达式方法（以lambda或其他函数的方式传递）应用到每个值上，但是<strong>在NA（null）值上会失败</strong></p>
+</li>
+<li><p>Series有面向数组的方法用于跳过NA值的字符串操作。这些方法通过Series的str属性进行调用</p>
+<ul>
+<li>str.contains来检查每个电子邮件地址是否含有’gmail’：<code>data.str.contains(‘gmail’)</code></li>
+</ul>
+</li>
+<li><p>正则表达式也可以结合任意的re模块选项使用，例如IGNORECASE</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">pattern</span><br><span class="line">data.<span class="built_in">str</span>.findall(pattern, flags=re.IGNORECASE)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">Dave     [(dave, google, com)]</span></span><br><span class="line"><span class="string">Steve    [(steve, gmail, com)]</span></span><br><span class="line"><span class="string">Rob        [(rob, gmail, com)]</span></span><br><span class="line"><span class="string">Wes                        NaN</span></span><br><span class="line"><span class="string">dtype: object</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>进行向量化元素检查</p>
+<ul>
+<li><p>使用str.get或在str属性内部索引</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">matches = data.<span class="built_in">str</span>.match(pattern,flags=re.IGNORECASE)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>要访问嵌入式列表中的元素,将索引传递给这些函数中的任意一个</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">matches.<span class="built_in">str</span>.get(<span class="number">1</span>)</span><br><span class="line">matches.<span class="built_in">str</span>[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用字符串切片的类似语法进行向量化切片</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">data.<span class="built_in">str</span>[<span class="number">5</span>]</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">Dave     dave@</span></span><br><span class="line"><span class="string">Steve    steve</span></span><br><span class="line"><span class="string">Rob      rob@g</span></span><br><span class="line"><span class="string">Wes        NaN</span></span><br><span class="line"><span class="string">dtype: object</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>部分向量化字符串方法列表</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/epub_22739904_99" alt="img" style="zoom:50%;" /></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/" rel="tag"># 数据处理</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/29/%E5%85%AD%E3%80%81%E6%95%B0%E6%8D%AE%E8%BD%BD%E5%85%A5%E3%80%81%E5%AD%98%E5%82%A8%E5%8F%8A%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" rel="prev" title="六、数据载入、存储及文件格式《利用Python进行数据分析》">
+      <i class="fa fa-chevron-left"></i> 六、数据载入、存储及文件格式《利用Python进行数据分析》
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/03/%E5%85%AB%E3%80%81%E6%95%B0%E6%8D%AE%E8%A7%84%E6%95%B4%EF%BC%9A%E8%BF%9E%E6%8E%A5%E3%80%81%E8%81%94%E5%90%88%E4%B8%8E%E9%87%8D%E5%A1%91%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" rel="next" title="八、数据规整：连接、联合与重塑——《利用Python进行数据分析》">
+      八、数据规整：连接、联合与重塑——《利用Python进行数据分析》 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%83%E7%AB%A0-%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97%E4%B8%8E%E5%87%86%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">第七章 数据清洗与准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#7-1-%E5%A4%84%E7%90%86%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="nav-number">1.1.</span> <span class="nav-text">7.1  处理缺失值</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="nav-number">1.1.1.</span> <span class="nav-text">过滤缺失值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A5%E5%85%A8%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="nav-number">1.1.2.</span> <span class="nav-text">补全缺失值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-2-%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.2.</span> <span class="nav-text">7.2 数据转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E9%87%8D%E5%A4%8D%E5%80%BC"><span class="nav-number">1.2.1.</span> <span class="nav-text">删除重复值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%87%BD%E6%95%B0%E6%88%96%E6%98%A0%E5%B0%84%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.2.2.</span> <span class="nav-text">使用函数或映射进行数据转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%BF%E4%BB%A3%E5%80%BC"><span class="nav-number">1.2.3.</span> <span class="nav-text">替代值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%91%BD%E5%90%8D%E8%BD%B4%E7%B4%A2%E5%BC%95"><span class="nav-number">1.2.4.</span> <span class="nav-text">重命名轴索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A6%BB%E6%95%A3%E5%8C%96%E5%92%8C%E5%88%86%E7%AE%B1"><span class="nav-number">1.2.5.</span> <span class="nav-text">离散化和分箱</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E6%B5%8B%E5%92%8C%E8%BF%87%E6%BB%A4%E5%BC%82%E5%B8%B8%E5%80%BC"><span class="nav-number">1.2.6.</span> <span class="nav-text">检测和过滤异常值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%AE%E6%8D%A2%E5%92%8C%E9%9A%8F%E6%9C%BA%E6%8A%BD%E6%A0%B7"><span class="nav-number">1.2.7.</span> <span class="nav-text">置换和随机抽样</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E6%8C%87%E6%A0%87%E3%80%81%E8%99%9A%E6%8B%9F%E5%8F%98%E9%87%8F"><span class="nav-number">1.2.8.</span> <span class="nav-text">计算指标、虚拟变量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-3-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%93%8D%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">7.3 字符串操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AF%B9%E8%B1%A1%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.1.</span> <span class="nav-text">字符串对象方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">1.3.2.</span> <span class="nav-text">正则表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pandas%E4%B8%AD%E7%9A%84%E5%90%91%E9%87%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%87%BD%E6%95%B0"><span class="nav-number">1.3.3.</span> <span class="nav-text">pandas中的向量化字符串函数</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="TT"
+      src="/images/header.jpg">
+  <p class="site-author-name" itemprop="name">TT</p>
+  <div class="site-description" itemprop="description">The Journey Is the Reward</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TT</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'TNUpeWIcsOXnq5yrEo6XphL5-gzGzoHsz',
+      appKey     : 'HdE2XffT6XTWRYvV2zovg336',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

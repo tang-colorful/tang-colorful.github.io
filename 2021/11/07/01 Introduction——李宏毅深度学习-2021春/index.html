@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="01-1 Introduction1课程网址：https:&#x2F;&#x2F;speech.ee.ntu.edu.tw&#x2F;~hylee&#x2F;ml&#x2F;2021-spring.html  1. Prerequisite Math Calculus (微积分) Linear algebra (线性代数) Probability (概率)   Programming Python PyTorch   Hardware:不需要硬件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="01 Introduction 简介和回归——李宏毅深度学习2021春">
+<meta property="og:url" content="http://example.com/2021/11/07/01%20Introduction%E2%80%94%E2%80%94%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2021%E6%98%A5/index.html">
+<meta property="og:site_name" content="TT&#39;Blog">
+<meta property="og:description" content="01-1 Introduction1课程网址：https:&#x2F;&#x2F;speech.ee.ntu.edu.tw&#x2F;~hylee&#x2F;ml&#x2F;2021-spring.html  1. Prerequisite Math Calculus (微积分) Linear algebra (线性代数) Probability (概率)   Programming Python PyTorch   Hardware:不需要硬件">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110271932872.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110271937805.jpg">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110272049047.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110272055908.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110272055176.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110272117754.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110272325187.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110272335279.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110272336167.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281252711.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281311792.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281320585.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281404694.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281409777.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281416887.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281431998.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281444043.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281518156.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281521055.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281531545.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111040932704.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111040935813.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111040952391.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111040954041.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111040957516.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041014018.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041023474.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041053505.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041445343.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041455924.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041500754.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041503239.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041908378.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041908248.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041908388.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041908710.png">
+<meta property="og:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041908500.png">
+<meta property="article:published_time" content="2021-11-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-09-13T11:49:09.314Z">
+<meta property="article:author" content="TT">
+<meta property="article:tag" content="机器学习，深度学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110271932872.png">
+
+<link rel="canonical" href="http://example.com/2021/11/07/01%20Introduction%E2%80%94%E2%80%94%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2021%E6%98%A5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>01 Introduction 简介和回归——李宏毅深度学习2021春 | TT'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">TT'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/07/01%20Introduction%E2%80%94%E2%80%94%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2021%E6%98%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="TT">
+      <meta itemprop="description" content="The Journey Is the Reward">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TT'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          01 Introduction 简介和回归——李宏毅深度学习2021春
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-11-07 00:00:00" itemprop="dateCreated datePublished" datetime="2021-11-07T00:00:00+08:00">2021-11-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-13 19:49:09" itemprop="dateModified" datetime="2023-09-13T19:49:09+08:00">2023-09-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/11/07/01%20Introduction%E2%80%94%E2%80%94%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2021%E6%98%A5/" class="post-meta-item leancloud_visitors" data-flag-title="01 Introduction 简介和回归——李宏毅深度学习2021春" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/11/07/01%20Introduction%E2%80%94%E2%80%94%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2021%E6%98%A5/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/07/01%20Introduction%E2%80%94%E2%80%94%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2021%E6%98%A5/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="01-1-Introduction"><a href="#01-1-Introduction" class="headerlink" title="01-1 Introduction"></a>01-1 Introduction</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">课程网址：https://speech.ee.ntu.edu.tw/~hylee/ml/2021-spring.html</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-Prerequisite"><a href="#1-Prerequisite" class="headerlink" title="1. Prerequisite"></a>1. Prerequisite</h2><ul>
+<li>Math<ul>
+<li>Calculus (微积分)</li>
+<li>Linear algebra (线性代数)</li>
+<li>Probability (概率)</li>
+</ul>
+</li>
+<li>Programming<ul>
+<li>Python</li>
+<li>PyTorch</li>
+</ul>
+</li>
+<li>Hardware:不需要硬件设备，在Google Colab上运行</li>
+</ul>
+<h2 id="2-Assignment"><a href="#2-Assignment" class="headerlink" title="2. Assignment"></a>2. Assignment</h2><ul>
+<li><p>multiple-choice questions（多选）：submitted via NTU COOL</p>
+</li>
+<li><p>Leaderboard（排行榜）：Kaggle or JudgeBoi (our in-house Kaggle  )</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110271932872.png" alt="Assignment Schedule" style="zoom:50%;" align="left" /></li>
+</ul>
+<h2 id="3-Lecture-Schedule"><a href="#3-Lecture-Schedule" class="headerlink" title="3. Lecture Schedule"></a>3. Lecture Schedule</h2><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110271937805.jpg" alt="Lecture Schedule" style="zoom:40%;" align="left"/>
+
+<h2 id="4-Kaggle-JudgeBoi-is-similar"><a href="#4-Kaggle-JudgeBoi-is-similar" class="headerlink" title="4. Kaggle (JudgeBoi is similar)"></a>4. Kaggle (JudgeBoi is similar)</h2><ul>
+<li>Register a Kaggle account by yourself 注册自己账号</li>
+<li>select two results for evaluating on the private set before the assignment deadline</li>
+<li>limited submission times per day 每天提交有字数限制</li>
+</ul>
+<h1 id="01-2-Regression"><a href="#01-2-Regression" class="headerlink" title="01-2 Regression"></a>01-2 Regression</h1><blockquote>
+<h2 id="Machine-Learning-≈-Looking-for-Function"><a href="#Machine-Learning-≈-Looking-for-Function" class="headerlink" title="Machine Learning  ≈ Looking for Function"></a>Machine Learning  ≈ Looking for Function</h2></blockquote>
+<h2 id="1-Different-types-of-Functions"><a href="#1-Different-types-of-Functions" class="headerlink" title="1. Different types of Functions"></a>1. Different types of Functions</h2><ul>
+<li><strong>Regression:</strong> The function outputs a scalar （输出固定值）</li>
+<li><strong>Classification:</strong> Given options (<strong>classes</strong>), the function outputs the correct one (分类)</li>
+<li><strong>Structured Learning:</strong> create something with structure (image, document)</li>
+</ul>
+<h2 id="2-How-to-find-a-function"><a href="#2-How-to-find-a-function" class="headerlink" title="2. How to find a function?"></a>2. How to find a function?</h2><blockquote>
+<p>研究案例：YouTube Channel     （李宏毅老师YouTube频道观看量）</p>
+<p><a target="_blank" rel="noopener" href="https://www.youtube.com/c/HungyiLeeNTU">https://www.youtube.com/c/HungyiLeeNTU</a></p>
+</blockquote>
+<h3 id="2-1-Function-with-Unknown-Parameters"><a href="#2-1-Function-with-Unknown-Parameters" class="headerlink" title="2.1 Function with Unknown Parameters"></a>2.1 Function with Unknown Parameters</h3><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110272049047.png" alt="YouTube案例" style="zoom:50%;" align="left"/>
+
+<blockquote>
+<p>y: 2&#x2F;26日的观看量，x:2&#x2F;25日的观看量</p>
+<p>w 和 b是将要从数据中学习的未知参数   W:<strong>weight</strong>  b:<strong>bias</strong></p>
+</blockquote>
+<h3 id="2-2-Define-Loss-from-Training-Data"><a href="#2-2-Define-Loss-from-Training-Data" class="headerlink" title="2.2 Define Loss from Training Data"></a>2.2 Define Loss from Training Data</h3><p>等高线图：梯度下降的方向与切线方向垂直  </p>
+<p>证明：<a target="_blank" rel="noopener" href="https://blog.csdn.net/chekongfu/article/details/85317288">人工智能数学基础04之：梯度等高线_智者之家-CSDN博客_机器学习等高线</a></p>
+<p><strong>Loss损失函数</strong>：L(b,w),表示这组值有多好</p>
+<p><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110272055908.png" alt="image-20211027204735464" style="zoom: 50%;" align="left"/> <img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110272055176.png" alt="image-20211027205518090" style="zoom:50%;" align="right"/></p>
+<h3 id="2-3-Optimization"><a href="#2-3-Optimization" class="headerlink" title="2.3 Optimization"></a>2.3 Optimization</h3><p>$$<br>\begin{array}{l}<br>w^{<em>}, b^{</em>}&#x3D;\arg \min_{w, b}  L<br>\end{array}<br>$$</p>
+<blockquote>
+<p>Gradient Descent梯度下降   Local Minima 局部最优 Global Minima 全局最优</p>
+</blockquote>
+<ul>
+<li><p>(Randomly) Pick initial values $w^0, b^0$ 随机初始化</p>
+</li>
+<li><p>Compute计算</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110272117754.png" alt="image-20211027211733695" style="zoom:50%;" align="left"/>
+</li>
+<li><p>Update w and b iteratively   交替更新w和b</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">A[Step 1:&lt;br /&gt;function with unknown] --&gt; B[Step 2: &lt;br /&gt;define loss from training data] </span><br><span class="line">B --&gt; C[Step 3:&lt;br /&gt; optimization ]</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-Sigmoid激活函数"><a href="#2-4-Sigmoid激活函数" class="headerlink" title="2.4 Sigmoid激活函数"></a>2.4 Sigmoid激活函数</h3><p>线性模型太简单，不能满足复杂问题的需要，因此我们需要建立更复杂的模型来拟合复杂曲线</p>
+<p><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110272325187.png" alt="image-20211027232521119"></p>
+<p>为了更好的拟合现实世界中复杂的曲线，就需要很多这样分段碎片（hard sigmoid），将它们和常数叠加就可以拟合出各种各样的线性折线</p>
+<p>然而hard sigmoid需要用分段函数来表示，在分段函数处不可导，针对计算机来说处理分段函数也更加麻烦，因此可以使用更加圆滑的sigmoid函数来代替，如下图所示</p>
+<p><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110272335279.png" alt="image-20211027233500190"></p>
+<p><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110272336167.png" alt="image-20211027233615094"></p>
+<blockquote>
+<p>i：no. of sigmoid</p>
+<p>j：no. of features</p>
+</blockquote>
+<p>以上是<strong>线性模型</strong>到<strong>非线性模型</strong>的过程，接下来介绍<strong>非线性模型</strong>到<strong>神经网络</strong>的过程</p>
+<h2 id="3-Neural-Networks"><a href="#3-Neural-Networks" class="headerlink" title="3.Neural Networks"></a>3.Neural Networks</h2><blockquote>
+<p>本部分展示了$y &#x3D; b + \sum_i :c_i sigmoid(b_i + \sum_j w_{ij}x_j)$公式由内到外的形成过程</p>
+</blockquote>
+<h3 id="3-1-b-i-sum-j-w-ij-x-j-形成过程"><a href="#3-1-b-i-sum-j-w-ij-x-j-形成过程" class="headerlink" title="3.1 $b_i + \sum_j w_{ij}x_j$形成过程"></a>3.1 $b_i + \sum_j w_{ij}x_j$形成过程</h3><img align = "left " src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281252711.png" alt="image-20211028125240578" style="zoom:50%;" />
+i:1,2,3 no. of sigmoid
+j:1,2,3 no. of features
+
+<p>$w_{ij}$: weight for $x_j$ for i-th sigmoid </p>
+<p>将系数抽象成矩阵</p>
+<img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281311792.png" alt="image-20211028131110717" style="zoom:60%;" />
+
+<h3 id="3-2-sigmoid-b-i-sum-j-w-ij-x-j-形成过程"><a href="#3-2-sigmoid-b-i-sum-j-w-ij-x-j-形成过程" class="headerlink" title="3.2 $sigmoid(b_i + \sum_j w_{ij}x_j)$形成过程"></a>3.2 $sigmoid(b_i + \sum_j w_{ij}x_j)$形成过程</h3><img align ="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281320585.png" alt="image-20211028132034512" style="zoom:60%;" />
+
+<h3 id="3-3-b-sum-i-c-i-sigmoid-b-i-sum-j-w-ij-x-j-形成过程"><a href="#3-3-b-sum-i-c-i-sigmoid-b-i-sum-j-w-ij-x-j-形成过程" class="headerlink" title="3.3 $b + \sum_i :c_i sigmoid(b_i + \sum_j w_{ij}x_j)$形成过程"></a>3.3 $b + \sum_i :c_i sigmoid(b_i + \sum_j w_{ij}x_j)$形成过程</h3><img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281404694.png" alt="image-20211028140402595" style="zoom:60%;" />
+
+<h3 id="3-4-神经网络处理过程-Back-to-ML-Framework"><a href="#3-4-神经网络处理过程-Back-to-ML-Framework" class="headerlink" title="3.4 神经网络处理过程 Back to ML Framework"></a>3.4 神经网络处理过程 Back to ML Framework</h3><h4 id="3-4-1-Function-with-unknown-parameters"><a href="#3-4-1-Function-with-unknown-parameters" class="headerlink" title="3.4.1 Function with unknown parameters"></a>3.4.1 Function with unknown parameters</h4><p><img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281409777.png" alt="image-20211028140953706" style="zoom:60%;" />w、b、$c_T$、b组成参数矩阵$\theta$</p>
+<h4 id="3-4-2-Loss"><a href="#3-4-2-Loss" class="headerlink" title="3.4.2 Loss"></a>3.4.2 Loss</h4><p>$$<br>L &#x3D; 1&#x2F;N \sum_ne_n<br>$$</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281416887.png" alt="image-20211028141604827" style="zoom:67%;" />
+
+<h4 id="3-4-3-Optimization-of-New-Model"><a href="#3-4-3-Optimization-of-New-Model" class="headerlink" title="3.4.3 Optimization of New Model"></a>3.4.3 Optimization of New Model</h4><ul>
+<li><p>$$<br>\theta&#x3D;<br>\begin{vmatrix}<br>\theta_1\<br>\theta_2\<br>\theta_3\<br>\vdots<br>\end{vmatrix}<br>\enspace\enspace\enspace\enspace<br>\theta^*&#x3D;\arg \min_\theta L<br>$$</p>
+</li>
+<li><p>随机初始化$\theta^0$</p>
+</li>
+</ul>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281431998.png" alt="image-20211028143107939" style="zoom:40%;" />
+
+
+
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281444043.png" style="zoom:50%;" />
+
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名词</th>
+<th>定义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Epoch</td>
+<td>使用训练集的全部数据对模型进行一次完整训练，被称之为“<strong>一代训练</strong>”</td>
+</tr>
+<tr>
+<td>Batch</td>
+<td>使用训练集中的一小部分样本对模型权重进行一次反向传播的参数更新，这一小部分样本被称为“<strong>一批数据</strong>”</td>
+</tr>
+<tr>
+<td>Iteration</td>
+<td>使用一个Batch数据对模型进行一次参数更新的过程，被称之为“<strong>一次训练</strong>”</td>
+</tr>
+</tbody></table>
+<p>一个例子说明：</p>
+<p>N&#x3D;10000（10000个样本），B&#x3D;10（Batch size为10）</p>
+<p>那么可以得出在一个epoch内更新了1000次参数</p>
+</blockquote>
+<h2 id="4-ReLU"><a href="#4-ReLU" class="headerlink" title="4. ReLU"></a>4. ReLU</h2><ul>
+<li><img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281518156.png" alt="image-20211028151847079" style="zoom:50%;" />
+两个ReLU合成了一个Hard Sigmoid</li>
+</ul>
+<p>系数c可以为复数，有负数时依然使用max而不使用min是为了更好的将公式合起来，更好表示</p>
+<ul>
+<li><img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281521055.png" alt="image-20211028152141997" style="zoom:50%;" />
+Activation function**激活函数**
+i变成2i是因为两个ReLU才能合成一个sigmoid
+
+
+
+
+</li>
+<li><p>激活函数模拟人脑内的神经元，因此这种结构被称为神经网络</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1.怎么样才能处理更复杂的模型呢？</span><br><span class="line">	够多的ReLU和Sigmoid就可以模拟出各种复杂的曲线</span><br><span class="line">	现在也会用一层叠一层的方式，向深度发展（具体为什么，接下来的课程会讲），也就是深度学习</span><br><span class="line">	【注】过多的层数会造成过拟合</span><br><span class="line">2.课程将讲述的模型真的应用到了youtube频道的流量预测，每一层有100个ReLu</span><br></pre></td></tr></table></figure>
+
+<img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202110281531545.png" alt="image-20211028153132333" style="zoom: 33%;" />
+深度学习模型的层数越来越多,预测误差也越来越小
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1 id="01-3-深度学习简介（To-Learn-More）"><a href="#01-3-深度学习简介（To-Learn-More）" class="headerlink" title="01-3 深度学习简介（To Learn More）"></a>01-3 深度学习简介（To Learn More）</h1><h2 id="1-深度学习历史"><a href="#1-深度学习历史" class="headerlink" title="1. 深度学习历史"></a>1. 深度学习历史</h2><ul>
+<li><p>1958: Perceptron (linear model)</p>
+</li>
+<li><p>1969: Perceptron has limitation</p>
+</li>
+<li><p>1980s: Multi layer perceptron</p>
+<ul>
+<li>Do not have significant difference from DNN today</li>
+</ul>
+</li>
+<li><p>1986: Backpropagation</p>
+<ul>
+<li>Usually more than 3 hidden layers is not helpful</li>
+</ul>
+</li>
+<li><p>1989: 1 hidden layer is “good enough”, why deep?</p>
+</li>
+<li><p>2006: RBM initialization (breakthrough)</p>
+</li>
+<li><p>2009: GPU</p>
+</li>
+<li><p>2011: Start to be popular in speech recognition 语音辨识</p>
+</li>
+<li><p>2012: win ILSVRC image competition</p>
+</li>
+</ul>
+<blockquote>
+<p>这部分看看就行</p>
+</blockquote>
+<h2 id="2-神经网络（Neural-Network）"><a href="#2-神经网络（Neural-Network）" class="headerlink" title="2.神经网络（Neural Network）"></a>2.神经网络（Neural Network）</h2><p>把一个逻辑回归函数看作是一个“<strong>Neural</strong>”，这些神经元不同连接方式就构成了不同的神经网络结构。所有神经元的<strong>weights</strong>和<strong>biases</strong>组成了神经网络的参数$\theta$</p>
+<h3 id="2-1-全连接前馈网络"><a href="#2-1-全连接前馈网络" class="headerlink" title="2.1 全连接前馈网络"></a>2.1 全连接前馈网络</h3><blockquote>
+<p>Fully Connect Feedforward Network</p>
+<p>给定一个网络结构，就是定义了一个函数集合</p>
+</blockquote>
+<img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111040932704.png" alt="image-20211104093219575" style="zoom:50%;" />
+
+<p>deep 就体现在有很多隐藏层</p>
+<img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111040935813.png" alt="image-20211104093518738" style="zoom:67%;" />
+
+<p>把神经网络转化成矩阵运算</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111040952391.png" alt="image-20211104095205311" style="zoom:80%;" />
+
+<p>输出层</p>
+<img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111040954041.png" alt="image-20211104095452979" style="zoom:67%;" />
+
+<h3 id="2-2-应用举例：识别数字"><a href="#2-2-应用举例：识别数字" class="headerlink" title="2.2 应用举例：识别数字"></a>2.2 应用举例：识别数字</h3><ul>
+<li><p>第一步：神经网络</p>
+<img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111040957516.png" alt="image-20211104095718448" style="zoom:67%;" />
+
+<p>输出层分表表示数字是i(0-9)的概率</p>
+<p>需要研究人员自己探索到更好的神经网络结构来实现好的函数设计</p>
+</li>
+<li><p>第二步：寻找好的函数</p>
+<p><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041014018.png" alt="image-20211104101456912"></p>
+</li>
+<li><p>第三步：优化参数，找到最好的函数</p>
+<ul>
+<li><p>梯度下降优化参数</p>
+</li>
+<li><p>反向传播机制计算偏微分可能更有效率</p>
+<img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041023474.png" alt="image-20211104102334382" style="zoom:50%;" /></li>
+</ul>
+</li>
+</ul>
+<h3 id="2-3-FAQ"><a href="#2-3-FAQ" class="headerlink" title="2.3 FAQ"></a>2.3 FAQ</h3><ul>
+<li>How many layers? How many neurons for each layer?</li>
+<li>Trial and Error  +   Intution</li>
+<li>用多层网络的计算减少了特征工程的工作</li>
+<li>深度学习在NLP上没有那么好的效果</li>
+<li>Can the structure be automatically determined? 自动找到更好的网络结构<ul>
+<li>E.g. Evolutionary Artificial Neural Networks</li>
+</ul>
+</li>
+<li>我们可以自己设计网络结构吗？<ul>
+<li>当然可以，比如Convolutional Neural Network (CNN)</li>
+</ul>
+</li>
+<li>深度学习一定是层数越多越好吗？  不是</li>
+<li>每一层多添加神经元也可以实现同样的输出矩阵？为什么选择让网络结构更深而不是更宽呢？</li>
+</ul>
+<h3 id="2-4-深度学习扩展资料"><a href="#2-4-深度学习扩展资料" class="headerlink" title="2.4 深度学习扩展资料"></a>2.4 深度学习扩展资料</h3><ul>
+<li>My Course: Machine learning and having it deep and structured<ul>
+<li><a target="_blank" rel="noopener" href="http://speech.ee.ntu.edu.tw/~tlkagk/courses_MLSD15_2.html">http://speech.ee.ntu.edu.tw/~tlkagk/courses_MLSD15_2.html</a></li>
+<li>6 hour version: <a target="_blank" rel="noopener" href="http://www.slideshare.net/tw_dsconf/ss62245351">http://www.slideshare.net/tw_dsconf/ss62245351</a></li>
+</ul>
+</li>
+<li>“Neural Networks and Deep<ul>
+<li>written by Michael Nielsen</li>
+<li><a target="_blank" rel="noopener" href="http://neuralnetworksanddeeplearning.com/">http://neuralnetworksanddeeplearning.com/</a></li>
+</ul>
+</li>
+<li>“Deep Learning”<ul>
+<li>written by Yoshua Bengio , Ian J. Goodfellow and Aaron Courville</li>
+<li><a target="_blank" rel="noopener" href="http://www.deeplearningbook.org/">http://www.deeplearningbook.org</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="01-4-反向传播（To-Learn-More）"><a href="#01-4-反向传播（To-Learn-More）" class="headerlink" title="01-4 反向传播（To Learn More）"></a>01-4 反向传播（To Learn More）</h1><h2 id="1-梯度下降"><a href="#1-梯度下降" class="headerlink" title="1. 梯度下降"></a>1. 梯度下降</h2><p>神经网络的参数<br>$$<br>\theta &#x3D; \left {  w_1,w_2,…,b_1,b_2,…  \right }<br>$$<br>初始化$\theta_0$之后，逐步计算$\theta_1,\theta_2$…..</p>
+<p>一个大的神经网络中有上百万的参数，为了更有效率的计算梯度下降，我们使用<strong>反向传播（backpropagation）</strong></p>
+<h2 id="2-链式法则"><a href="#2-链式法则" class="headerlink" title="2. 链式法则"></a>2. 链式法则</h2><img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041053505.png" alt="image-20211104105312441" style="zoom:50%;" />
+
+<p>case1：x变化一点，y就跟着变化一点，z也相应变化一点</p>
+<p>case2：s变化一点，x和y就变化一点，z也随之变化；s通过两条路径影响z的变化</p>
+<h2 id="3-反向传播"><a href="#3-反向传播" class="headerlink" title="3. 反向传播"></a>3. 反向传播</h2><img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041445343.png" alt="image-20211104144505209" style="zoom:50%;" />
+
+<h3 id="3-1-前向传播"><a href="#3-1-前向传播" class="headerlink" title="3.1 前向传播"></a>3.1 前向传播</h3><blockquote>
+<p>Forward pass，针对所有参数计算$\dfrac{\partial z}{\partial w}$</p>
+</blockquote>
+<p>根据<strong>链式法则</strong>可以将梯度下降中需要求解的<strong>偏微分</strong>分解，根据前文链式法则有如下公式成立<br>$$<br>\dfrac{\partial C}{\partial w}&#x3D; \dfrac{\partial C}{\partial z}    \dfrac{\partial z}{\partial w}<br>$$<br><img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041455924.png" alt="image-20211104145558857" style="zoom:67%;" /></p>
+<p>如图，$\dfrac{\partial z}{\partial w}$的值就是weight前对应的输入值：$\dfrac{\partial z}{\partial w_1}&#x3D;x_1$，$\dfrac{\partial z}{\partial w_2}&#x3D;x_2$</p>
+<img  align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041500754.png" alt="image-20211104150040687" style="zoom:50%;" />
+
+<img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041503239.png" alt="image-20211104150305176" style="zoom:50%;" />
+      那么$\dfrac{\partial C}{\partial z}$该如何求呢？ 如下图，依然使用链式法则分解
+
+<p><img src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041908378.png" alt="image-20211104151604648"></p>
+<h3 id="3-2-反向传播"><a href="#3-2-反向传播" class="headerlink" title="3.2 反向传播"></a>3.2 反向传播</h3><blockquote>
+<p>Backward pass</p>
+<p>针对所有激活函数的输入$z$计算$\dfrac{\partial C} {\partial z}$</p>
+</blockquote>
+<p>接上文，想要求解$\dfrac{\partial C} {\partial z}$，必须要知道$\dfrac{\partial C} {\partial z^&#96;}$和$\dfrac{\partial C} {\partial z^{&#96;&#96;}}$，因为$w_3,w_4$,$\sigma^,(z)$是一个常数。</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">关于为什么σ导数的值是确定的？</span><br><span class="line">    在进行参数初始化后，参数的值就固定下来了，每一次前向传播计算时，这些参数的值是不会变化的。参数不变化，由参数计算出来的函数值就不会发生变化，因此每个激活函数结点的σ导数值已经随着参数的确定而确定，并且已知。</span><br></pre></td></tr></table></figure>
+
+<p>换一种视角（从后向前）看神经网络的结构，可以很好地理解偏微分的计算过程</p>
+<p>反向传播约等于建立了一个反向的神经网络，用空间换时间</p>
+<p>&#x3D;&#x3D;很想知道计算偏微分的式子为啥可以和这个神经网络的结构很好的对应上（可能要对偏微分的数学原理很清楚才能搞明白）&#x3D;&#x3D;</p>
+<img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041908248.png" alt="image-20211104161626409" style="zoom:50%;" />
+
+<blockquote>
+<p>灰色方块</p>
+<p>​    输入：输入层数值和w</p>
+<p>​    输出：z</p>
+<p>圆形（激活函数）</p>
+<p>​    输入：z</p>
+<p>​    输出：a</p>
+</blockquote>
+<p>虽然这样看来，偏微分之间的关系更好理解了，但是$\dfrac{\partial C} {\partial z^&#96;}$和$\dfrac{\partial C} {\partial z^{&#96;&#96;}}$到底要怎么计算呢？</p>
+<ul>
+<li><p>case 1：之后就是输出层</p>
+<p>问题变得简单了，直接计算就可以了</p>
+<img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041908388.png" alt="image-20211104163323083" style="zoom:67%;" />
+</li>
+<li><p>case2：之后连接的不是输出层</p>
+<p>后面还有好多层才到达输出层，其实和直接到达输出层原理一样，就是不断的迭代计算，因为总有一个时刻会到达输出层。</p>
+</li>
+</ul>
+<p>这样看来，从输出层着手逐步向前计算$\dfrac{\partial C} {\partial z}$会更简单，这就是&#x3D;&#x3D;后向传播机制&#x3D;&#x3D;</p>
+<img align=left src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041908710.png" alt="image-20211104163717385" style="zoom:67%;" />
+
+<h2 id="3-3-反向传播机制总结"><a href="#3-3-反向传播机制总结" class="headerlink" title="3.3 反向传播机制总结"></a>3.3 反向传播机制总结</h2><p>其实每进行一次参数的梯度下降迭代，都要把神经网络【从前往后】【从后往前】计算两遍</p>
+<ul>
+<li>【从前往后】根据给定的参数计算函数，在计算的过程中，每个激活函数的到数值都被计算出来了，$\dfrac{\partial Z} {\partial w}$也得到了计算。</li>
+<li>【从后往前】为了寻找更好的参数，使用梯度下降的方法，要计算每一个参数的偏微分，但是计算偏微分从前往后太难求了，根据【从前往后】计算出的<strong>输出层值</strong>从后向前推更简便，算法效率更高。</li>
+</ul>
+<img align="left" src="https://justdoit6.oss-cn-zhangjiakou.aliyuncs.com/gitImage/202111041908500.png" alt="image-20211104164618904" style="zoom:67%;" />
+
+<p>为什么要反着算呢？</p>
+<p>​    从前往后算偏微分，算一个偏微分就要把后面的偏微分全都算了，倒着算的话只算一遍就好。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%EF%BC%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习，深度学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/07/02%20Deep%20Learning%E2%80%94%E2%80%94%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2021%E6%98%A5/" rel="prev" title="02 机器学习任务攻略——李宏毅深度学习2021春">
+      <i class="fa fa-chevron-left"></i> 02 机器学习任务攻略——李宏毅深度学习2021春
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/26/%E4%B8%80%E3%80%81%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E2%80%94%E2%80%94%E3%80%8A%E5%88%A9%E7%94%A8Python%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%8B/" rel="next" title="一、准备工作——《利用Python进行数据分析》">
+      一、准备工作——《利用Python进行数据分析》 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#01-1-Introduction"><span class="nav-number">1.</span> <span class="nav-text">01-1 Introduction</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Prerequisite"><span class="nav-number">1.1.</span> <span class="nav-text">1. Prerequisite</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Assignment"><span class="nav-number">1.2.</span> <span class="nav-text">2. Assignment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Lecture-Schedule"><span class="nav-number">1.3.</span> <span class="nav-text">3. Lecture Schedule</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Kaggle-JudgeBoi-is-similar"><span class="nav-number">1.4.</span> <span class="nav-text">4. Kaggle (JudgeBoi is similar)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#01-2-Regression"><span class="nav-number">2.</span> <span class="nav-text">01-2 Regression</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Machine-Learning-%E2%89%88-Looking-for-Function"><span class="nav-number">2.1.</span> <span class="nav-text">Machine Learning  ≈ Looking for Function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Different-types-of-Functions"><span class="nav-number">2.2.</span> <span class="nav-text">1. Different types of Functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-How-to-find-a-function"><span class="nav-number">2.3.</span> <span class="nav-text">2. How to find a function?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-Function-with-Unknown-Parameters"><span class="nav-number">2.3.1.</span> <span class="nav-text">2.1 Function with Unknown Parameters</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-Define-Loss-from-Training-Data"><span class="nav-number">2.3.2.</span> <span class="nav-text">2.2 Define Loss from Training Data</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-Optimization"><span class="nav-number">2.3.3.</span> <span class="nav-text">2.3 Optimization</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-Sigmoid%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0"><span class="nav-number">2.3.4.</span> <span class="nav-text">2.4 Sigmoid激活函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Neural-Networks"><span class="nav-number">2.4.</span> <span class="nav-text">3.Neural Networks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-b-i-sum-j-w-ij-x-j-%E5%BD%A2%E6%88%90%E8%BF%87%E7%A8%8B"><span class="nav-number">2.4.1.</span> <span class="nav-text">3.1 $b_i + \sum_j w_{ij}x_j$形成过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-sigmoid-b-i-sum-j-w-ij-x-j-%E5%BD%A2%E6%88%90%E8%BF%87%E7%A8%8B"><span class="nav-number">2.4.2.</span> <span class="nav-text">3.2 $sigmoid(b_i + \sum_j w_{ij}x_j)$形成过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-b-sum-i-c-i-sigmoid-b-i-sum-j-w-ij-x-j-%E5%BD%A2%E6%88%90%E8%BF%87%E7%A8%8B"><span class="nav-number">2.4.3.</span> <span class="nav-text">3.3 $b + \sum_i :c_i sigmoid(b_i + \sum_j w_{ij}x_j)$形成过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B-Back-to-ML-Framework"><span class="nav-number">2.4.4.</span> <span class="nav-text">3.4 神经网络处理过程 Back to ML Framework</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-1-Function-with-unknown-parameters"><span class="nav-number">2.4.4.1.</span> <span class="nav-text">3.4.1 Function with unknown parameters</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-2-Loss"><span class="nav-number">2.4.4.2.</span> <span class="nav-text">3.4.2 Loss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-3-Optimization-of-New-Model"><span class="nav-number">2.4.4.3.</span> <span class="nav-text">3.4.3 Optimization of New Model</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-ReLU"><span class="nav-number">2.5.</span> <span class="nav-text">4. ReLU</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#01-3-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AE%80%E4%BB%8B%EF%BC%88To-Learn-More%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">01-3 深度学习简介（To Learn More）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%8E%86%E5%8F%B2"><span class="nav-number">3.1.</span> <span class="nav-text">1. 深度学习历史</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%EF%BC%88Neural-Network%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">2.神经网络（Neural Network）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%89%8D%E9%A6%88%E7%BD%91%E7%BB%9C"><span class="nav-number">3.2.1.</span> <span class="nav-text">2.1 全连接前馈网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%BA%94%E7%94%A8%E4%B8%BE%E4%BE%8B%EF%BC%9A%E8%AF%86%E5%88%AB%E6%95%B0%E5%AD%97"><span class="nav-number">3.2.2.</span> <span class="nav-text">2.2 应用举例：识别数字</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-FAQ"><span class="nav-number">3.2.3.</span> <span class="nav-text">2.3 FAQ</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99"><span class="nav-number">3.2.4.</span> <span class="nav-text">2.4 深度学习扩展资料</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#01-4-%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%EF%BC%88To-Learn-More%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">01-4 反向传播（To Learn More）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D"><span class="nav-number">4.1.</span> <span class="nav-text">1. 梯度下降</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%93%BE%E5%BC%8F%E6%B3%95%E5%88%99"><span class="nav-number">4.2.</span> <span class="nav-text">2. 链式法则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="nav-number">4.3.</span> <span class="nav-text">3. 反向传播</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E5%89%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="nav-number">4.3.1.</span> <span class="nav-text">3.1 前向传播</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="nav-number">4.3.2.</span> <span class="nav-text">3.2 反向传播</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E6%9C%BA%E5%88%B6%E6%80%BB%E7%BB%93"><span class="nav-number">4.4.</span> <span class="nav-text">3.3 反向传播机制总结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="TT"
+      src="/images/header.jpg">
+  <p class="site-author-name" itemprop="name">TT</p>
+  <div class="site-description" itemprop="description">The Journey Is the Reward</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TT</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'TNUpeWIcsOXnq5yrEo6XphL5-gzGzoHsz',
+      appKey     : 'HdE2XffT6XTWRYvV2zovg336',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
